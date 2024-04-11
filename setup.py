@@ -8,7 +8,8 @@ setup(
         'httpx',
         'orjson',
         'pydantic',
-        'urllib3'
+        'urllib3',
+        'sphinx-rtd-theme'
     ],
     author='KnownZero',
     description='2024 Python SDK for Jenkins',
