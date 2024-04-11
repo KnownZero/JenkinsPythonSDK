@@ -8,8 +8,6 @@ version: 2
 # Set the OS, Python version, and other tools you might need
 build:
   os:
-    - ubuntu-20.04
-    - ubuntu-22.04
     - ubuntu-lts-latest
     - windows-2022
     - macos-latest
