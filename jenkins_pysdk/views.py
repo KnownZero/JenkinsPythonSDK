@@ -1,12 +1,11 @@
 from collections.abc import Generator
 from typing import List
 import orjson
-import pprint
 
 from pydantic import HttpUrl
 
-from jenkins_pysdk.response_objects import JenkinsValidateJob, JenkinsActionObject, Views as r_views
-from jenkins_pysdk.jenkins_exceptions import JenkinsViewNotFound, JenkinsGeneralException
+from jenkins_pysdk.objects import JenkinsValidateJob, JenkinsActionObject, Views as r_views
+from jenkins_pysdk.exceptions import JenkinsViewNotFound, JenkinsGeneralException
 from jenkins_pysdk.consts import Endpoints, Class, XML_HEADER_DEFAULT, XML_POST_HEADER
 from jenkins_pysdk.builders import Builder
 
@@ -15,19 +14,52 @@ __all__ = ["Views"]
 
 class View:
     def __init__(self, /, *, jenkins, name, url):
+        """
+        Interact with Views on the Jenkins instance.
+
+        :param jenkins: Connection to Jenkins instance.
+        :type jenkins: Jenkins
+        :param name: The name of the view.
+        :type name: str
+        :param url: The URL of the view.
+        :type url: HttpUrl
+        """
         self._jenkins = jenkins
         self._view_name = name
         self._view_url = url
 
     @property
     def url(self) -> HttpUrl:
+        """
+        Get the URL of the view.
+
+        :return: The URL of the view.
+        :rtype: HttpUrl
+        """
         return HttpUrl(self._view_url)
 
     @property
     def name(self) -> str:
+        """
+        Get the name of the view.
+
+        :return: The name of the view.
+        :rtype: str
+        """
         return self._view_name
 
     def reconfig(self, xml: str = None, builder: Builder.View = None) -> JenkinsActionObject:
+        """
+        Reconfigure the view with XML configuration or a builder.
+
+        :param xml: The XML configuration of the view, defaults to None.
+        :type xml: str, optional
+        :param builder: The builder object to build the view, defaults to None.
+        :type builder: Builder.View, optional
+        :return: Jenkins action object indicating the reconfiguration status.
+        :rtype: JenkinsActionObject
+        :raises JenkinsGeneralException: If a general exception occurs.
+        """
         if not xml and not builder:
             raise JenkinsGeneralException("Missing view configuration.")
         url = self._jenkins._build_url(Endpoints.Jobs.Xml, prefix=self._view_url)
@@ -43,7 +75,13 @@ class View:
         return obj
 
     @property
-    def delete(self):
+    def delete(self) -> JenkinsActionObject:
+        """
+        Delete the view.
+
+        :return: Jenkins action object indicating the delete status.
+        :rtype: JenkinsActionObject
+        """
         url = self._jenkins._build_url("/", prefix=self._view_url)
         req_obj, resp_obj = self._jenkins._send_http(method="DELETE", url=url)
         msg = f"[{resp_obj.status_code}] Successfully deleted view."
@@ -54,25 +92,42 @@ class View:
         return obj
 
     @property
-    def config(self):
-        url = f"{self._view_url}/{Endpoints.Jobs.Xml}"  # TODO: Fix this
+    def config(self) -> str:
+        """
+        Get the XML configuration of the view.
+
+        :return: The XML configuration of the view.
+        :rtype: str
+        :raises JenkinsGeneralException: If a general exception occurs.
+        """
+        url = self._jenkins._build_url(Endpoints.Jobs.Xml, prefix=self._view_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url, headers=XML_HEADER_DEFAULT)
         code = resp_obj.status_code
         if code != 200:
-            return JenkinsGeneralException(f"[{code}] Failed to download view XML.")
+            raise JenkinsGeneralException(f"[{code}] Failed to download view XML.")
         return resp_obj.content
 
 
 class Views:
     def __init__(self, jenkins):
         """
-        Interact with Jobs on the Jenkins instance.
-        :param jenkins: Connection to Jenkins instance
+        Interact with Views on the Jenkins instance.
+
+        :param jenkins: Connection to the Jenkins instance.
         """
         self._jenkins = jenkins
 
     def search(self, view_path: str) -> View:
-        # TODO: Get view_name from API as resutls are won't be consistent with User Views
+        """
+        Search for a view within Jenkins.
+
+        :param view_path: The path of the view to search for.
+        :type view_path: str
+        :return: The View object representing the found view.
+        :rtype: View
+        :raises JenkinsViewNotFound: If the view was not found.
+        """
+        # TODO: Get view_name from API as results are won't be consistent with User Views
         validated = self._validate_view(view_path)
         if not validated.is_valid:
             raise JenkinsViewNotFound(f"Could not retrieve {view_path} because it doesn't exist.")
@@ -80,9 +135,12 @@ class Views:
 
     def is_view(self, path: str) -> bool:
         """
-        Checks if the path is a Folder.
-        :param path: The job path
-        :return:
+        Check if the specified path corresponds to a view in Jenkins.
+
+        :param path: The path to check.
+        :type path: str
+        :return: True if the path corresponds to a view, False otherwise.
+        :rtype: bool
         """
         built = self._jenkins._build_view_http_path(path)
         endpoint = f"{built}/{Endpoints.Instance.Standard}"
@@ -117,9 +175,6 @@ class Views:
 
     def _create_view(self, view_name: str, xml, mode: r_views) -> JenkinsActionObject:
         # TODO: Add mode with params
-
-        # url = self._jenkins._build_url(Endpoints.Views.Create)
-        # params = {"name": view_name, "mode": mode}
         params = {"mode": mode}
         url = self._jenkins._build_url(f"/{view_name}")
 
@@ -134,6 +189,18 @@ class Views:
         return obj
 
     def create(self, name: str, xml: str or Builder.View, *args: r_views) -> JenkinsActionObject:
+        """
+        Create a new view.
+
+        :param name: The name of the new view.
+        :type name: str
+        :param xml: The XML configuration or Builder.View object for the new view.
+        :type xml: str or Builder.View
+        :param args: Additional parameters for the view creation.
+        :type args: r_views
+        :return: JenkinsActionObject indicating the result of the creation.
+        :rtype: JenkinsActionObject
+        """
         try:
             self.is_view(name)
             raise JenkinsGeneralException(f"{name} already exists.")
@@ -145,6 +212,16 @@ class Views:
         return created
 
     def iter(self, /, folder=None, _paginate=0) -> Generator[View]:
+        """
+        Iterate through views.
+
+        :param folder: Folder to iterate through. Default is None.
+        :type folder: Any, optional
+        :param _paginate: Pagination option. Default is 0.
+        :type _paginate: int, optional
+        :return: A generator yielding View objects.
+        :rtype: Generator[View]
+        """
         if folder:
             path = self._jenkins._build_job_http_path(folder)
             url = self._jenkins._build_url(path + "/")
@@ -209,14 +286,18 @@ class Views:
     @property
     def tree(self):
         """
-        View all jobs in a pretty tree-like structure.
-        :return:
+        View all views in a pretty tree-like structure.
+
+        :return: None
+        :rtype: None
         """
         raise NotImplemented
 
     def api(self):
         """
-        Run your own query and return jobs data objects.
-        :return:
+        Run your own query and return views data objects.
+
+        :return: None
+        :rtype: None
         """
         raise NotImplemented

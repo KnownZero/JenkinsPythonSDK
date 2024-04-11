@@ -1,5 +1,4 @@
 from typing import Union, Tuple
-from abc import ABC, abstractmethod
 
 import orjson
 from pydantic import HttpUrl
@@ -7,8 +6,9 @@ from pydantic import HttpUrl
 from jenkins_pysdk.consts import Endpoints
 from jenkins_pysdk.utils import interact_http, interact_http_session
 from jenkins_pysdk.consts import HTTP_HEADER_DEFAULT
-from jenkins_pysdk.response_objects import HTTPSessionRequestObject, HTTPSessionResponseObject, \
+from jenkins_pysdk.objects import HTTPSessionRequestObject, HTTPSessionResponseObject, \
     HTTPRequestObject, HTTPResponseObject
+from jenkins_pysdk.exceptions import JenkinsConnectionException
 
 __all__ = ["Core"]
 
@@ -17,15 +17,6 @@ __all__ = ["Core"]
 class Core:  # TODO: Revise these messy methods
     def _set_schema(self, url):
         raise NotImplemented
-
-    # def _build_url(self, endpoint: str, prefix: str = None) -> HttpUrl:
-    #     endpoint = str(endpoint)
-    #     scheme = "https://" if self.verify else "http://"
-    #     if prefix:
-    #         prefix = str(prefix)
-    #         prefix = prefix[:-1] if prefix.endswith("/") else prefix
-    #         return HttpUrl(f"{prefix}/{endpoint}".replace("//", "/"))
-    #     return HttpUrl(f"{scheme}{self.host}/{endpoint}".replace("//", "/"))
 
     def _build_url(self, endpoint: str, prefix: str = None, suffix: str = None) -> HttpUrl:
         scheme = "https://" if self.verify else "http://"
@@ -141,6 +132,8 @@ class Core:  # TODO: Revise these messy methods
                 keep_session=True
             )
             crumbed_session = interact_http_session(crumbed_session_req)
+            if isinstance(crumbed_session._raw, Exception):
+                raise JenkinsConnectionException(crumbed_session._raw)
             crumbed_data = orjson.loads(crumbed_session.content)
             add_crumb_header = {crumbed_data['crumbRequestField']: crumbed_data['crumb']}
             headers.update(add_crumb_header)

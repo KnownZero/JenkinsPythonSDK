@@ -9,8 +9,14 @@ class Builder:
     @classmethod
     def Folder(cls, name, description: str):
         """
+        Create a new folder template.
 
-        :return:
+        :param name: The name of the folder.
+        :type name: str
+        :param description: The description of the folder.
+        :type description: str
+        :return: The newly created folder template.
+        :rtype: Folder
         """
         template = cls._Templates.Folder.format(folder_name=name)
         template = template.format(description=description)
@@ -18,16 +24,34 @@ class Builder:
 
     @classmethod
     def Freestyle(cls):
+        """
+        Create a new Freestyle job.
+
+        :return: The newly created Freestyle job template.
+        :rtype: Job
+        """
         # TODO: This
         pass
 
     @classmethod
     def View(cls):
+        """
+        Create a new view template.
+
+        :return: The newly created view.
+        :rtype: View
+        """
         pass
 
     class Credentials:
         @classmethod
-        def UsernamePassword(cls):
+        def UsernamePassword(cls) -> str:
+            """
+            Create a new Username/Password credential.
+
+            :return: The newly created Username/Password credential template.
+            :rtype: str
+            """
             # TODO: This
             raise NotImplemented
 
@@ -37,7 +61,8 @@ class Builder:
              password: str,
              cred_id=None,
              domain: str = "GLOBAL") -> ...:
-        pass
+        # TODO: This
+        raise NotImplemented
 
     class _Templates:
         Folder = \

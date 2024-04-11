@@ -1,5 +1,3 @@
-# JenkinsPythonSDK
-
 # Jenkins Python SDK (jenkins_pysdk)
 
 # Supported for python 3.8+
@@ -8,7 +6,8 @@ May work with older versions
 
 ## Installation
 
-Use the package manager [pypi.org](https://pypi.org/project/jenkins-pysdk/) to install jenkins-pysdk.
+Use the package manager [pip](https://pip.pypa.io/en/stable/installation/) and 
+[pypi.org](https://pypi.org/project/jenkins-pysdk/) to install jenkins-pysdk.
 
 ```bash
 pip install jenkins-pysdk
@@ -22,13 +21,10 @@ jenkins = Jenkins(
     host="<host>", 
     username="<username>", 
     passw="<passw>",
-    verify=False, 
-    proxy={"https": "", "http": ""},
-    timeout=30
 )
 ```
 #### OR
-```
+```python
 from jenkins_pysdk.jenkins import Jenkins
 jenkins = Jenkins(
     host="<host>", 
@@ -36,6 +32,7 @@ jenkins = Jenkins(
 )
 ```
 
+#### See [docs](docs/) for full documentation.
 
 ## Contributing
 
@@ -50,7 +47,7 @@ Please make sure to update tests as appropriate.
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
-This code is free to use and I will not take ANY responibilty for any damage that you create yourself.
+This code is free to use, and I will not take ANY responsibility for any damage that you create yourself.
 
 ## Contributors
 KnownZero

@@ -1,4 +1,0 @@
-httpx
-orjson
-pydantic
-urllib3

@@ -7,20 +7,20 @@ sys.path.insert(0, project_root)
 import re
 import time
 
-import pprint
 from typing import Optional
 import threading
 
 from jenkins_pysdk.core import Core
 from jenkins_pysdk.consts import Endpoints, FORM_HEADER_DEFAULT, Class
-from jenkins_pysdk.jenkins_exceptions import JenkinsConnectionException, JenkinsUnauthorisedException, JenkinsRestartFailed, \
-    JenkinsActionFailed
-from jenkins_pysdk.response_objects import JenkinsConnectObject, JenkinsDataObject, JenkinsActionObject, \
+from jenkins_pysdk.exceptions import JenkinsConnectionException, JenkinsUnauthorisedException, \
+    JenkinsRestartFailed, JenkinsActionFailed
+from jenkins_pysdk.objects import JenkinsConnectObject, JenkinsActionObject, \
     HTTPSessionResponseObject, Views as r_views, Jobs as r_jobs
 from jenkins_pysdk.jobs import Jobs, Folders, Job, Folder
 from jenkins_pysdk.views import Views, View
 from jenkins_pysdk.users import Users, User
-from credentials import Credentials
+from jenkins_pysdk.credentials import Credentials
+from jenkins_pysdk.plugins import Plugins
 
 import orjson
 
@@ -28,11 +28,28 @@ import orjson
 __all__ = ["Jenkins"]
 
 
-import logging
-logging.basicConfig(handlers=[logging.StreamHandler()], format="func=%(funcName)s line=%(lineno)d | %(message)s")
-
-
 class Jenkins(Core):
+    """
+    This is the main class for interacting with your Jenkins instance.
+
+    :param host: The hostname/IP/DNS of the Jenkins instance.
+    :type host: str
+    :param username: The username for authentication. Defaults to None.
+    :type username: str, optional
+    :param passw: The password for authentication. Defaults to None.
+    :type passw: str, optional
+    :param token: The API token for authentication. Defaults to None.
+    :type token: str, optional
+    :param verify: Enable or disable SSL verification. Defaults to True.
+    :type verify: bool, optional
+    :param proxy: Specify a proxy for routing requests. Supports both HTTP and HTTPS. Defaults to None.
+    :type proxy: dict, optional
+    :param port: The port number for connecting to the Jenkins instance. Defaults to 443.
+    :type port: int, optional
+    :param timeout: Specify the connection timeout in seconds. Defaults to 30.
+    :type timeout: int, optional
+    """
+
     Enable_Logging = 0
 
     def __init__(self, /, *,
@@ -44,15 +61,6 @@ class Jenkins(Core):
                  proxy: dict = None,
                  port: int = 443,
                  timeout: int = 30):
-        """
-
-        :param host:
-        :param username:
-        :param passw:
-        :param token:
-        :param verify:
-        :param timeout:
-        """
         self.host = host
         self.username = username
         self.passw = passw
@@ -68,20 +76,21 @@ class Jenkins(Core):
         self._views = Views(self)
         self._credentials = Credentials(self)
         self._users = Users(self)
+        self._plugins = Plugins(self)
 
         # Test connection
         self.connect()
 
     @property
-    def jobs(self) -> (Jobs, Job):
+    def jobs(self) -> Jobs or Job:
         return self._jobs
 
     @property
-    def folders(self) -> (Folders, Folder):
+    def folders(self) -> Folders or Folder:
         return self._folders
 
     @property
-    def views(self) -> (Views, View):
+    def views(self) -> Views or View:
         return self._views
 
     @property
@@ -94,14 +103,32 @@ class Jenkins(Core):
 
     @property
     def ListView(self) -> r_views:
+        """
+        Flag used to create a ListView View in Views.create method.
+
+        :return: Flag for creating a ListView View
+        :rtype: r_views
+        """
         return r_views(value=Class.ListView)
 
     @property
     def MyView(self) -> r_views:
+        """
+        Flag used to create a MyView View in Views.create method.
+
+        :return: Flag for creating a MyView View
+        :rtype: r_views
+        """
         return r_views(value=Class.MyView)
 
     @property
     def FreeStyle(self) -> r_jobs:
+        """
+        Flag used to create FreeStyle jobs in Jobs.create method.
+
+        :return: Flag for creating FreeStyle jobs
+        :rtype: r_jobs
+        """
         return r_jobs(value=Class.Freestyle)
 
     @property
@@ -113,10 +140,14 @@ class Jenkins(Core):
         # TODO: Add logging and enhance with logger per component/more levels etc etc
         self.Enable_Logging = value
 
-    def connect(self) -> JenkinsConnectObject or JenkinsConnectionException:
+    def connect(self) -> JenkinsConnectObject:
         """
-        Connect to the Jenkins instance.
-        :return:
+        Test the connection to the Jenkins instance.
+
+        :return: Object containing connection information if successful, otherwise raises a JenkinsConnectionException.
+        :rtype: JenkinsConnectObject
+        :raises JenkinsConnectionException: If a connection exception if it fails to connect.
+        :raises JenkinsUnauthorisedException: If the credentials aren't valid.
         """
         # TODO: Fix PORTING MAYBE?
         url = self._build_url(Endpoints.Instance.Connect)
@@ -136,22 +167,14 @@ class Jenkins(Core):
             return return_object
         elif code == 401:
             if self.username and self.passw:
-                msg = JenkinsUnauthorisedException(
-                    f"[{response_obj.status_code}] Wrong credentials supplied.")
+                raise JenkinsUnauthorisedException(f"[{response_obj.status_code}] Wrong credentials supplied.")
             elif not self.username:
-                msg = JenkinsUnauthorisedException(
-                    f"[{response_obj.status_code}] Unauthorised. No username supplied.")
+                raise JenkinsUnauthorisedException(f"[{response_obj.status_code}] Unauthorised. No username supplied.")
             elif not self.passw and not self.token:
-                msg = JenkinsUnauthorisedException(
-                    f"[{response_obj.status_code}] Unauthorised. No password supplied.")
+                raise JenkinsUnauthorisedException(f"[{response_obj.status_code}] Unauthorised. No password supplied.")
             else:
-                msg = JenkinsUnauthorisedException(
-                    f"[{response_obj.status_code}] Unauthorised. No credentials supplied.")
-            return_object = JenkinsConnectObject(request=req_obj, response=response_obj, content=msg,
-                                                 status_code=response_obj.status_code)
-            return_object._raw = response_obj._raw
-            return return_object
-        elif code == 500:
+                raise JenkinsUnauthorisedException(f"[{response_obj.status_code}] Unauthorised. No credentials supplied.")
+        elif code >= 500:
             # TODO: FIX THIS DUPLICATE CODE MESS
             msg = JenkinsConnectionException(f"[{response_obj.status_code}] Server error.")
             return_object = JenkinsConnectObject(request=req_obj, response=response_obj, content=msg,
@@ -163,11 +186,6 @@ class Jenkins(Core):
             raise JenkinsConnectionException(msg)
 
     def use_crumb(self) -> HTTPSessionResponseObject:
-        """
-        Spawns a session with the crumb included.
-        Note: Crumbs are auto-applied to any requests that don't use an API token.
-        :return:
-        """
         url = self._build_url(Endpoints.Instance.Crumb)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
@@ -177,10 +195,6 @@ class Jenkins(Core):
 
     @property
     def tree(self):
-        """
-        View all jobs in a pretty tree-like structure.
-        :return:
-        """
         raise NotImplemented
 
     @property
@@ -188,15 +202,28 @@ class Jenkins(Core):
         return self._users
 
     @property
-    def me(self):
+    def me(self) -> User:
         """
-        Return the authenticated users' information.
+        Retrieve information about the authenticated user.
+
+        :return: Information about the authenticated user
+        :rtype: :class:`users.User`
         """
         url = self._build_url(Endpoints.User.Me)
         return User(self, url)
 
     @property
-    def version(self):
+    def plugins(self) -> Plugins:
+        return self._plugins
+
+    @property
+    def version(self) -> str:
+        """
+        Get the version information of the Jenkins instance.
+
+        :return: Version information of the Jenkins instance
+        :rtype: str
+        """
         # TODO: Finish me
         url = self._build_url(Endpoints.Instance.Crumb)
         req_obj, resp_obj = self._send_http(url)
@@ -204,18 +231,12 @@ class Jenkins(Core):
         raise NotImplemented
 
     @property
-    def plugins(self):
+    def available_executors(self) -> int or str:
         """
-        Returns a list of all plugins on the Jenkins instance.
-        :return:
-        """
-        raise NotImplemented
+        View the number of available executors on the instance.
 
-    @property
-    def available_executors(self) -> JenkinsDataObject:
-        """
-        View the available executors on the instance.
-        :return:
+        :return: Number of available executors
+        :rtype: int or str
         """
         # TODO: FIX CODE COPY & PASTE BELOW... maybe singledispatch
         _fields = ['_class', 'availableExecutors']
@@ -225,17 +246,15 @@ class Jenkins(Core):
         content = data['availableExecutors']
         if not content:
             content = "No executors are available."
-        obj = JenkinsDataObject(request=req_obj, content=content)
-        obj._class = data['_class']
-        raw_data = {k: v for k, v in data.items() if k in _fields}
-        obj._raw = raw_data
-        return obj
+        return content
 
     @property
-    def executors_in_use(self) -> JenkinsDataObject:
+    def executors_in_use(self) -> str:
         """
         View the executors that are currently being used on the instance.
-        :return:
+
+        :return: Information about the executors in use
+        :rtype: str
         """
         _fields = ['_class', 'busyExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -244,17 +263,15 @@ class Jenkins(Core):
         content = data['busyExecutors']
         if not content:
             content = "No executors are in-use."
-        obj = JenkinsDataObject(request=req_obj, content=content)
-        obj._class = data['_class']
-        raw_data = {k: v for k, v in data.items() if k in _fields}
-        obj._raw = raw_data
-        return obj
+        return content
 
     @property
-    def pending_executors(self) -> JenkinsDataObject:
+    def pending_executors(self) -> int or str:
         """
-        View the executors that are about to run on the instance.
-        :return:
+        View the number of executors that are about to run on the instance.
+
+        :return: Number of pending executors
+        :rtype: int or str
         """
         _fields = ['_class', 'connectingExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -263,17 +280,15 @@ class Jenkins(Core):
         content = data['connectingExecutors']
         if not content:
             content = "No executors are connecting."
-        obj = JenkinsDataObject(request=req_obj, content=content)
-        obj._class = data['_class']
-        raw_data = {k: v for k, v in data.items() if k in _fields}
-        obj._raw = raw_data
-        return obj
+        return content
 
     @property
-    def executor_info(self) -> JenkinsDataObject:
+    def executor_info(self) -> str:
         """
-        View the setup executors on the instance.
-        :return:
+        View information about the setup executors on the instance.
+
+        :return: Information about the setup executors
+        :rtype: str
         """
         _fields = ['_class', 'definedExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -282,17 +297,15 @@ class Jenkins(Core):
         content = data['definedExecutors']
         if not content:
             content = "No executors are defined."
-        obj = JenkinsDataObject(request=req_obj, content=content)
-        obj._class = data['_class']
-        raw_data = {k: v for k, v in data.items() if k in _fields}
-        obj._raw = raw_data
-        return obj
+        return content
 
     @property
-    def idle_executors(self) -> JenkinsDataObject:
+    def idle_executors(self) -> int or str:
         """
-        View the idle executors on the instance.
-        :return:
+        View the number of idle executors on the instance.
+
+        :return: Number of idle executors
+        :rtype: int or str
         """
         _fields = ['_class', 'idleExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -301,17 +314,15 @@ class Jenkins(Core):
         content = data['idleExecutors']
         if not content:
             content = "No executors are idle."
-        obj = JenkinsDataObject(request=req_obj, content=content)
-        obj._class = data['_class']
-        raw_data = {k: v for k, v in data.items() if k in _fields}
-        obj._raw = raw_data
-        return obj
+        return content
 
     @property
-    def online_executors(self) -> JenkinsDataObject:
+    def online_executors(self) -> int or str:
         """
-        View the executors that are online, on the instance.
-        :return:
+        View the number of executors that are currently online on the instance.
+
+        :return: Number of online executors
+        :rtype: int or str
         """
         _fields = ['_class', 'onlineExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -320,17 +331,15 @@ class Jenkins(Core):
         content = data['onlineExecutors']
         if not content:
             content = "No executors are online."
-        obj = JenkinsDataObject(request=req_obj, content=content)
-        obj._class = data['_class']
-        raw_data = {k: v for k, v in data.items() if k in _fields}
-        obj._raw = raw_data
-        return obj
+        return content
 
     @property
-    def queue_size(self) -> JenkinsDataObject:
+    def queue_size(self) -> int or str:
         """
         View the current queue size on the instance.
-        :return:
+
+        :return: Current queue size
+        :rtype: int or str
         """
         _fields = ['_class', 'queueLength']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -339,17 +348,15 @@ class Jenkins(Core):
         content = data['queueLength']
         if not content:
             content = "No work in the queue."
-        obj = JenkinsDataObject(request=req_obj, content=content)
-        obj._class = data['_class']
-        raw_data = {k: v for k, v in data.items() if k in _fields}
-        obj._raw = raw_data
-        return obj
+        return content
 
     @property
-    def max_executors(self) -> JenkinsDataObject:
+    def max_executors(self) -> int or str:
         """
         View the total number of executors on the instance.
-        :return:
+
+        :return: Total number of executors
+        :rtype: int or str
         """
         _fields = ['_class', 'totalExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -358,17 +365,15 @@ class Jenkins(Core):
         content = data['totalExecutors']
         if not content:
             content = "No executors are setup."
-        obj = JenkinsDataObject(request=req_obj, content=content)
-        obj._class = data['_class']
-        raw_data = {k: v for k, v in data.items() if k in _fields}
-        obj._raw = raw_data
-        return obj
+        return content
 
     @property
-    def max_queue_size(self) -> JenkinsDataObject:
+    def max_queue_size(self) -> int or str:
         """
-        View the max queue size on the instance.
-        :return:
+        View the maximum queue size on the instance.
+
+        :return: Maximum queue size
+        :rtype: int or str
         """
         _fields = ['_class', 'totalQueueLength']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -377,17 +382,16 @@ class Jenkins(Core):
         content = data['totalQueueLength']
         if not content:
             content = "No executors are setup."
-        obj = JenkinsDataObject(request=req_obj, content=content)
-        obj._class = data['_class']
-        raw_data = {k: v for k, v in data.items() if k in _fields}
-        obj._raw = raw_data
-        return obj
+        return content
 
     def restart(self, graceful: bool = False) -> JenkinsActionObject:
         """
         Restart the Jenkins instance.
-        :param graceful: Restart after all jobs have finished.
-        :return: Request outcome.
+
+        :param graceful: (optional) If True, restart after all jobs have finished, defaults to False
+        :type graceful: bool
+        :return: Restart status
+        :rtype: JenkinsActionObject
         """
         # TODO: Unit Test
         url = self._build_url(Endpoints.Maintenance.Restart)
@@ -413,6 +417,12 @@ class Jenkins(Core):
         return restart_obj
 
     def _enable_quiet_mode(self) -> JenkinsActionObject:
+        """
+        Enable Quiet Mode on the Jenkins instance.
+
+        :return: Result of the request to enable Quiet Mode
+        :rtype: JenkinsActionObject
+        """
         url = self._build_url(Endpoints.Maintenance.QuietDown)
         req_obj, resp_obj = self._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT)
         code = resp_obj.status_code
@@ -425,6 +435,14 @@ class Jenkins(Core):
         return quiet_obj
 
     def _disable_quiet_mode(self, wait_time: int = 0) -> JenkinsActionObject:
+        """
+        Disable Quiet Mode on the Jenkins instance.
+
+        :param wait_time: (optional) Time to wait before disabling Quiet Mode, in seconds (default is 0)
+        :type wait_time: int
+        :return: Result of the request to disable Quiet Mode
+        :rtype: JenkinsActionObject
+        """
         time.sleep(wait_time)
         url = self._build_url(Endpoints.Maintenance.NoQuietDown)
         req_obj, resp_obj = self._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT)
@@ -440,10 +458,14 @@ class Jenkins(Core):
 
     def quiet_mode(self, duration: int = None, disable: bool = False) -> JenkinsActionObject:
         """
-        Enable Quiet Mode on the Jenkins instance.
-        :param duration: (Optional) Enable Quiet Mode for X seconds
-        :param disable: Disable Quiet Mode
-        :return: Request outcome.
+        Enable or disable Quiet Mode on the Jenkins instance.
+
+        :param duration: (optional) Enable Quiet Mode for X seconds
+        :type duration: int
+        :param disable: (optional) If True, disable Quiet Mode, defaults to False
+        :type disable: bool
+        :return: Result of the request to enable or disable Quiet Mode
+        :rtype: JenkinsActionObject
         """
         # TODO: Fix 403 error
         # TODO: Run second thread to enable quiet mode for x time
@@ -484,7 +506,10 @@ class Jenkins(Core):
     @property
     def logout(self) -> JenkinsActionObject:
         """
-        Logout of your session.
+        Terminate the user's session.
+
+        :return: Result of the logout request
+        :rtype: JenkinsActionObject
         """
         url = self._build_url(Endpoints.User.Logout)
         req_obj, resp_obj = self._send_http(method="POST", url=url)
@@ -500,6 +525,9 @@ class Jenkins(Core):
     def reload(self) -> JenkinsActionObject:
         """
         Reload configuration from disk.
+
+        :return: Result of request
+        :rtype: JenkinsActionObject
         """
         url = self._build_url(Endpoints.Manage.Reload)
         req_obj, resp_obj = self._send_http(method="POST", url=url)
@@ -509,10 +537,3 @@ class Jenkins(Core):
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
         return obj
-
-    class Plugins:
-        pass
-
-if __name__ == "__main__":
-    jenkins = Jenkins(host="http://c0ea-90-194-113-56.ngrok-free.app", username="admin", passw="jenkins")
-    print(jenkins.version)
