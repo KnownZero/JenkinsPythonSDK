@@ -67,7 +67,7 @@ class Build:
         Delete the build.
 
         :return: Result of the delete request.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         """
         url = self._jenkins._build_url(Endpoints.Builds.Delete, prefix=self._build_url)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
@@ -139,14 +139,14 @@ class Build:
         raise NotImplemented
 
     @property
-    def url(self):
+    def url(self) -> str:
         """
         Get the URL of the build.
 
         :return: The URL of the build.
         :rtype: str
         """
-        return self._build_url
+        return str(self._build_url)
 
     @property
     def result(self) -> str:
@@ -198,6 +198,7 @@ class Build:
         :return: A list of artifacts associated with the build.
         :rtype: List[Artifact]
         """
+        # TODO: CHange rtype to class when ready
         raise NotImplementedError
 
 
@@ -221,7 +222,7 @@ class Builds:
         :param build_number: The number of the build to fetch.
         :type build_number: int
         :return: The Build object representing the requested build.
-        :rtype: Build
+        :rtype: :class:`Build`
         """
         return self._fetch_build(build_number)
 
@@ -247,7 +248,7 @@ class Builds:
         Iterate over builds in the build history of the job.
 
         :yield: A Build object representing each build in the build history.
-        :rtype: Generator[Build]
+        :rtype: Generator[:class:`Build`]
         """
         url = self._jenkins._build_url(Endpoints.Instance.Standard)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
@@ -264,7 +265,7 @@ class Builds:
         Get a list of all builds in the build history of the job.
 
         :return: A list of Build objects representing each build in the build history.
-        :rtype: List[Build]
+        :rtype: List[:class:`Build`]
         """
         return [b for b in self.iter()]
 
@@ -286,7 +287,7 @@ class Builds:
         Retrieve the last build in the build history of the job.
 
         :return: The Build object representing the last build.
-        :rtype: Build
+        :rtype: :class:`Build`
         """
         # TODO: Add filtering for success=False, failed=False
         return self._fetch_build(0)
@@ -297,7 +298,7 @@ class Builds:
         Retrieve the oldest saved build in the build history of the job.
 
         :return: The Build object representing the oldest saved build.
-        :rtype: Build
+        :rtype: :class:`Build`
         """
         # TODO: Add filtering for success=False, failed=False
         return self._fetch_build(-1)
@@ -309,7 +310,7 @@ class Builds:
         :param parameters: Optional parameters to be passed to the build.
         :type parameters: dict, optional
         :return: Result of the build trigger request.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         if parameters:

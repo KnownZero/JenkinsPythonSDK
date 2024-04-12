@@ -10,7 +10,7 @@ from jenkins_pysdk.consts import Endpoints, Class, XML_HEADER_DEFAULT, XML_POST_
 from jenkins_pysdk.builders import Builder
 from jenkins_pysdk.builds import Builds
 
-__all__ = ["Jobs", "Folders"]
+__all__ = ["Jobs", "Folders", "Job", "Folder"]
 
 
 class Job:
@@ -36,7 +36,7 @@ class Job:
         Disable the job.
 
         :return: Result of the request to disable the job.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.Jobs.Disable, prefix=self._job_url)
@@ -76,7 +76,7 @@ class Job:
         Enable the job.
 
         :return: The outcome of enabling the job.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.Jobs.Enable, prefix=self._job_url)
@@ -99,7 +99,7 @@ class Job:
         :param builder: The builder to use for generating XML configuration, defaults to None.
         :type builder: Builder, optional
         :return: The outcome of reconfiguring the job.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         if not xml and not builder:
@@ -122,7 +122,7 @@ class Job:
         Delete the folder.
 
         :return: Result of the delete operation.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         """
         url = self._jenkins._build_url("/", prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(method="DELETE", url=url)
@@ -155,7 +155,7 @@ class Job:
         Access the builds associated with this job.
 
         :return: Builds associated with this job.
-        :rtype: Builds
+        :rtype: :class:`builds.Builds`
         """
         return Builds(self._jenkins, self._job_url)
 
@@ -177,7 +177,8 @@ class Jobs:
         :param job_path: The path of the job to search for.
         :type job_path: str
         :return: The job object.
-        :rtype: Job
+        :rtype: :class:`Job`
+        :raises: JenkinsJobNotFound: If the job wasn't found.
         """
         validated = self._validate_job(job_path)
         if not validated.is_valid:
@@ -253,9 +254,10 @@ class Jobs:
         :param xml: XML configuration for the job.
         :type xml: str
         :param args: Additional parameters for job creation.
-        :type args: r_jobs
+        :type args: :class:`objects.Jobs` (Default: Freestyle)
         :return: Object representing the result of the creation action.
-        :rtype: JenkinsActionObject or JenkinsGeneralException
+        :rtype: :class:`objects.JenkinsActionObject`
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         try:
             self.is_job(job_path)
@@ -263,6 +265,7 @@ class Jobs:
         except JenkinsJobNotFound:
             pass
 
+        # TODO: Add all other jobs types
         mode = args[0].value if args else Class.Freestyle
         job_name, job_parent = self._jenkins._get_folder_parent(job_path)
         built = self._jenkins._build_job_http_path(job_parent)
@@ -278,7 +281,7 @@ class Jobs:
         :param _paginate: Pagination flag. Defaults to 0 (disabled).
         :type _paginate: int, optional
         :return: Generator yielding Job objects.
-        :rtype: Generator[Job]
+        :rtype: Generator[:class:`Job`]
         """
         if folder:
             path = self._jenkins._build_job_http_path(folder)
@@ -291,8 +294,9 @@ class Jobs:
             while True:
                 limit = _paginate + start
                 job_param = f"jobs[fullName,url,jobs[fullName,url,jobs]]"  # TODO: Remove hardcode
-                tree_param = f"{job_param}{{{start},{limit}}}"
-                params = {"tree": tree_param}
+                if _paginate > 0:
+                    job_param = f"{job_param}{{{start},{limit}}}"
+                params = {"tree": job_param}
                 url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=url)
 
                 req_obj, resp_obj = self._jenkins._send_http(url=url, params=params)
@@ -314,6 +318,8 @@ class Jobs:
 
                 if _paginate > 0:
                     start += _paginate
+                elif _paginate == 0:
+                    break
 
     def _fetch_job_iter(self, job_url) -> Generator[Job]:
         # Pagination not needed here because function repeats itself if needed
@@ -339,6 +345,17 @@ class Jobs:
         yield Job(jenkins=self._jenkins, job_path=data['fullName'], job_url=data['url'])
 
     def list(self, folder=None, _paginate=0) -> List[Job]:
+        """
+        Retrieve a list of jobs from Jenkins.
+
+        :param folder: (Optional) The folder from which to retrieve jobs.
+        :type folder: str or None
+        :param _paginate: (Optional) The number of jobs to retrieve per paginated request.
+            Set to 0 to disable pagination.
+        :type _paginate: int
+        :return: A list of Job objects representing the jobs in the specified folder.
+        :rtype: List[:class:`Job`]
+        """
         return [item for item in self.iter(folder=folder, _paginate=_paginate)]
 
     @property
@@ -370,14 +387,15 @@ class Folder:
         self._folder_url = folder_url
         self._jenkins = jenkins
 
-    def reconfig(self, xml: str or Builder.Folder) -> JenkinsActionObject or JenkinsGeneralException:
+    def reconfig(self, xml: str or Builder.Folder) -> JenkinsActionObject:
         """
         Reconfigure the folder.
 
         :param xml: The XML configuration or Builder.Folder object.
         :type xml: str or Builder.Folder
         :return: Action outcome
-        :rtype: JenkinsActionObject or JenkinsGeneralException
+        :rtype: :class:`objects.JenkinsActionObject`
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.Jobs.Xml, prefix=self._folder_url)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER,
@@ -420,7 +438,7 @@ class Folder:
         :param copy_job_name: The name of the job to copy.
         :type copy_job_name: str
         :return: Result of the copy operation.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         import re
@@ -446,7 +464,7 @@ class Folder:
         Delete the folder.
 
         :return: Result of the delete operation.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url("/", prefix=self._folder_url)
@@ -469,19 +487,11 @@ class Folder:
         :param xml: The XML configuration for the folder. Can be a string or a Builder.Folder object.
         :type xml: str or Builder.Folder
         :return: The result of the action.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        # TODO: Test this!!!!!!!!!!!!! Folders(self)?
-        built_path = self._jenkins._build_job_http_path(folder_name)
         try:
-            Folders(self).search(built_path)
-            raise JenkinsGeneralException(f"{folder_name} already exists.")
-        except JenkinsFolderNotFound:
-            pass
-
-        try:
-            return Folders(self)._create_folder(folder_name, xml, built_path)
+            return Folders(self._jenkins)._create_folder(folder_name, xml, self.path)
         except:
             raise
 
@@ -518,7 +528,7 @@ class Folders:
         :param folder_path: The path of the folder to search for.
         :type folder_path: str
         :return: The folder object if found.
-        :rtype: Folder
+        :rtype: :class:`Folder`
         :raises JenkinsFolderNotFound: If the folder was not found.
         """
         validated = self._validate_job(folder_path)
@@ -555,7 +565,7 @@ class Folders:
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         built = self._jenkins._build_job_http_path(path)
-        url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=built)
+        url = self._jenkins._build_url(built, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
@@ -566,10 +576,9 @@ class Folders:
             return True
         return False
 
-    def _create_folder(self, folder_name: str, xml, folder_path: HttpUrl = None) -> JenkinsActionObject:
-        create_endpoint = Endpoints.Jobs.Create
-        endpoint = f"{folder_path}/{create_endpoint}" if folder_path else create_endpoint
-        url = self._jenkins._build_url(endpoint)
+    def _create_folder(self, folder_name: str, xml, folder_path: str = None) -> JenkinsActionObject:
+        endpoint = self._jenkins._build_job_http_path(folder_path)
+        url = self._jenkins._build_url(endpoint, suffix=Endpoints.Jobs.Create)
         params = {"name": folder_name, "mode": Class.Folder}
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_HEADER_DEFAULT,
                                                      params=params, data=xml)
@@ -592,11 +601,11 @@ class Folders:
         :param xml: The XML configuration for the folder.
         :type xml: str or Builder.Folder
         :return: The result of the folder creation operation.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         :raises JenkinsFolderNotFound: If the folder was not found.
         """
         folder_name, folder_parent = self._jenkins._get_folder_parent(folder_path)
-        
+
         try:
             built_path = self._jenkins._build_job_http_path(folder_name, folder_parent)
             self.search(built_path)
@@ -623,7 +632,7 @@ class Folders:
         :param _paginate: Number of items to paginate. Default is 0 (no pagination).
         :type _paginate: int, optional
         :return: A generator yielding Folder objects.
-        :rtype: Generator[Folder]
+        :rtype: Generator[:class:`Folder`]
         """
         if folder:
             path = self._jenkins._build_job_http_path(folder)
@@ -636,8 +645,9 @@ class Folders:
             while True:
                 limit = _paginate + start
                 job_param = f"jobs[fullName,url,jobs[fullName,url,jobs]]"  # TODO: Remove hardcode
-                tree_param = f"{job_param}{{{start},{limit}}}"
-                params = {"tree": tree_param}
+                if _paginate > 0:
+                    job_param = f"{job_param}{{{start},{limit}}}"
+                params = {"tree": job_param}
                 json_url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=url)
 
                 req_obj, resp_obj = self._jenkins._send_http(url=json_url, params=params)
@@ -650,7 +660,7 @@ class Folders:
                 folders = data.get('jobs', [])
                 for item in folders:
                     if item['_class'] == Class.Folder:
-                        yield from self._fetch_folder(item['url'])  # TODO: Revise.. do we want to return data like this?
+                        # yield from self._fetch_folder(item['url'])  # TODO: Revise.. do we want to return data like this?
                         yield from self._fetch_folder_iter(item['url'])
 
                 if not folders:
@@ -658,6 +668,8 @@ class Folders:
 
                 if _paginate > 0:
                     start += _paginate
+                elif _paginate == 0:
+                    break
 
     def _fetch_folder_iter(self, folder_url) -> Generator[Folder]:
         json_url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=folder_url)
@@ -683,6 +695,17 @@ class Folders:
         yield Folder(jenkins=self._jenkins, folder_path=data['fullName'], folder_url=data['url'])
 
     def list(self, folder=None, _paginate=0) -> List[Folder]:
+        """
+        Retrieve a list of folder from Jenkins.
+
+        :param folder: (Optional) The folder from which to retrieve jobs.
+        :type folder: str or None
+        :param _paginate: (Optional) The number of jobs to retrieve per paginated request.
+            Set to 0 to disable pagination.
+        :type _paginate: int
+        :return: A list of Job objects representing the jobs in the specified folder.
+        :rtype: List[:class:`Folder`]
+        """
         return [item for item in self.iter(folder=folder, _paginate=_paginate)]
 
     @property

@@ -217,7 +217,7 @@ class Views:
 
         :param folder: Folder to iterate through. Default is None.
         :type folder: Any, optional
-        :param _paginate: Pagination option. Default is 0.
+        :param _paginate: Pagination option. Default is 0 (no pagination).
         :type _paginate: int, optional
         :return: A generator yielding View objects.
         :rtype: Generator[View]

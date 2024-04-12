@@ -72,7 +72,7 @@ class User:
         :param domain: The domain to search for credentials (default is "_").
         :type domain: str, optional
         :return: A domain object representing the user's personal credential safe.
-        :rtype: c_domain
+        :rtype: :class:`credentials.Domain`
         :raises: JenkinsNotFound: If the users credentials were not found.
         """
         # TODO: Replace with Domain
@@ -210,7 +210,7 @@ class Users:
         """
         return len(self.list())
 
-    def create(self, user: Builder.User):
+    def create(self, user: str or Builder.User):
         """
         Create a new user.
 

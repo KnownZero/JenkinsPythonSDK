@@ -10,7 +10,7 @@ from jenkins_pysdk.consts import Endpoints, XML_HEADER_DEFAULT, FORM_HEADER_DEFA
 from jenkins_pysdk.builders import Builder
 
 
-__all__ = ["Credentials", "Credential"]
+__all__ = ["Credentials", "Credential", "Domain"]
 
 
 class Credential:

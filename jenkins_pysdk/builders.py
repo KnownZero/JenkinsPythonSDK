@@ -18,8 +18,7 @@ class Builder:
         :return: The newly created folder template.
         :rtype: Folder
         """
-        template = cls._Templates.Folder.format(folder_name=name)
-        template = template.format(description=description)
+        template = cls._Templates.Folder.format(folder_name=name, description=description)
         return template
 
     @classmethod
@@ -31,7 +30,7 @@ class Builder:
         :rtype: Job
         """
         # TODO: This
-        pass
+        raise NotImplemented
 
     @classmethod
     def View(cls):
@@ -41,7 +40,7 @@ class Builder:
         :return: The newly created view.
         :rtype: View
         """
-        pass
+        raise NotImplemented
 
     class Credentials:
         @classmethod
@@ -74,12 +73,12 @@ class Builder:
 
         Freestyle = \
         """<project>
-              <description></description>
+              <description>{description}</description>
               <keepDependencies>false</keepDependencies>
               <properties/>
               <scm class="hudson.scm.NullSCM"/>
               <canRoam>true</canRoam>
-              <disabled>false</disabled>
+              <disabled>{disabled}</disabled>
               <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
               <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
               <triggers/>

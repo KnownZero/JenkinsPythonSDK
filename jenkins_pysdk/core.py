@@ -20,15 +20,16 @@ class Core:  # TODO: Revise these messy methods
 
     def _build_url(self, endpoint: str, prefix: str = None, suffix: str = None) -> HttpUrl:
         scheme = "https://" if self.verify else "http://"
+        host = self.host.replace("http://", "").replace("https://", "")
         if prefix:
             prefix = str(prefix)
             prefix = prefix[:-1] if prefix.endswith("/") else prefix
-            endpoint = HttpUrl(f"{prefix}/{endpoint}".replace("//", "/"))
+            endpoint = f"{prefix}/{endpoint}".replace("//", "/")
         else:
-            endpoint = HttpUrl(f"{scheme}{self.host}/{endpoint}".replace("//", "/"))
+            endpoint = f"{scheme}{host}/{endpoint}".replace("//", "/")
         if suffix:
-            endpoint = f"{str(endpoint)}/{suffix}".replace("//", "/")
-        return endpoint
+            endpoint = f"{endpoint}/{suffix}".replace("//", "/")
+        return HttpUrl(endpoint)
 
     def _validate_url_returned_from_instance(self, data: orjson):
         """

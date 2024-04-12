@@ -14,8 +14,7 @@ from jenkins_pysdk.core import Core
 from jenkins_pysdk.consts import Endpoints, FORM_HEADER_DEFAULT, Class
 from jenkins_pysdk.exceptions import JenkinsConnectionException, JenkinsUnauthorisedException, \
     JenkinsRestartFailed, JenkinsActionFailed
-from jenkins_pysdk.objects import JenkinsConnectObject, JenkinsActionObject, \
-    HTTPSessionResponseObject, Views as r_views, Jobs as r_jobs
+from jenkins_pysdk.objects import JenkinsConnectObject, JenkinsActionObject, Views as r_views, Jobs as r_jobs
 from jenkins_pysdk.jobs import Jobs, Folders, Job, Folder
 from jenkins_pysdk.views import Views, View
 from jenkins_pysdk.users import Users, User
@@ -50,8 +49,6 @@ class Jenkins(Core):
     :type timeout: int, optional
     """
 
-    Enable_Logging = 0
-
     def __init__(self, /, *,
                  host: str,
                  username: Optional[str] = None,
@@ -78,26 +75,57 @@ class Jenkins(Core):
         self._users = Users(self)
         self._plugins = Plugins(self)
 
+        self._logging_level = 0
+
         # Test connection
         self.connect()
 
     @property
-    def jobs(self) -> Jobs or Job:
+    def jobs(self) -> Jobs:
+        """
+        Retrieve information about jobs.
+
+        :return: A Jobs object representing the jobs on the system.
+        :rtype: :class:`jobs.Jobs`
+        """
         return self._jobs
 
     @property
-    def folders(self) -> Folders or Folder:
+    def folders(self) -> Folders:
+        """
+        Retrieve information about folders.
+
+        :return: A Folders object representing the folders on the system.
+        :rtype: :class:`jobs.Folders`
+        """
         return self._folders
 
     @property
-    def views(self) -> Views or View:
+    def views(self) -> Views:
+        """
+        Retrieve information about views.
+
+        :return: A Views object representing the views on the system.
+        :rtype: :class:`views.Views`
+        """
         return self._views
 
     @property
     def credentials(self):
+        """
+        Retrieve information about credentials.
+
+        :return: A Credentials object representing the credentials on the system.
+        :rtype: :class:`credentials.Credentials`
+        """
         return self._credentials
 
-    def ApiRaw(self, query: str):
+    def api(self, query: str):
+        """
+        Run a custom query and return the relevant data objects.
+
+        :return: Data objects representing the resource requested.
+        """
         # TODO: Allow the user to enter their own query parameters
         raise NotImplementedError
 
@@ -107,7 +135,7 @@ class Jenkins(Core):
         Flag used to create a ListView View in Views.create method.
 
         :return: Flag for creating a ListView View
-        :rtype: r_views
+        :rtype: :class:`objects.Flags.Views`
         """
         return r_views(value=Class.ListView)
 
@@ -117,7 +145,7 @@ class Jenkins(Core):
         Flag used to create a MyView View in Views.create method.
 
         :return: Flag for creating a MyView View
-        :rtype: r_views
+        :rtype: :class:`objects.Flags.Views`
         """
         return r_views(value=Class.MyView)
 
@@ -127,16 +155,22 @@ class Jenkins(Core):
         Flag used to create FreeStyle jobs in Jobs.create method.
 
         :return: Flag for creating FreeStyle jobs
-        :rtype: r_jobs
+        :rtype: :class:`objects.Flags.Jobs`
         """
         return r_jobs(value=Class.Freestyle)
 
     @property
     def enable_logging(self):
+        """
+        Get the logging level.
+        """
         return self.Enable_Logging
 
     @enable_logging.setter
-    def enable_logging(self, value: int or bool):
+    def enable_logging(self, value: int):
+        """
+        Enable a logging level.
+        """
         # TODO: Add logging and enhance with logger per component/more levels etc etc
         self.Enable_Logging = value
 
@@ -185,20 +219,23 @@ class Jenkins(Core):
         if response_obj.status_code not in [200, 201]:
             raise JenkinsConnectionException(msg)
 
-    def use_crumb(self) -> HTTPSessionResponseObject:
-        url = self._build_url(Endpoints.Instance.Crumb)
-        req_obj, resp_obj = self._send_http(url=url)
-        data = orjson.loads(resp_obj.content)
-        add_crumb_header = {data['crumbRequestField']: data['crumb']}
-        resp_obj.session.headers.update(add_crumb_header)
-        raise NotImplementedError
-
     @property
     def tree(self):
+        """
+        View all jobs in a pretty tree-like structure.
+
+        :return: Tree-like structure of all jobs.
+        """
         raise NotImplemented
 
     @property
     def users(self) -> Users:
+        """
+        Retrieve information about users.
+
+        :return: A Users object representing the users on the system.
+        :rtype: :class:`users.Users`
+        """
         return self._users
 
     @property
@@ -214,6 +251,12 @@ class Jenkins(Core):
 
     @property
     def plugins(self) -> Plugins:
+        """
+        Retrieve information about plugins.
+
+        :return: A Plugins object representing the plugins on the system.
+        :rtype: :class:`plugins.Plugins`
+        """
         return self._plugins
 
     @property
@@ -391,7 +434,7 @@ class Jenkins(Core):
         :param graceful: (optional) If True, restart after all jobs have finished, defaults to False
         :type graceful: bool
         :return: Restart status
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         """
         # TODO: Unit Test
         url = self._build_url(Endpoints.Maintenance.Restart)
@@ -421,7 +464,7 @@ class Jenkins(Core):
         Enable Quiet Mode on the Jenkins instance.
 
         :return: Result of the request to enable Quiet Mode
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         """
         url = self._build_url(Endpoints.Maintenance.QuietDown)
         req_obj, resp_obj = self._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT)
@@ -441,7 +484,7 @@ class Jenkins(Core):
         :param wait_time: (optional) Time to wait before disabling Quiet Mode, in seconds (default is 0)
         :type wait_time: int
         :return: Result of the request to disable Quiet Mode
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         """
         time.sleep(wait_time)
         url = self._build_url(Endpoints.Maintenance.NoQuietDown)
@@ -465,7 +508,7 @@ class Jenkins(Core):
         :param disable: (optional) If True, disable Quiet Mode, defaults to False
         :type disable: bool
         :return: Result of the request to enable or disable Quiet Mode
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         """
         # TODO: Fix 403 error
         # TODO: Run second thread to enable quiet mode for x time
@@ -509,7 +552,7 @@ class Jenkins(Core):
         Terminate the user's session.
 
         :return: Result of the logout request
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         """
         url = self._build_url(Endpoints.User.Logout)
         req_obj, resp_obj = self._send_http(method="POST", url=url)
@@ -527,7 +570,7 @@ class Jenkins(Core):
         Reload configuration from disk.
 
         :return: Result of request
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         """
         url = self._build_url(Endpoints.Manage.Reload)
         req_obj, resp_obj = self._send_http(method="POST", url=url)
@@ -537,3 +580,9 @@ class Jenkins(Core):
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
         return obj
+
+
+if __name__ == "__main__":
+    jenkins = Jenkins(host="https://ca81-90-194-113-56.ngrok-free.app", username="admin",
+                      token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.reload)
