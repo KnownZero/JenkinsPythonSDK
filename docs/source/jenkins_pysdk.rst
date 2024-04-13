@@ -4,54 +4,6 @@ jenkins\_pysdk package
 Submodules
 ----------
 
-jenkins\_pysdk.builders module
-------------------------------
-
-.. automodule:: jenkins_pysdk.builders
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-jenkins\_pysdk.builds module
-----------------------------
-
-.. automodule:: jenkins_pysdk.builds
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-jenkins\_pysdk.consts module
-----------------------------
-
-.. automodule:: jenkins_pysdk.consts
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-jenkins\_pysdk.core module
---------------------------
-
-.. automodule:: jenkins_pysdk.core
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-jenkins\_pysdk.credentials module
----------------------------------
-
-.. automodule:: jenkins_pysdk.credentials
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-jenkins\_pysdk.exceptions module
---------------------------------
-
-.. automodule:: jenkins_pysdk.exceptions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 jenkins\_pysdk.jenkins module
 -----------------------------
 
@@ -68,18 +20,26 @@ jenkins\_pysdk.jobs module
    :undoc-members:
    :show-inheritance:
 
-jenkins\_pysdk.objects module
------------------------------
+jenkins\_pysdk.builds module
+----------------------------
 
-.. automodule:: jenkins_pysdk.objects
+.. automodule:: jenkins_pysdk.builds
    :members:
    :undoc-members:
    :show-inheritance:
 
-jenkins\_pysdk.plugins module
------------------------------
+jenkins\_pysdk.views module
+---------------------------
 
-.. automodule:: jenkins_pysdk.plugins
+.. automodule:: jenkins_pysdk.views
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+jenkins\_pysdk.credentials module
+---------------------------------
+
+.. automodule:: jenkins_pysdk.credentials
    :members:
    :undoc-members:
    :show-inheritance:
@@ -92,21 +52,38 @@ jenkins\_pysdk.users module
    :undoc-members:
    :show-inheritance:
 
-jenkins\_pysdk.utils module
----------------------------
+jenkins\_pysdk.plugins module
+-----------------------------
 
-.. automodule:: jenkins_pysdk.utils
+.. automodule:: jenkins_pysdk.plugins
    :members:
    :undoc-members:
    :show-inheritance:
 
-jenkins\_pysdk.views module
----------------------------
+jenkins\_pysdk.exceptions module
+--------------------------------
 
-.. automodule:: jenkins_pysdk.views
+.. automodule:: jenkins_pysdk.exceptions
    :members:
    :undoc-members:
    :show-inheritance:
+
+jenkins\_pysdk.builders module
+------------------------------
+
+.. automodule:: jenkins_pysdk.builders
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+jenkins\_pysdk.objects module
+------------------------------
+
+.. automodule:: jenkins_pysdk.objects
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------

@@ -11,6 +11,8 @@ Welcome to Python Jenkins SDK documentation!
    :caption: Contents:
 
    modules
+   usage
+   examples
 
 Indices and tables
 ==================
@@ -18,3 +20,5 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+* :ref:`usage`
+* :ref:`examples`

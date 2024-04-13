@@ -28,11 +28,12 @@ jenkins = Jenkins(
 from jenkins_pysdk.jenkins import Jenkins
 jenkins = Jenkins(
     host="<host>", 
+    username="<username>",
     token="<token>"
 )
 ```
 
-#### See [docs](docs/) for full documentation.
+#### See [docs](https://jenkinspythonsdk.readthedocs.io/en/latest/index.html) for full documentation.
 
 ## Contributing
 
