@@ -4,9 +4,9 @@ import orjson
 
 from pydantic import HttpUrl
 
-from jenkins_pysdk.objects import JenkinsValidateJob, JenkinsActionObject, Views as r_views
-from jenkins_pysdk.exceptions import JenkinsViewNotFound, JenkinsGeneralException
-from jenkins_pysdk.consts import Endpoints, Class, XML_HEADER_DEFAULT, XML_POST_HEADER, FORM_HEADER_DEFAULT
+from jenkins_pysdk.objects import JenkinsValidateJob, JenkinsActionObject
+from jenkins_pysdk.exceptions import JenkinsNotFound, JenkinsGeneralException
+from jenkins_pysdk.consts import Endpoints, Class, XML_HEADER_DEFAULT, XML_POST_HEADER
 from jenkins_pysdk.builders import Builder
 
 __all__ = ["Views"]
@@ -125,31 +125,31 @@ class Views:
         :type view_path: str
         :return: The View object representing the found view.
         :rtype: View
-        :raises JenkinsViewNotFound: If the view was not found.
+        :raises JenkinsNotFound: If the view was not found.
         """
-        # TODO: Get view_name from API as results are won't be consistent with User Views
+        # TODO: Get view_name from API as results won't be consistent with User Views
         validated = self._validate_view(view_path)
         if not validated.is_valid:
-            raise JenkinsViewNotFound(f"Could not retrieve {view_path} because it doesn't exist.")
+            raise JenkinsNotFound(f"Could not retrieve {view_path} because it doesn't exist.")
         return View(jenkins=self._jenkins, name=view_path, url=validated.url)
 
     def is_view(self, path: str) -> bool:
         """
-        Check if the specified path corresponds to a view in Jenkins.
+        Check if the specified path is a view.
 
         :param path: The path to check.
         :type path: str
         :return: True if the path corresponds to a view, False otherwise.
         :rtype: bool
+        :raises JenkinsNotFound: If the view was not found.
         """
         built = self._jenkins._build_view_http_path(path)
-        endpoint = f"{built}/{Endpoints.Instance.Standard}"
-        url = self._jenkins._build_url(endpoint)
+        url = self._jenkins._build_url(built, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code == 404:
-            raise JenkinsViewNotFound(f"[{resp_obj.status_code}] {path} not found.")
+            raise JenkinsNotFound(f"[{resp_obj.status_code}] {path} not found.")
         else:
             data = orjson.loads(resp_obj.content)
             if data['_class'] != Class.Folder:
@@ -173,15 +173,13 @@ class Views:
         obj._raw = resp_obj
         return obj
 
-    def _create_view(self, view_name: str, xml, mode: r_views) -> JenkinsActionObject:
+    def _create_view(self, view_name: str, xml) -> JenkinsActionObject:
         # TODO: Add mode with params
-        params = {"name": view_name, "mode": mode}
-        url = self._jenkins._build_url("newView")
+        params = {"name": view_name}
+        url = self._jenkins._build_url(Endpoints.Views.Create)
 
-        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT,
+        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER,
                                                      params=params, data=str(xml))
-        print(req_obj)
-        print(resp_obj.content)
         if resp_obj.status_code == 200:
             msg = f"[{resp_obj.status_code}] Successfully created {view_name}."
         elif resp_obj.status_code == 400:
@@ -192,7 +190,7 @@ class Views:
         obj._raw = resp_obj._raw
         return obj
 
-    def create(self, name: str, xml: str or Builder.View, *args: r_views) -> JenkinsActionObject:
+    def create(self, name: str, xml: str or Builder.View) -> JenkinsActionObject:
         """
         Create a new view.
 
@@ -200,8 +198,6 @@ class Views:
         :type name: str
         :param xml: The XML configuration or Builder.View object for the new view.
         :type xml: str or Builder.View
-        :param args: Additional parameters for the view creation.
-        :type args: r_views (Default: ListView)
         :return: JenkinsActionObject indicating the result of the creation.
         :rtype: :class:`objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
@@ -209,11 +205,10 @@ class Views:
         try:
             self.is_view(name)
             raise JenkinsGeneralException(f"{name} already exists.")
-        except JenkinsViewNotFound:
+        except JenkinsNotFound:
             pass
 
-        mode = args[0].value if args else Class.ListView
-        created = self._create_view(name, xml, mode)
+        created = self._create_view(name, xml)
         return created
 
     def iter(self, /, folder: str = None, _paginate=0) -> Generator[View]:
@@ -236,7 +231,7 @@ class Views:
 
             while True:
                 limit = _paginate + start
-                job_param = f"views[name,url,jobs[fullName,url,jobs]]"  # TODO: Remove hardcode
+                job_param = Endpoints.Views.Iter
                 if _paginate > 0:
                     job_param = f"{job_param}{{{start},{limit}}}"
                 params = {"tree": job_param}

@@ -20,16 +20,14 @@ class Core:  # TODO: Revise these messy methods
         raise NotImplemented
 
     def _build_url(self, endpoint: str, prefix: str = None, suffix: str = None) -> HttpUrl:
-        scheme = "https://" if self.verify else "http://"
-        host = self.host.replace("http://", "").replace("https://", "")
+        host = self.host.replace("http://", "https://") if self.verify else self.host
         if prefix:
-            prefix = str(prefix)
-            prefix = prefix[:-1] if prefix.endswith("/") else prefix
-            endpoint = f"{prefix}/{endpoint}".replace("//", "/")
+            prefix = str(prefix).replace("http://", "https://") if self.verify else str(prefix)
+            endpoint = f"{prefix.rstrip('/')}/{endpoint.replace('//', '/')}"
         else:
-            endpoint = f"{scheme}{host}/{endpoint}".replace("//", "/")
+            endpoint = f"{host}/{endpoint.replace('//', '/')}"
         if suffix:
-            endpoint = f"{endpoint}/{suffix}".replace("//", "/")
+            endpoint = f"{endpoint.rstrip('/')}/{suffix.replace('//', '/')}"
         return HttpUrl(endpoint)
 
     def _validate_url_returned_from_instance(self, data: orjson):
@@ -43,7 +41,7 @@ class Core:  # TODO: Revise these messy methods
                 if key in ['url', 'absoluteUrl'] and isinstance(value, str):
                     if self.verify:
                         value = value.replace("http://", "https://")
-                    value = value.replace("localhost:8080", self.host)  # TODO: Make this work for non 8080
+                    value = value.replace("localhost:8080", self.host.lstrip("http://").lstrip("https://"))  # TODO: Make this work for non 8080
                     data[key] = value
                 else:
                     data[key] = self._validate_url_returned_from_instance(value)
@@ -114,7 +112,7 @@ class Core:  # TODO: Revise these messy methods
         :param timeout: request timeout
         :return:
         """
-        headers = headers.update({"User-Agent": f"{python_name}/{version}"})
+        headers.update({"User-Agent": f"{python_name}/{version}"})
         # TODO: Unit Test
         if self.token:
             request_obj = HTTPRequestObject(method=method, url=url, headers=headers, params=params, data=data,
@@ -123,7 +121,10 @@ class Core:  # TODO: Revise these messy methods
                                             verify=self.verify,
                                             proxy=self.proxy,
                                             timeout=timeout if timeout else self.timeout)
-            return request_obj, interact_http(request_obj)
+            req, resp = request_obj, interact_http(request_obj)
+            if isinstance(resp._raw, Exception):
+                raise JenkinsConnectionException(resp._raw)
+            return req, resp
         else:
             crumbed_session_req = HTTPSessionRequestObject(
                 method="GET", url=self._build_url(Endpoints.Instance.Crumb), headers=headers,
@@ -138,8 +139,7 @@ class Core:  # TODO: Revise these messy methods
             if isinstance(crumbed_session._raw, Exception):
                 raise JenkinsConnectionException(crumbed_session._raw)
             crumbed_data = orjson.loads(crumbed_session.content)
-            add_crumb_header = {crumbed_data['crumbRequestField']: crumbed_data['crumb']}
-            headers.update(add_crumb_header)
+            headers.update({crumbed_data['crumbRequestField']: crumbed_data['crumb']})
             request_obj = HTTPSessionRequestObject(method=method, url=url, headers=headers, params=params, data=data,
                                                    username=username if username else self.username,
                                                    passw_or_token=passw_or_token if passw_or_token else self.passw,

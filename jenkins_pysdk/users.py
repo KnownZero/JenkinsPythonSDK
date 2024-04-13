@@ -41,7 +41,7 @@ class User:
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self._user_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         if resp_obj.status_code != 200:
-            pass  # TODO: Something here
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get user information.")
         return orjson.loads(resp_obj.content)
 
     @property
@@ -74,7 +74,6 @@ class User:
         :rtype: :class:`credentials.Domain`
         :raises: JenkinsNotFound: If the users credentials were not found.
         """
-        # TODO: Replace with Domain
         endpoint = Endpoints.User.Credentials.format(domain=domain)
         url = self._jenkins._build_url(endpoint, prefix=self._user_url, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._jenkins._send_http(url=url, params={"depth": 1})

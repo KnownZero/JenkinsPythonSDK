@@ -288,16 +288,15 @@ class Jobs:
             url = self._jenkins._build_url(path + "/")
             yield from self._fetch_job_iter(url)
         else:
-            url = self._jenkins._build_url("")  # TODO: Remove copy & paste
             start = 0
 
             while True:
                 limit = _paginate + start
-                job_param = f"jobs[fullName,url,jobs[fullName,url,jobs]]"  # TODO: Remove hardcode
+                job_param = Endpoints.Jobs.Iter
                 if _paginate > 0:
                     job_param = f"{job_param}{{{start},{limit}}}"
                 params = {"tree": job_param}
-                url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=url)
+                url = self._jenkins._build_url(Endpoints.Instance.Standard)
 
                 req_obj, resp_obj = self._jenkins._send_http(url=url, params=params)
                 if resp_obj.status_code > 200 and start > 0:
@@ -537,7 +536,6 @@ class Folders:
         return Folder(jenkins=self._jenkins, folder_path=folder_path, folder_url=validated.url)
 
     def _validate_job(self, job_path) -> JenkinsValidateJob:
-        # TODO: Change to /checkJobName
         job = self._jenkins._build_job_http_path(job_path)
         url = self._jenkins._build_url(job)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
@@ -639,16 +637,15 @@ class Folders:
             url = self._jenkins._build_url(path + "/")
             yield from self._fetch_folder_iter(url)
         else:
-            url = self._jenkins._build_url("")  # TODO: Remove copy & paste
             start = 0
 
             while True:
                 limit = _paginate + start
-                job_param = f"jobs[fullName,url,jobs[fullName,url,jobs]]"  # TODO: Remove hardcode
+                job_param = Endpoints.Jobs.Iter
                 if _paginate > 0:
                     job_param = f"{job_param}{{{start},{limit}}}"
                 params = {"tree": job_param}
-                json_url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=url)
+                json_url = self._jenkins._build_url(Endpoints.Instance.Standard)
 
                 req_obj, resp_obj = self._jenkins._send_http(url=json_url, params=params)
                 if resp_obj.status_code > 200 and start > 0:
@@ -660,7 +657,6 @@ class Folders:
                 folders = data.get('jobs', [])
                 for item in folders:
                     if item['_class'] == Class.Folder:
-                        # yield from self._fetch_folder(item['url'])  # TODO: Revise.. do we want to return data like this?
                         yield from self._fetch_folder_iter(item['url'])
 
                 if not folders:

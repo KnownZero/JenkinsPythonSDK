@@ -13,9 +13,8 @@ import threading
 from jenkins_pysdk.core import Core
 from jenkins_pysdk.consts import Endpoints, FORM_HEADER_DEFAULT, Class
 from jenkins_pysdk.exceptions import JenkinsConnectionException, JenkinsUnauthorisedException, \
-    JenkinsRestartFailed, JenkinsActionFailed
-from jenkins_pysdk.objects import JenkinsConnectObject, JenkinsActionObject, Views as r_views, Jobs as r_jobs, \
-    Builder as r_builder
+    JenkinsRestartFailed, JenkinsActionFailed, JenkinsGeneralException
+from jenkins_pysdk.objects import JenkinsConnectObject, JenkinsActionObject, Views as r_views, Jobs as r_jobs
 from jenkins_pysdk.jobs import Jobs, Folders
 from jenkins_pysdk.views import Views
 from jenkins_pysdk.users import Users, User
@@ -112,7 +111,7 @@ class Jenkins(Core):
         return self._views
 
     @property
-    def credentials(self):
+    def credentials(self) -> Credentials:
         """
         Retrieve information about credentials.
 
@@ -275,16 +274,16 @@ class Jenkins(Core):
         # TODO: Finish me
         url = self._build_url(Endpoints.Instance.Crumb)
         req_obj, resp_obj = self._send_http(url)
-        print(resp_obj.content)
-        raise NotImplemented
+        return str(resp_obj._raw.headers['x-jenkins'])
 
     @property
-    def available_executors(self) -> int or str:
+    def available_executors(self) -> int:
         """
         View the number of available executors on the instance.
 
         :return: Number of available executors
-        :rtype: int or str
+        :rtype: int
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         # TODO: FIX CODE COPY & PASTE BELOW... maybe singledispatch
         _fields = ['_class', 'availableExecutors']
@@ -293,7 +292,7 @@ class Jenkins(Core):
         data = orjson.loads(resp_obj.content)
         content = data['availableExecutors']
         if not content:
-            content = "No executors are available."
+            raise JenkinsGeneralException("No executors are available.")
         return content
 
     @property
@@ -303,6 +302,7 @@ class Jenkins(Core):
 
         :return: Information about the executors in use
         :rtype: str
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         _fields = ['_class', 'busyExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -310,16 +310,17 @@ class Jenkins(Core):
         data = orjson.loads(resp_obj.content)
         content = data['busyExecutors']
         if not content:
-            content = "No executors are in-use."
+            raise JenkinsGeneralException("No executors are in-use.")
         return content
 
     @property
-    def pending_executors(self) -> int or str:
+    def pending_executors(self) -> int:
         """
         View the number of executors that are about to run on the instance.
 
         :return: Number of pending executors
-        :rtype: int or str
+        :rtype: int
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         _fields = ['_class', 'connectingExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -327,7 +328,7 @@ class Jenkins(Core):
         data = orjson.loads(resp_obj.content)
         content = data['connectingExecutors']
         if not content:
-            content = "No executors are connecting."
+            raise JenkinsGeneralException("No executors are connecting.")
         return content
 
     @property
@@ -337,6 +338,7 @@ class Jenkins(Core):
 
         :return: Information about the setup executors
         :rtype: str
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         _fields = ['_class', 'definedExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -344,16 +346,17 @@ class Jenkins(Core):
         data = orjson.loads(resp_obj.content)
         content = data['definedExecutors']
         if not content:
-            content = "No executors are defined."
+            raise JenkinsGeneralException("No executors are defined.")
         return content
 
     @property
-    def idle_executors(self) -> int or str:
+    def idle_executors(self) -> int:
         """
         View the number of idle executors on the instance.
 
         :return: Number of idle executors
-        :rtype: int or str
+        :rtype: int
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         _fields = ['_class', 'idleExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -361,16 +364,17 @@ class Jenkins(Core):
         data = orjson.loads(resp_obj.content)
         content = data['idleExecutors']
         if not content:
-            content = "No executors are idle."
+            raise JenkinsGeneralException("No executors are idle.")
         return content
 
     @property
-    def online_executors(self) -> int or str:
+    def online_executors(self) -> int:
         """
         View the number of executors that are currently online on the instance.
 
         :return: Number of online executors
-        :rtype: int or str
+        :rtype: int
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         _fields = ['_class', 'onlineExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -378,16 +382,17 @@ class Jenkins(Core):
         data = orjson.loads(resp_obj.content)
         content = data['onlineExecutors']
         if not content:
-            content = "No executors are online."
+            raise JenkinsGeneralException("No executors are online.")
         return content
 
     @property
-    def queue_size(self) -> int or str:
+    def queue_size(self) -> int:
         """
         View the current queue size on the instance.
 
         :return: Current queue size
-        :rtype: int or str
+        :rtype: int
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         _fields = ['_class', 'queueLength']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -395,16 +400,17 @@ class Jenkins(Core):
         data = orjson.loads(resp_obj.content)
         content = data['queueLength']
         if not content:
-            content = "No work in the queue."
+            raise JenkinsGeneralException("No work in the queue.")
         return content
 
     @property
-    def max_executors(self) -> int or str:
+    def max_executors(self) -> int:
         """
         View the total number of executors on the instance.
 
         :return: Total number of executors
-        :rtype: int or str
+        :rtype: int
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         _fields = ['_class', 'totalExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -412,16 +418,17 @@ class Jenkins(Core):
         data = orjson.loads(resp_obj.content)
         content = data['totalExecutors']
         if not content:
-            content = "No executors are setup."
+            raise JenkinsGeneralException("No executors are setup.")
         return content
 
     @property
-    def max_queue_size(self) -> int or str:
+    def max_queue_size(self) -> int:
         """
         View the maximum queue size on the instance.
 
         :return: Maximum queue size
-        :rtype: int or str
+        :rtype: int
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         _fields = ['_class', 'totalQueueLength']
         url = self._build_url(Endpoints.Instance.OverallLoad)
@@ -429,7 +436,7 @@ class Jenkins(Core):
         data = orjson.loads(resp_obj.content)
         content = data['totalQueueLength']
         if not content:
-            content = "No executors are setup."
+            raise JenkinsGeneralException("No executors are setup.")
         return content
 
     def restart(self, graceful: bool = False) -> JenkinsActionObject:
@@ -599,27 +606,6 @@ class Jenkins(Core):
 
 
 if __name__ == "__main__":
-    jenkins = Jenkins(host="a767-90-194-113-56.ngrok-free.app", username="admin",
-                      token="11e8e294cee85ee88b60d99328284d7608", timeout=10, verify=False)
-    # xml = """
-    # <MyView>
-    #   <name>my_view</name>
-    #   <description>my new view</description>
-    #   <filterExecutors>false</filterExecutors>
-    #   <filterQueue>false</filterQueue>
-    #   <properties>
-    #   </properties>
-    #   <jobNames>
-    #     <string>new_freestyle</string>
-    #   </jobNames>
-    #   <columns>
-    #     <hudson.views.StatusColumn/>
-    #     <hudson.views.WeatherColumn/>
-    #     <hudson.views.JobColumn/>
-    #   </columns>
-    #   <recurse>true</recurse>
-    # </MyView>
-    # """
-    # print(jenkins.views.create("my_view", xml, jenkins.MyView))
-
-    print(jenkins.views.search("All").name)
+    jenkins = Jenkins(host="https://48b7-90-194-113-56.ngrok-free.app", username="admin",
+                      passw="jenkins", timeout=10, verify=False)
+    print(jenkins.jobs.iter())

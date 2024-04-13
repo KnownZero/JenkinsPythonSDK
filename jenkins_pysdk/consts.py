@@ -30,6 +30,7 @@ class Endpoints:
         Enable = "enable"
         Disable = "disable"
         Xml = "config.xml"
+        Iter = "jobs[fullName,url,jobs[fullName,url,jobs]]"
 
     class Builds:
         BuildNumber = "buildNumber"
@@ -43,6 +44,7 @@ class Endpoints:
     class Views:
         View = "view"
         Create = "createView"
+        Iter = "views[name,url,jobs[fullName,url,jobs]]"
 
     class Credential:
         Create = "createCredentials"

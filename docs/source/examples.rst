@@ -2,12 +2,12 @@ Examples
 ========
 
 System
-====
+-----------
 
 .. _system:
 
 Connect to the application
-----------------
+
 
 .. autofunction:: jenkins.Jenkins.connect()
 
@@ -17,16 +17,17 @@ Connect to the application
 request=<HTTPRequestObject object at 1718212996176> response=<HTTPResponseObject object at 1718223889776> content='[200] Successfully connected to JenkinsDNS.' status_code=200
 
 Get the Jenkins version
-----------------
+
 
 .. autofunction:: jenkins.Jenkins.version()
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
 >>> print(jenkins.version)
+2.448
 
 Get the available executors
-----------------
+
 
 .. autofunction:: jenkins.Jenkins.available_executors()
 
@@ -36,7 +37,7 @@ Get the available executors
 No executors are available.
 
 Restart the application
-----------------
+
 
 .. autofunction:: jenkins.Jenkins.restart()
 
@@ -46,7 +47,7 @@ Restart the application
 request=<HTTPRequestObject object at 2603665289872> content='[200] Restarting the Jenkins instance... please wait...' status_code=200
 
 Enable Quiet Mode
-----------------
+
 
 .. autofunction:: jenkins.Jenkins.quiet_mode()
 
@@ -56,7 +57,7 @@ Enable Quiet Mode
 request=<HTTPRequestObject object at 1938732315280> content='[200] Successfully enabled Quiet Mode for 30 seconds.' status_code=200
 
 Shutdown the application
-----------------
+
 
 .. autofunction:: jenkins.Jenkins.shutdown()
 
@@ -66,7 +67,7 @@ Shutdown the application
 request=<HTTPRequestObject object at 2613641997152> content='[200] Shutting down...' status_code=200
 
 Logout
-----------------
+
 
 .. autofunction:: jenkins.Jenkins.logout()
 
@@ -76,7 +77,7 @@ Logout
 request=<HTTPRequestObject object at 2453417290592> content='[200] Successfully logged out.' status_code=200
 
 Reload config from disk
-----------------
+
 
 .. autofunction:: jenkins.Jenkins.reload()
 
@@ -87,12 +88,12 @@ request=<HTTPRequestObject object at 2741687462992> content='[200] Successfully 
 
 
 Folders
-====
+-----------
 
 .. _folders:
 
 Interact with a folder
-----------------
+
 
 .. autofunction:: jobs.Folders.search()
 
@@ -102,7 +103,7 @@ Interact with a folder
 <jenkins_pysdk.jobs.Folder object at 0x00000295B24B4AF0>
 
 List all folders
-----------------
+
 
 .. autofunction:: jobs.Folders.list()
 
@@ -121,7 +122,7 @@ new_folder/new_job23 https://JenkinsDNS/job/new_folder/job/new_job23/
 new_folder/test_folder https://JenkinsDNS/job/new_folder/job/test_folder/
 
 Iterate all folders
-----------------
+
 
 .. autofunction:: jobs.Folders.iter()
 
@@ -140,7 +141,7 @@ new_folder/new_job23 https://JenkinsDNS/job/new_folder/job/new_job23/
 new_folder/test_folder https://JenkinsDNS/job/new_folder/job/test_folder/
 
 Create a new folders
-----------------
+
 
 .. autofunction:: builders.Builder.Folder()
 .. autofunction:: jobs.Folders.create()
@@ -154,7 +155,7 @@ request=<HTTPRequestObject object at 1935978150336> content='[200] Successfully 
 
 
 Check if the path is a folder
-----------------
+
 
 .. autofunction:: jobs.Folders.is_folder()
 
@@ -164,12 +165,12 @@ Check if the path is a folder
 True
 
 Folder
-====
+-----------
 
 .. _folder:
 
 Reconfigure a folder
-----------------
+
 
 .. autofunction:: jobs.Folder.reconfig()
 
@@ -182,7 +183,7 @@ request=<HTTPRequestObject object at 2282610093216> content='[200] Successfully 
 
 
 Get the first folder URL
-----------------
+
 
 .. autofunction:: jobs.Folder.url()
 
@@ -193,9 +194,9 @@ Get the first folder URL
 https://JenkinsDNS/job/builder_1/
 
 Get the first folder Path
-----------------
 
-.. autofunction:: jobs.Folder.url()
+
+.. autofunction:: jobs.Folder.path()
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -203,7 +204,7 @@ Get the first folder Path
 builder_1
 
 Copy a folder
-----------------
+
 (You are interacting with a specific folder location, so you can't copy a folder up a level)
 
 .. autofunction:: jobs.Folder.copy()
@@ -215,7 +216,7 @@ Copy a folder
 request=<HTTPRequestObject object at 1480728865872> content='[200] Successfully copied sub_folder to another_sub_folder.' status_code=200
 
 Delete the current folder
-----------------
+
 
 .. autofunction:: jobs.Folder.delete()
 
@@ -225,7 +226,7 @@ Delete the current folder
 request=<HTTPRequestObject object at 2309917207952> content='[204] Successfully deleted folder.' status_code=204
 
 Create a folder
-----------------
+
 (You are interacting with a specific folder location, so you can only create sub-folders)
 
 .. autofunction:: jobs.Folder.create()
@@ -238,7 +239,7 @@ Create a folder
 request=<HTTPRequestObject object at 1660448175456> content='[200] Successfully created another_sub_folder.' status_code=200
 
 Get the folder config
-----------------
+
 
 .. autofunction:: jobs.Folder.config()
 
@@ -268,12 +269,10 @@ Get the folder config
 
 
 Jobs
-====
-
-.. _jobs:
+-----------
 
 Interact with a job
-----------------
+
 
 .. autofunction:: jobs.Jobs.search()
 
@@ -283,7 +282,7 @@ Interact with a job
 <jenkins_pysdk.jobs.Job object at 0x000001E515CD4A90>
 
 List all jobs
-----------------
+
 
 .. autofunction:: jobs.Jobs.list()
 
@@ -293,7 +292,6 @@ List all jobs
 [<jenkins_pysdk.jobs.Job object at 0x000002B4E528A710>, <jenkins_pysdk.jobs.Job object at 0x000002B4E5119780>, <jenkins_pysdk.jobs.Job object at 0x000002B4E5118580>, <jenkins_pysdk.jobs.Job object at 0x000002B4E511BC10>, <jenkins_pysdk.jobs.Job object at 0x000002B4E5119870>]
 
 Iterate all jobs
-----------------
 
 .. autofunction:: jobs.Jobs.iter()
 
@@ -303,7 +301,7 @@ Iterate all jobs
 [<jenkins_pysdk.jobs.Job object at 0x000002B4E528A710>, <jenkins_pysdk.jobs.Job object at 0x000002B4E5119780>, <jenkins_pysdk.jobs.Job object at 0x000002B4E5118580>, <jenkins_pysdk.jobs.Job object at 0x000002B4E511BC10>, <jenkins_pysdk.jobs.Job object at 0x000002B4E5119870>]
 
 Create a freestyle job
-----------------
+
 
 .. autofunction:: jobs.Jobs.create()
 
@@ -328,7 +326,7 @@ Create a freestyle job
 request=<HTTPRequestObject object at 2205281481040> content='[200] Successfully created freestyle_created.' status_code=200
 
 Check if the path is a job
-----------------
+
 
 .. autofunction:: jobs.Jobs.is_job()
 
@@ -339,10 +337,10 @@ True
 
 
 Job
-====
+-----------
 
 Disable a job
-----------------
+
 
 .. autofunction:: jobs.Job.disable()
 
@@ -352,7 +350,7 @@ Disable a job
 request=<HTTPRequestObject object at 2523890810240> content='[200] Successfully disabled folder3/freestyle_4.' status_code=200
 
 Get a job URL
-----------------
+
 
 .. autofunction:: jobs.Job.url()
 
@@ -362,7 +360,7 @@ Get a job URL
 https://JenkinsDNS/job/folder3/job/freestyle_4
 
 Get a job path
-----------------
+
 
 .. autofunction:: jobs.Job.path()
 
@@ -373,7 +371,7 @@ folder3/freestyle_4
 
 
 Get job URL
-----------------
+
 
 .. autofunction:: jobs.Job.enable()
 
@@ -383,7 +381,7 @@ Get job URL
 request=<HTTPRequestObject object at 1986068844192> content='[200] Successfully enabled folder3/freestyle_4.' status_code=200
 
 Reconfigure a job
-----------------
+
 
 .. autofunction:: jobs.Job.reconfig())
 
@@ -395,7 +393,7 @@ Reconfigure a job
 request=<HTTPRequestObject object at 1772165197280> content='[200] Successfully reconfigured freestyle_created.' status_code=200
 
 Delete a job
-----------------
+
 
 .. autofunction:: jobs.Job.delete()
 
@@ -405,7 +403,7 @@ Delete a job
 request=<HTTPRequestObject object at 1721615969440> content='[204] Successfully deleted job.' status_code=204
 
 Get job config
-----------------
+
 
 .. autofunction:: jobs.Job.config()
 
@@ -430,7 +428,7 @@ Get job config
 </project>
 
 Get a job's builds
-----------------
+
 
 .. autofunction:: jobs.Job.builds()
 
@@ -441,10 +439,10 @@ Get a job's builds
 
 
 Builds
-====
+-----------
 
 Search for a build
-----------------
+
 
 .. autofunction:: builds.Builds.search()
 
@@ -454,19 +452,9 @@ Search for a build
 >>> print(my_job.builds.search(10))
 <jenkins_pysdk.builds.Build object at 0x0000025270CDFD00>
 
-Interact with a job's builds
-----------------
-
-.. autofunction:: builds.Builds.search()
-
->>> from jenkins_pysdk.jenkins import Jenkins
->>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
->>> my_job = jenkins.jobs.search("new_freestyle")
->>> print(my_job.builds)
-<jenkins_pysdk.builds.Builds object at 0x0000025EF50AA890>
 
 Get the total build history of a job
-----------------
+
 
 .. autofunction:: builds.Builds.total()
 
@@ -477,7 +465,7 @@ Get the total build history of a job
 6
 
 Iterate all job's builds
-----------------
+
 
 .. autofunction:: builds.Builds.iter()
 
@@ -494,7 +482,7 @@ Iterate all job's builds
 1
 
 List all job's builds
-----------------
+
 
 .. autofunction:: builds.Builds.list()
 
@@ -506,7 +494,7 @@ List all job's builds
 
 
 Get the latest saved build
-----------------
+
 
 .. autofunction:: builds.Builds.latest()
 
@@ -517,7 +505,7 @@ Get the latest saved build
 https://JenkinsDNS/job/new_freestyle/10/
 
 Get the oldest saved build
-----------------
+
 
 .. autofunction:: builds.Builds.oldest()
 
@@ -528,9 +516,9 @@ Get the oldest saved build
 https://JenkinsDNS/job/new_freestyle/1/
 
 Trigger a new build
-----------------
 
-.. autofunction:: builds.Builds.latest()
+
+.. autofunction:: builds.Builds.build()
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -541,10 +529,10 @@ request=<HTTPRequestObject object at 2421026107968> content='[201] Successfully 
 
 
 Build
-====
+-----------
 
 Get the build number
-----------------
+
 
 .. autofunction:: builds.Build.number()
 
@@ -555,7 +543,7 @@ Get the build number
 10
 
 Get the build URL
-----------------
+
 
 .. autofunction:: builds.Build.url()
 
@@ -566,7 +554,7 @@ Get the build URL
 https://JenkinsDNS/job/new_freestyle/2/
 
 Get the build result
-----------------
+
 
 .. autofunction:: builds.Build.result()
 
@@ -577,7 +565,7 @@ Get the build result
 SUCCESS
 
 Get the build description
-----------------
+
 
 .. autofunction:: builds.Build.description()
 
@@ -588,7 +576,7 @@ Get the build description
 None
 
 Check if the build is done
-----------------
+
 
 .. autofunction:: builds.Build.done()
 
@@ -599,7 +587,7 @@ Check if the build is done
 True
 
 Get the build duration
-----------------
+
 
 .. autofunction:: builds.Build.duration()
 
@@ -610,7 +598,7 @@ Get the build duration
 15
 
 Get the build console logs
-----------------
+
 
 .. autofunction:: builds.Build.console()
 
@@ -624,7 +612,7 @@ Building in workspace /var/lib/jenkins/workspace/new_freestyle
 Finished: SUCCESS
 
 Delete the build
-----------------
+
 
 .. autofunction:: builds.Build.delete()
 
@@ -635,7 +623,7 @@ Delete the build
 request=<HTTPRequestObject object at 2286772207216> content='[200] Successfully deleted build (10).' status_code=200
 
 Get the build changes
-----------------
+
 
 .. autofunction:: builds.Build.changes()
 
@@ -647,10 +635,10 @@ Get the build changes
 
 
 Credentials
-====
+-----------
 
 Search for a system domain
-----------------
+
 
 .. autofunction:: credentials.Credentials.search_domains()
 
@@ -660,7 +648,7 @@ Search for a system domain
 <jenkins_pysdk.credentials.Domain object at 0x0000023E2488CCD0>
 
 Iterate all domains
-----------------
+
 
 .. autofunction:: credentials.Credentials.iter_domains()
 
@@ -673,7 +661,7 @@ domain2
 test_domain
 
 Iterate all domains
-----------------
+
 
 .. autofunction:: credentials.Credentials.list_domains()
 
@@ -683,10 +671,10 @@ Iterate all domains
 ['Global credentials (unrestricted)', 'domain2', 'test_domain']
 
 Domain
-====
+-----------
 
 Get the domain name
-----------------
+
 
 .. autofunction:: credentials.Domain.name()
 
@@ -697,7 +685,7 @@ Get the domain name
 Global credentials (unrestricted)
 
 Get the domain URL
-----------------
+
 
 .. autofunction:: credentials.Domain.url()
 
@@ -708,7 +696,7 @@ Get the domain URL
 https://JenkinsDNS/manage/credentials/store/system/domain/_
 
 Search for a credential in the domain
-----------------
+
 
 .. autofunction:: credentials.Domain.search()
 
@@ -720,7 +708,7 @@ Search for a credential in the domain
 
 
 Iterate credentials in the domain
-----------------
+
 
 .. autofunction:: credentials.Domain.iter()
 
@@ -733,7 +721,7 @@ Iterate credentials in the domain
 95b47fec-c078-4821-b05b-c7149f549429
 
 List credentials in the domain
-----------------
+
 
 .. autofunction:: credentials.Domain.list()
 
@@ -744,10 +732,10 @@ List credentials in the domain
 ['3f2ba384-a1bc-4785-86d0-1c82d4e8be03', '95b47fec-c078-4821-b05b-c7149f549429']
 
 Credential
-====
+-----------
 
 Get the credential ID
-----------------
+
 
 .. autofunction:: credentials.Credential.id()
 
@@ -758,7 +746,7 @@ Get the credential ID
 Github_PAT
 
 Get the credential config
-----------------
+
 
 .. autofunction:: credentials.Credential.config()
 
@@ -776,7 +764,7 @@ Get the credential config
 </org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl>
 
 Reconfigure the credential
-----------------
+
 
 .. autofunction:: credentials.Credential.reconfig()
 
@@ -794,10 +782,10 @@ Reconfigure the credential
 request=<HTTPRequestObject object at 2336431155744> content='[200] Successfully reconfigured Github_PAT.' status_code=200
 
 Users
-====
+-----------
 
 Search for a user
-----------------
+
 
 .. autofunction:: users.Users.search()
 
@@ -807,7 +795,7 @@ Search for a user
 <jenkins_pysdk.users.User object at 0x000001BEEBF3CD30>
 
 Get total users
-----------------
+
 
 .. autofunction:: users.Users.total()
 
@@ -817,7 +805,7 @@ Get total users
 3
 
 Iterate all users
-----------------
+
 
 .. autofunction:: users.Users.iter()
 
@@ -830,7 +818,7 @@ new
 test
 
 List all users
-----------------
+
 
 .. autofunction:: users.Users.list()
 
@@ -841,10 +829,10 @@ List all users
 
 
 User
-====
+-----------
 
 Get the user name
-----------------
+
 
 .. autofunction:: users.User.name()
 
@@ -855,7 +843,7 @@ Get the user name
 test
 
 Get the user URL
-----------------
+
 
 .. autofunction:: users.User.url()
 
@@ -866,7 +854,7 @@ Get the user URL
 https://JenkinsDNS/user/test
 
 Get the user description
-----------------
+
 
 .. autofunction:: users.User.description()
 
@@ -877,7 +865,7 @@ Get the user description
 This user is using for testing automation.
 
 Get the user's credentials
-----------------
+
 
 .. autofunction:: users.User.credentials()
 
@@ -888,7 +876,7 @@ Get the user's credentials
 ['my_pypi_password']
 
 Get the user's views
-----------------
+
 
 .. autofunction:: users.User.views()
 
@@ -899,7 +887,7 @@ Get the user's views
 [<jenkins_pysdk.views.View object at 0x000002AF1883DDB0>, <jenkins_pysdk.views.View object at 0x000002AF1883CCD0>, <jenkins_pysdk.views.View object at 0x000002AF1883C6A0>, <jenkins_pysdk.views.View object at 0x000002AF1883C8B0>, <jenkins_pysdk.views.View object at 0x000002AF1883D0C0>]
 
 Get the user's builds
-----------------
+
 
 .. autofunction:: users.User.builds()
 
@@ -911,7 +899,7 @@ No REST endpoint available... returning HTML response for the moment...
 <HTML Output>
 
 Delete the user
-----------------
+
 
 .. autofunction:: users.User.delete()
 
@@ -922,7 +910,7 @@ Delete the user
 request=<HTTPRequestObject object at 2813768495920> content='[400] Failed to delete user (test).' status_code=200
 
 Terminate a users' sessions
-----------------
+
 
 .. autofunction:: users.User.logout()
 
@@ -933,10 +921,10 @@ Terminate a users' sessions
 request=<HTTPRequestObject object at 2073057402192> content='[200] Successfully logged out.' status_code=200
 
 Views
-====
+-----------
 
 Search for a view
-----------------
+
 
 .. autofunction:: views.Views.search()
 
@@ -945,7 +933,7 @@ Search for a view
 >>> print(jenkins.views.search("All"))
 
 Iterate all views
-----------------
+
 
 .. autofunction:: views.Views.iter()
 
@@ -958,7 +946,7 @@ m
 my
 
 List all views
-----------------
+
 
 .. autofunction:: views.Views.list()
 
@@ -968,21 +956,38 @@ List all views
 [<jenkins_pysdk.views.View object at 0x0000013439AA9E10>, <jenkins_pysdk.views.View object at 0x0000013439AA9DE0>, <jenkins_pysdk.views.View object at 0x0000013439AA9DB0>]
 
 Create a view
-----------------
+
 
 .. autofunction:: views.Views.create()
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
->>> print(jenkins.views.create())
-###############################################################################################################################################
+>>> xml = """
+>>>    <hudson.model.ListView>
+>>>      <name>my_view</name>
+>>>      <mode>hudson.model.ListView</mode>
+>>>      <description>Your view description</description>
+>>>      <jobNames>
+>>>        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+>>>        <string>new_freestyle</string>
+>>>      </jobNames>
+>>>      <columns>
+>>>        <hudson.views.StatusColumn/>
+>>>        <hudson.views.WeatherColumn/>
+>>>        <hudson.views.JobColumn/>
+>>>      </columns>
+>>>      <recurse>true</recurse>
+>>>    </hudson.model.ListView>
+>>>    """
+>>> print(jenkins.views.create("my_view", xml))
+request=<HTTPRequestObject object at 2275566295520> content='[200] Successfully created my_view.' status_code=200
 
 
 View
-====
+-----------
 
 Get the view name
-----------------
+
 
 .. autofunction:: views.View.name()
 
@@ -992,7 +997,7 @@ Get the view name
 All
 
 Get the view URL
-----------------
+
 
 .. autofunction:: views.View.url()
 
@@ -1002,7 +1007,7 @@ Get the view URL
 http://JenkinsDNS/view/All
 
 Reconfigure the view
-----------------
+
 
 .. autofunction:: views.View.reconfig()
 

@@ -42,7 +42,6 @@ def interact_http(request: HTTPRequestObject) -> HTTPResponseObject:
     # TODO: should this be in utils :(
     if validate_http_url(request.url) is False:
         raise JenkinsInvalidHost(f"{request.url.host} is not a valid target.")
-
     req = Request(
         method=request.method,
         url=str(request.url),
@@ -60,9 +59,9 @@ def interact_http(request: HTTPRequestObject) -> HTTPResponseObject:
             with Client(auth=BasicAuth(request.username, request.passw_or_token),
                         verify=request.verify, proxies=request.proxy, timeout=request.timeout) as conn:
                 response = conn.send(request=req, follow_redirects=True)
-                return_object = HTTPResponseObject(request=req, response=response, content=response.text,
+                return_object = HTTPResponseObject(request=req, content=response.text,
                                                    status_code=int(response.status_code))
-                return_object._raw = response.content
+                return_object._raw = response
                 logger.debuge(response.content)
                 return return_object
         except (EnvironmentError, ConnectError) as error:
@@ -73,8 +72,8 @@ def interact_http(request: HTTPRequestObject) -> HTTPResponseObject:
         except TimeoutError as error:
             raise error
     else:
-        msg = "Request failed due to an exception."
-        return_object = HTTPResponseObject(request=req, response=exception, content=msg, status_code=-1)
+        msg = "Request failed due to an exception. See _raw field."
+        return_object = HTTPResponseObject(request=req, content=msg, status_code=-1)
         return_object._raw = exception
         logger.debuge(exception)
         return return_object
@@ -104,9 +103,9 @@ def interact_http_session(request: HTTPSessionRequestObject) -> HTTPSessionRespo
                              verify=request.verify, proxies=request.proxy, timeout=request.timeout)
         try:
             response = session.send(request=req, follow_redirects=True)
-            return_object = HTTPSessionResponseObject(request=req, response=response, content=response.text,
+            return_object = HTTPSessionResponseObject(request=req, content=response.text,
                                                       status_code=int(response.status_code), session=session)
-            return_object._raw = response.content
+            return_object._raw = response
             logger.debuge(response.content)
             return return_object
         except (EnvironmentError, ConnectError) as error:
@@ -119,9 +118,8 @@ def interact_http_session(request: HTTPSessionRequestObject) -> HTTPSessionRespo
             if request.keep_session is False:
                 session.close()
     else:
-        msg = "Request failed due to an exception. See _raw field..."
-        return_object = HTTPSessionResponseObject(request=req, response=exception, content=msg, status_code=-1,
-                                                  session=None)
+        msg = "Request failed due to an exception. See _raw field."
+        return_object = HTTPSessionResponseObject(request=req, content=msg, status_code=-1, session=None)
         return_object._raw = exception
         logger.debuge(exception)
         return return_object

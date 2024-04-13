@@ -1,15 +1,10 @@
-import traceback
-
 __all__ = ["JenkinsInvalidHost", "JenkinsConnectionException", "JenkinsUnauthorisedException", "JenkinsRestartFailed",
            "JenkinsActionFailed", "JenkinsGeneralException", "JenkinsJobNotFound", "JenkinsWrongAuthenticationMethod",
-           "JenkinsAlreadyExists", "JenkinsFolderNotFound", "JenkinsViewNotFound"]
+           "JenkinsAlreadyExists", "JenkinsFolderNotFound", "JenkinsNotFound"]
 
 
 class ExceptionHandler(Exception):
-    def __init__(self, message):
-        # TODO: Fix
-        super().__init__(message)
-        traceback.print_exc()
+    pass
 
 
 class JenkinsInvalidHost(ExceptionHandler):
@@ -57,12 +52,6 @@ class JenkinsJobNotFound(ExceptionHandler):
 class JenkinsFolderNotFound(ExceptionHandler):
     """
     Exception raised when a specified folder is not found in Jenkins.
-    """
-
-
-class JenkinsViewNotFound(ExceptionHandler):
-    """
-    Exception raised when a specified view is not found in Jenkins.
     """
 
 
