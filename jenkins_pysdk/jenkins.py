@@ -14,9 +14,10 @@ from jenkins_pysdk.core import Core
 from jenkins_pysdk.consts import Endpoints, FORM_HEADER_DEFAULT, Class
 from jenkins_pysdk.exceptions import JenkinsConnectionException, JenkinsUnauthorisedException, \
     JenkinsRestartFailed, JenkinsActionFailed
-from jenkins_pysdk.objects import JenkinsConnectObject, JenkinsActionObject, Views as r_views, Jobs as r_jobs
-from jenkins_pysdk.jobs import Jobs, Folders, Job, Folder
-from jenkins_pysdk.views import Views, View
+from jenkins_pysdk.objects import JenkinsConnectObject, JenkinsActionObject, Views as r_views, Jobs as r_jobs, \
+    Builder as r_builder
+from jenkins_pysdk.jobs import Jobs, Folders
+from jenkins_pysdk.views import Views
 from jenkins_pysdk.users import Users, User
 from jenkins_pysdk.credentials import Credentials
 from jenkins_pysdk.plugins import Plugins
@@ -159,6 +160,10 @@ class Jenkins(Core):
         """
         return r_jobs(value=Class.Freestyle)
 
+    # @property
+    # def UsernamePassword(self) -> r_builder.Credential:
+    #     return r_builder.Credential(value=Class.UsernamePassword)
+
     @property
     def enable_logging(self):
         """
@@ -178,8 +183,8 @@ class Jenkins(Core):
         """
         Test the connection to the Jenkins instance.
 
-        :return: Object containing connection information if successful, otherwise raises a JenkinsConnectionException.
-        :rtype: JenkinsConnectObject
+        :return: Object containing connection information.
+        :rtype: :class:`objects.JenkinsConnectObject`
         :raises JenkinsConnectionException: If a connection exception if it fails to connect.
         :raises JenkinsUnauthorisedException: If the credentials aren't valid.
         """
@@ -532,7 +537,15 @@ class Jenkins(Core):
                 # TODO: Add log message or something....
         return quiet_obj
 
-    def shutdown(self, graceful=False) -> JenkinsActionObject:
+    def shutdown(self, graceful: bool = False) -> JenkinsActionObject:
+        """
+        Terminate the user's session.
+
+        :param graceful: (Default: False) If True, pause new jobs and wait for all jobs to complete.
+        :type graceful: bool
+        :return: Result of the shutdown request
+        :rtype: :class:`objects.JenkinsActionObject`
+        """
         url = self._build_url(Endpoints.Maintenance.Shutdown)
         if graceful:
             url = self._build_url(Endpoints.Maintenance.SafeShutdown)
@@ -546,15 +559,18 @@ class Jenkins(Core):
         obj._raw = resp_obj._raw
         return obj
 
-    @property
-    def logout(self) -> JenkinsActionObject:
+    def logout(self, boot: bool = False) -> JenkinsActionObject:
         """
         Terminate the user's session.
 
+        :param boot: (Default: False) If True, terminate all the users' sessions. (Caution if it's a service account!)
+        :type boot: bool
         :return: Result of the logout request
         :rtype: :class:`objects.JenkinsActionObject`
         """
         url = self._build_url(Endpoints.User.Logout)
+        if boot:
+            url = self._build_url(Endpoints.User.Boot.format(user=self.username))
         req_obj, resp_obj = self._send_http(method="POST", url=url)
         if resp_obj.status_code == 200:
             msg = f"[{resp_obj.status_code}] Successfully logged out."
@@ -583,6 +599,27 @@ class Jenkins(Core):
 
 
 if __name__ == "__main__":
-    jenkins = Jenkins(host="https://ca81-90-194-113-56.ngrok-free.app", username="admin",
-                      token="11e8e294cee85ee88b60d99328284d7608")
-    print(jenkins.reload)
+    jenkins = Jenkins(host="a767-90-194-113-56.ngrok-free.app", username="admin",
+                      token="11e8e294cee85ee88b60d99328284d7608", timeout=10, verify=False)
+    # xml = """
+    # <MyView>
+    #   <name>my_view</name>
+    #   <description>my new view</description>
+    #   <filterExecutors>false</filterExecutors>
+    #   <filterQueue>false</filterQueue>
+    #   <properties>
+    #   </properties>
+    #   <jobNames>
+    #     <string>new_freestyle</string>
+    #   </jobNames>
+    #   <columns>
+    #     <hudson.views.StatusColumn/>
+    #     <hudson.views.WeatherColumn/>
+    #     <hudson.views.JobColumn/>
+    #   </columns>
+    #   <recurse>true</recurse>
+    # </MyView>
+    # """
+    # print(jenkins.views.create("my_view", xml, jenkins.MyView))
+
+    print(jenkins.views.search("All").name)

@@ -122,3 +122,6 @@ class Setting(Flags):
 class Builder(Flags):
     class User:
         value: dict
+
+    class Credential:
+        value: str

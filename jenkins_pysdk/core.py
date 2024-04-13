@@ -9,6 +9,7 @@ from jenkins_pysdk.consts import HTTP_HEADER_DEFAULT
 from jenkins_pysdk.objects import HTTPSessionRequestObject, HTTPSessionResponseObject, \
     HTTPRequestObject, HTTPResponseObject
 from jenkins_pysdk.exceptions import JenkinsConnectionException
+from __init__ import version, python_name
 
 __all__ = ["Core"]
 
@@ -113,6 +114,7 @@ class Core:  # TODO: Revise these messy methods
         :param timeout: request timeout
         :return:
         """
+        headers = headers.update({"User-Agent": f"{python_name}/{version}"})
         # TODO: Unit Test
         if self.token:
             request_obj = HTTPRequestObject(method=method, url=url, headers=headers, params=params, data=data,

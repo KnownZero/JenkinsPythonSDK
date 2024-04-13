@@ -249,14 +249,15 @@ class Builds:
 
         :yield: A Build object representing each build in the build history.
         :rtype: Generator[:class:`Build`]
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
-        url = self._jenkins._build_url(Endpoints.Instance.Standard)
+        url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
-        code = resp_obj.status_code
-        if code != 200:
-            return JenkinsGeneralException(f"[{code}] Failed to fetch job information.")
+        if resp_obj.status_code != 200:
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch job information.")
 
         data = orjson.loads(resp_obj.content)
+        data = self._jenkins._validate_url_returned_from_instance(data)
         for build in data.get('builds', []):
             yield Build(self._jenkins, build['url'])
 
@@ -266,6 +267,7 @@ class Builds:
 
         :return: A list of Build objects representing each build in the build history.
         :rtype: List[:class:`Build`]
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         return [b for b in self.iter()]
 
@@ -279,7 +281,11 @@ class Builds:
         data = self._jenkins._validate_url_returned_from_instance(data)
         if not data.get('builds', []):
             raise JenkinsGeneralException("This job has no builds.")
-        return Build(self._jenkins, data['builds'][index]['url'])
+        for build in data.get('builds', []):
+            if build['number'] == index:
+                return Build(self._jenkins, build['url'])
+        else:
+            raise JenkinsGeneralException(f"Build ({index}) was not found.")
 
     @property
     def latest(self) -> Build:
@@ -290,7 +296,7 @@ class Builds:
         :rtype: :class:`Build`
         """
         # TODO: Add filtering for success=False, failed=False
-        return self._fetch_build(0)
+        return self.list()[-1]
 
     @property
     def oldest(self) -> Build:

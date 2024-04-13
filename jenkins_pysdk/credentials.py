@@ -5,7 +5,7 @@ import orjson
 from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsActionObject
-from jenkins_pysdk.exceptions import JenkinsGeneralException
+from jenkins_pysdk.exceptions import JenkinsGeneralException, JenkinsNotFound
 from jenkins_pysdk.consts import Endpoints, XML_HEADER_DEFAULT, FORM_HEADER_DEFAULT, XML_POST_HEADER
 from jenkins_pysdk.builders import Builder
 
@@ -117,6 +117,21 @@ class Domain:
         """
         self._jenkins = jenkins
         self.domain_url = url
+        self._raw = self._get_raw()
+
+    @property
+    def name(self) -> str:
+        return str(self._raw['displayName'])
+
+    @property
+    def url(self) -> HttpUrl:
+        return self.domain_url
+
+    def _get_raw(self) -> orjson.loads:
+        url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self.domain_url)
+        req_obj, resp_obj = self._jenkins._send_http(url=url)
+        data = orjson.loads(resp_obj.content)
+        return data
 
     def search(self, cred_id: str) -> Credential:
         """
@@ -127,38 +142,39 @@ class Domain:
         :return: The credential matching the provided ID.
         :rtype: Credential
         """
-        raise NotImplemented
+        for cred in self.iter():
+            if cred.id == cred_id:
+                return Credential(jenkins=self._jenkins, cred_id=cred.id, domain_url=self.domain_url)
+        else:
+            raise JenkinsNotFound(f"Credential ({cred_id}) was not found in domain ({self.name}).")
 
-    def iter(self, domain="_") -> Generator[Credential]:
+    def iter(self) -> Generator[Credential]:
         """
         Iterate over credentials within the domain.
 
-        :param domain: The domain name to iterate over. Default is "_", representing all domains.
-        :type domain: str
         :return: A generator yielding credentials within the specified domain.
         :rtype: Generator[Credential]
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        req_obj, resp_obj = self._jenkins._send_http(url=self.domain_url, params={"depth": 1})
+        url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self.domain_url)
+        req_obj, resp_obj = self._jenkins._send_http(url=url, params={"depth": 1})
 
         if resp_obj.status_code != 200:
-            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch credentials in domain ({domain}).")
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch credentials in domain ({self.name}).")
 
         data = orjson.loads(resp_obj.content)
         for cred in data.get('credentials', []):
             domain_url = str(self.domain_url).strip(Endpoints.Instance.Standard)
             yield Credential(jenkins=self._jenkins, cred_id=cred['id'], domain_url=domain_url)
 
-    def list(self, domain="_") -> List[Credential]:
+    def list(self) -> List[Credential]:
         """
         List credentials within the domain.
 
-        :param domain: The domain name to list credentials from. Default is "_", representing all domains.
-        :type domain: str
         :return: A list of credentials within the specified domain.
         :rtype: List[Credential]
         """
-        return [cred for cred in self.iter(domain=domain)]
+        return [cred for cred in self.iter()]
 
     def create(self, cred: Builder.Credentials) -> JenkinsActionObject:
         """

@@ -1,7 +1,6 @@
 from collections.abc import Generator
 from typing import List
 import orjson
-import pprint
 
 from pydantic import HttpUrl
 
@@ -141,6 +140,24 @@ class User:
                 msg = f"[200] Successfully deleted user ({self.name})."
         else:
             msg = f"[400] Failed to delete user ({self.name})."
+        obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
+        obj._raw = resp_obj._raw
+        return obj
+
+    @property
+    def logout(self) -> JenkinsActionObject:
+        """
+        Terminate all the users' sessions.
+
+        :return: Result of the logout request
+        :rtype: :class:`objects.JenkinsActionObject`
+        """
+        url = self._jenkins._build_url(Endpoints.User.Boot.format(user=self.name))
+        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
+        if resp_obj.status_code == 200:
+            msg = f"[{resp_obj.status_code}] Successfully logged out."
+        else:
+            msg = f"[{resp_obj.status_code}] Failed to logout."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
         return obj

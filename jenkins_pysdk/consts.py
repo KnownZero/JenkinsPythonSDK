@@ -6,7 +6,7 @@ HTTP_HEADER_DEFAULT = {"Content-Type": "application/json"}
 XML_HEADER_DEFAULT = {"Content-Type": "application/xml"}
 XML_POST_HEADER = {"Content-Type": "text/xml"}
 FORM_HEADER_DEFAULT = {"Content-Type": "application/x-www-form-urlencoded"}
-HTTP_REQUEST_PARAMETERS = ['method', 'url', 'headers', 'data', 'verify', 'auth']
+# HTTP_REQUEST_PARAMETERS = ['method', 'url', 'headers', 'data', 'verify', 'auth']
 
 HOST_MATCH_REGEX_PATTERN = r"^[a-zA-Z0-9.-]+$"
 
@@ -15,7 +15,7 @@ class Endpoints:
     class Instance:
         Crumb = "crumbIssuer/api/json"
         Connect = "login"
-        Jobs = "api/json?tree="  # TODO: Change ?tree= maybe?
+        # Jobs = "api/json?tree="  # TODO: Change ?tree= maybe?
         Standard = "api/json"
         About = "about"  # For plugins list etc
         OverallLoad = "overallLoad/api/json"
@@ -71,6 +71,7 @@ class Endpoints:
         Views = "my-views/view/all"
         Credentials = "credentials/store/user/domain/{domain}/"
         Me = "me"
+        Boot = "user/{user}/descriptorByName/jenkins.security.seed.UserSeedProperty/renewSessionSeed"
 
     class Plugins:
         pass
@@ -83,6 +84,7 @@ class Class:
     ListView = "hudson.model.ListView"
     MyView = "hudson.model.MyView"
     Dashboard = "hudson.plugins.view.dashboard.Dashboard"
+    UsernamePassword = ""
 
 
 class References:

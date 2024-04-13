@@ -58,7 +58,7 @@ def interact_http(request: HTTPRequestObject) -> HTTPResponseObject:
             # TODO: Dynamically add these parameters from the request object
             # TODO: TIDY
             with Client(auth=BasicAuth(request.username, request.passw_or_token),
-                        verify=request.verify, proxies=request.proxy) as conn:
+                        verify=request.verify, proxies=request.proxy, timeout=request.timeout) as conn:
                 response = conn.send(request=req, follow_redirects=True)
                 return_object = HTTPResponseObject(request=req, response=response, content=response.text,
                                                    status_code=int(response.status_code))

@@ -6,7 +6,7 @@ from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsValidateJob, JenkinsActionObject, Views as r_views
 from jenkins_pysdk.exceptions import JenkinsViewNotFound, JenkinsGeneralException
-from jenkins_pysdk.consts import Endpoints, Class, XML_HEADER_DEFAULT, XML_POST_HEADER
+from jenkins_pysdk.consts import Endpoints, Class, XML_HEADER_DEFAULT, XML_POST_HEADER, FORM_HEADER_DEFAULT
 from jenkins_pysdk.builders import Builder
 
 __all__ = ["Views"]
@@ -46,7 +46,7 @@ class View:
         :return: The name of the view.
         :rtype: str
         """
-        return self._view_name
+        return str(self._view_name)
 
     def reconfig(self, xml: str = None, builder: Builder.View = None) -> JenkinsActionObject:
         """
@@ -57,7 +57,7 @@ class View:
         :param builder: The builder object to build the view, defaults to None.
         :type builder: Builder.View, optional
         :return: Jenkins action object indicating the reconfiguration status.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         if not xml and not builder:
@@ -80,7 +80,7 @@ class View:
         Delete the view.
 
         :return: Jenkins action object indicating the delete status.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         """
         url = self._jenkins._build_url("/", prefix=self._view_url)
         req_obj, resp_obj = self._jenkins._send_http(method="DELETE", url=url)
@@ -175,13 +175,17 @@ class Views:
 
     def _create_view(self, view_name: str, xml, mode: r_views) -> JenkinsActionObject:
         # TODO: Add mode with params
-        params = {"mode": mode}
-        url = self._jenkins._build_url(f"/{view_name}")
+        params = {"name": view_name, "mode": mode}
+        url = self._jenkins._build_url("newView")
 
-        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER,
-                                                     params=params, data=xml)
+        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT,
+                                                     params=params, data=str(xml))
+        print(req_obj)
+        print(resp_obj.content)
         if resp_obj.status_code == 200:
             msg = f"[{resp_obj.status_code}] Successfully created {view_name}."
+        elif resp_obj.status_code == 400:
+            msg = f"[{resp_obj.status_code}] Bad request for {view_name}."
         else:
             msg = f"[{resp_obj.status_code}] Failed to create view {view_name}."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
@@ -197,9 +201,10 @@ class Views:
         :param xml: The XML configuration or Builder.View object for the new view.
         :type xml: str or Builder.View
         :param args: Additional parameters for the view creation.
-        :type args: r_views
+        :type args: r_views (Default: ListView)
         :return: JenkinsActionObject indicating the result of the creation.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         try:
             self.is_view(name)
@@ -211,31 +216,31 @@ class Views:
         created = self._create_view(name, xml, mode)
         return created
 
-    def iter(self, /, folder=None, _paginate=0) -> Generator[View]:
+    def iter(self, /, folder: str = None, _paginate=0) -> Generator[View]:
         """
         Iterate through views.
 
-        :param folder: Folder to iterate through. Default is None.
-        :type folder: Any, optional
+        :param folder: Check if folder is in a view. Default is None.
+        :type folder: str, optional
         :param _paginate: Pagination option. Default is 0 (no pagination).
         :type _paginate: int, optional
         :return: A generator yielding View objects.
-        :rtype: Generator[View]
+        :rtype: Generator[:class:`View`]
         """
         if folder:
             path = self._jenkins._build_job_http_path(folder)
             url = self._jenkins._build_url(path + "/")
             yield from self._fetch_view_iter(url)
         else:
-            url = self._jenkins._build_url("")  # TODO: Remove copy & paste
             start = 0
 
             while True:
                 limit = _paginate + start
-                job_param = f"views[fullName,url,jobs[fullName,url,jobs]]"  # TODO: Remove hardcode
-                tree_param = f"{job_param}{{{start},{limit}}}"
-                params = {"tree": tree_param}
-                url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=url)
+                job_param = f"views[name,url,jobs[fullName,url,jobs]]"  # TODO: Remove hardcode
+                if _paginate > 0:
+                    job_param = f"{job_param}{{{start},{limit}}}"
+                params = {"tree": job_param}
+                url = self._jenkins._build_url(Endpoints.Instance.Standard)
 
                 req_obj, resp_obj = self._jenkins._send_http(url=url, params=params)
                 if resp_obj.status_code > 200 and start > 0:
@@ -244,18 +249,18 @@ class Views:
                 data = orjson.loads(resp_obj.content)
                 data = self._jenkins._validate_url_returned_from_instance(data)
 
-                jobs = data.get('jobs', [])
-                for item in jobs:
-                    if item['_class'] == Class.Folder:
-                        yield from self._fetch_view_iter(item['url'])
-                    elif item['_class'] != Class.Folder:
-                        yield from self._fetch_view(item['url'])
-
-                if not jobs:
+                views = data.get('views', [])
+                if not views:
                     break
+
+                for item in views:
+                    # yield from self._fetch_view(item['url'])
+                    yield View(jenkins=self._jenkins, name=item['name'], url=item['url'])
 
                 if _paginate > 0:
                     start += _paginate
+                elif _paginate == 0:
+                    break
 
     def _fetch_view_iter(self, job_url) -> Generator[View]:
         # Pagination not needed here because function repeats itself if needed
@@ -264,23 +269,31 @@ class Views:
         data = orjson.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
 
-        try:
-            if data['_class'] != Class.Folder:
-                yield View(jenkins=self._jenkins, name=data['fullName'], url=data['url'])
-            elif data['_class'] == Class.Folder:
-                for item in data.get('jobs', []):
-                    yield from self._fetch_view_iter(item['url'])
-        except Exception as error:
-            print(error)
+        views = data.get('views', [])
+        if not views:
+            return
+
+        for item in views:
+            yield View(jenkins=self._jenkins, name=item['name'], url=item['url'])
 
     def _fetch_view(self, view_url) -> Generator[View]:
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=view_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
-        yield View(jenkins=self._jenkins, name=data['fullName'], url=data['url'])
+        yield View(jenkins=self._jenkins, name=data['name'], url=data['url'])
 
-    def list(self, folder=None, _paginate=0) -> List[View]:
+    def list(self, folder: str = None, _paginate=0) -> List[View]:
+        """
+        List all views.
+
+        :param folder: Folder to iterate through. Default is None.
+        :type folder: str, optional
+        :param _paginate: Pagination option. Default is 0 (no pagination).
+        :type _paginate: int, optional
+        :return: A list of View objects.
+        :rtype: List[:class:`View`]
+        """
         return [item for item in self.iter(folder=folder, _paginate=_paginate)]
 
     @property

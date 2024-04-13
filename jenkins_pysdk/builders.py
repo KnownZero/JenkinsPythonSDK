@@ -43,16 +43,18 @@ class Builder:
         raise NotImplemented
 
     class Credentials:
-        @classmethod
-        def UsernamePassword(cls) -> str:
-            """
-            Create a new Username/Password credential.
-
-            :return: The newly created Username/Password credential template.
-            :rtype: str
-            """
-            # TODO: This
-            raise NotImplemented
+        pass
+        # @classmethod
+        # def UsernamePassword(cls, domain: str, cred_id: str, username: str, password: str) -> str:
+        #     """
+        #     Create a new Username/Password credential.
+        #
+        #     :return: The newly created Username/Password credential template.
+        #     :rtype: str
+        #     """
+        #     # TODO: This
+        #     return Builder._Templates.Credentials.UsernamePassword.format(domain=domain, cred_id=cred_id,
+        #                                                                   username=username, password=password)
 
     @classmethod
     def User(cls, /, *,
@@ -100,4 +102,3 @@ class Builder:
                   <username>{username}</username>
                   <password>{password}</password>
                 </com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl>"""
-
