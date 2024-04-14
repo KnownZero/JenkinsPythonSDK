@@ -123,4 +123,3 @@ def interact_http_session(request: HTTPSessionRequestObject) -> HTTPSessionRespo
         return_object._raw = exception
         # logger.debuge(exception)
         return return_object
-

@@ -26,16 +26,6 @@ Get the Jenkins version
 >>> print(jenkins.version)
 2.448
 
-Get the available executors
-
-
-.. autofunction:: jenkins.Jenkins.available_executors()
-
->>> from jenkins_pysdk.jenkins import Jenkins
->>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
->>> print(jenkins.available_executors)
-No executors are available.
-
 Restart the application
 
 
@@ -85,6 +75,16 @@ Reload config from disk
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
 >>> print(jenkins.reload)
 request=<HTTPRequestObject object at 2741687462992> content='[200] Successfully reloaded configuration.' status_code=200
+
+Get the available executors
+
+
+.. autofunction:: jenkins.Jenkins.available_executors()
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.available_executors)
+No executors are available.
 
 
 Folders
@@ -140,7 +140,7 @@ builder_w https://JenkinsDNS/job/builder_w/
 new_folder/new_job23 https://JenkinsDNS/job/new_folder/job/new_job23/
 new_folder/test_folder https://JenkinsDNS/job/new_folder/job/test_folder/
 
-Create a new folders
+Create a new folder
 
 
 .. autofunction:: builders.Builder.Folder()
@@ -979,6 +979,85 @@ Terminate a users' sessions
 >>> print(user.logout)
 request=<HTTPRequestObject object at 2073057402192> content='[200] Successfully logged out.' status_code=200
 
+
+Me
+-----------
+
+Get my username
+
+
+.. autofunction:: users.User.name()
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.me.name)
+admin
+
+Get my user URL
+
+
+.. autofunction:: users.User.url()
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.me.url)
+https://JenkinsDNS/me
+
+
+Get my user description
+
+
+.. autofunction:: users.User.description()
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.me.description)
+None
+
+Get my user credentials
+
+
+.. autofunction:: users.User.credentials()
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print([passw.id for passw in jenkins.me.credentials(domain="admin_domain").list()])
+['my_pypi_password']
+
+
+Get my user views
+
+
+.. autofunction:: users.User.views()
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print([view.name for view in jenkins.me.views])
+['builder_1', 'builder_2', 'builder_4', 'builder_d', 'builder_e', 'builder_folder', 'builder_w', 'folder1', 'folder3', 'my_new_folder_name', 'new_folder', 'new_freestyle']
+
+
+Get my user builds
+
+
+.. autofunction:: users.User.builds()
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.me.builds)
+No REST endpoint available... returning HTML response for the moment...
+<HTML Output>
+
+Terminate my session
+
+
+.. autofunction:: users.User.logout()
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>>  print(jenkins.me.logout)
+request=<HTTPRequestObject object at 2012346268496> content='[200] Successfully logged out.' status_code=200
+
+
 Views
 -----------
 
@@ -1066,11 +1145,37 @@ Get the view URL
 http://JenkinsDNS/view/All
 
 Reconfigure the view
-
+(Job order must be the same as the order in the application, otherwise you will get dodgy results)
+E.g.
+builder_e is higher up in the list of jobs so it goes above builder_folder, which is underneath it in the list :)
 
 .. autofunction:: views.View.reconfig()
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
->>> print(jenkins.views.search("All").reconfig())
-http://JenkinsDNS/view/All
+>>> xml = """
+>>>    <hudson.model.ListView>
+>>>      <name>my_view</name>
+>>>      <description>Your view description</description>
+>>>      <filterExecutors>false</filterExecutors>
+>>>      <filterQueue>false</filterQueue>
+>>>      <properties class="hudson.model.View$PropertyList"/>
+>>>      <jobNames>
+>>>        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+>>>        <string>builder_e</string>
+>>>        <string>builder_folder</string>
+>>>        <string>builder_w</string>
+>>>        <string>new_freestyle</string>
+>>>      </jobNames>
+>>>      <jobFilters/>
+>>>      <columns>
+>>>        <hudson.views.StatusColumn/>
+>>>        <hudson.views.WeatherColumn/>
+>>>        <hudson.views.JobColumn/>
+>>>      </columns>
+>>>      <recurse>true</recurse>
+>>>    </hudson.model.ListView>
+>>>   """
+>>>   print(jenkins.views.search("my_view").reconfig(xml))
+request=<HTTPRequestObject object at 2153302882832> content='[200] Successfully reconfigured view (my_view).' status_code=200
+

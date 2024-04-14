@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import os, sys
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, project_root)
+
 import re
 import time
 
@@ -269,7 +273,7 @@ class Jenkins(Core):
         """
         # TODO: Finish me
         url = self._build_url(Endpoints.Instance.Crumb)
-        req_obj, resp_obj = self._send_http(url)
+        req_obj, resp_obj = self._send_http(url=url)
         return str(resp_obj._raw.headers['x-jenkins'])
 
     @property
