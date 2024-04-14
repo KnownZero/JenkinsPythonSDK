@@ -1,9 +1,5 @@
 from __future__ import annotations
 
-import os, sys
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, project_root)
-
 import re
 import time
 
@@ -163,20 +159,20 @@ class Jenkins(Core):
     # def UsernamePassword(self) -> r_builder.Credential:
     #     return r_builder.Credential(value=Class.UsernamePassword)
 
-    @property
-    def enable_logging(self):
-        """
-        Get the logging level.
-        """
-        return self.Enable_Logging
-
-    @enable_logging.setter
-    def enable_logging(self, value: int):
-        """
-        Enable a logging level.
-        """
-        # TODO: Add logging and enhance with logger per component/more levels etc etc
-        self.Enable_Logging = value
+    # @property
+    # def enable_logging(self):
+    #     """
+    #     Get the logging level.
+    #     """
+    #     return self.Enable_Logging
+    #
+    # @enable_logging.setter
+    # def enable_logging(self, value: int):
+    #     """
+    #     Enable a logging level.
+    #     """
+    #     # TODO: Add logging and enhance with logger per component/more levels etc etc
+    #     self.Enable_Logging = value
 
     def connect(self) -> JenkinsConnectObject:
         """

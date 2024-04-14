@@ -1,5 +1,3 @@
-__all__ = ["version", "python_name"]
-
-version = 0.1
-python_name = "jenkins_pysdk"
-
+import os, sys
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, project_root)
