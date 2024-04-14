@@ -1,0 +1,6 @@
+sphinx
+sphinx-rtd-theme
+httpx
+urllib3
+orjson
+pydantic
