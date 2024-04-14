@@ -20,12 +20,16 @@ class Core:  # TODO: Revise these messy methods
         raise NotImplemented
 
     def _build_url(self, endpoint: str, prefix: str = None, suffix: str = None) -> HttpUrl:
-        host = self.host.replace("http://", "https://") if self.verify else self.host
+        if not self.host.startswith("http://") and not self.host.startswith("https://"):
+            host = f"http://{self.host}"
+        else:
+            host = self.host
+        host = host.replace("http://", "https://") if self.verify else host
         if prefix:
             prefix = str(prefix).replace("http://", "https://") if self.verify else str(prefix)
             endpoint = f"{prefix.rstrip('/')}/{endpoint.replace('//', '/')}"
         else:
-            endpoint = f"{host}/{endpoint.replace('//', '/')}"
+            endpoint = f"{host.rstrip('/')}/{endpoint.replace('//', '/')}"
         if suffix:
             endpoint = f"{endpoint.rstrip('/')}/{suffix.replace('//', '/')}"
         return HttpUrl(endpoint)
@@ -58,20 +62,18 @@ class Core:  # TODO: Revise these messy methods
             job_path = f"{folder_path}/{job_path}".replace("//", "/")
         if not job_path.startswith("/"):
             job_path = "/" + job_path
-        if job_path.endswith("/"):
-            job_path = job_path[:-2]
+        job_path = job_path.rstrip("/")
         job_path = re.sub(r"((/)?\bjob\b(/)?)+", "/", str(job_path))
-        return job_path.replace("/", "/job/")
+        return job_path.replace("/", "/job/").replace("//", "/")
 
     @staticmethod
     def _build_view_http_path(view_path: str):
         import re
         if not view_path.startswith("/"):
             view_path = "/" + view_path
-        if view_path.endswith("/"):
-            view_path = view_path[:-2]
+        view_path = view_path.rstrip("/")
         job_path = re.sub(r"((/)?\bjob\b(/)?)+", "/", str(view_path))
-        return job_path.replace("/", "/view/")
+        return job_path.replace("/", "/view/").replace("//", "/").lstrip("/")
 
     @staticmethod
     def _get_folder_parent(folder_path: str) -> (str, str):

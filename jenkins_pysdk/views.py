@@ -6,7 +6,7 @@ from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsValidateJob, JenkinsActionObject
 from jenkins_pysdk.exceptions import JenkinsNotFound, JenkinsGeneralException
-from jenkins_pysdk.consts import Endpoints, Class, XML_HEADER_DEFAULT, XML_POST_HEADER
+from jenkins_pysdk.consts import Endpoints, XML_HEADER_DEFAULT, XML_POST_HEADER
 from jenkins_pysdk.builders import Builder
 
 __all__ = ["Views"]
@@ -48,28 +48,24 @@ class View:
         """
         return str(self._view_name)
 
-    def reconfig(self, xml: str = None, builder: Builder.View = None) -> JenkinsActionObject:
+    def reconfig(self, xml: str or Builder.View) -> JenkinsActionObject:
         """
         Reconfigure the view with XML configuration or a builder.
 
         :param xml: The XML configuration of the view, defaults to None.
         :type xml: str, optional
-        :param builder: The builder object to build the view, defaults to None.
-        :type builder: Builder.View, optional
         :return: Jenkins action object indicating the reconfiguration status.
         :rtype: :class:`objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        if not xml and not builder:
-            raise JenkinsGeneralException("Missing view configuration.")
         url = self._jenkins._build_url(Endpoints.Jobs.Xml, prefix=self._view_url)
-        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER,
-                                                     data=xml)
-        msg = f"[{resp_obj.status_code}] Successfully reconfigured {self._view_name}."
+        print(url)
+        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER, data=str(xml))
+        msg = f"[{resp_obj.status_code}] Successfully reconfigured view ({self._view_name})."
         if resp_obj.status_code >= 500:
-            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error. Check the internal logs.")
         elif resp_obj.status_code != 200:
-            msg = f"[{resp_obj.status_code}] Failed to reconfigure {self._view_name}."
+            msg = f"[{resp_obj.status_code}] Failed to reconfigure view ({self._view_name})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
         return obj
@@ -84,9 +80,9 @@ class View:
         """
         url = self._jenkins._build_url("/", prefix=self._view_url)
         req_obj, resp_obj = self._jenkins._send_http(method="DELETE", url=url)
-        msg = f"[{resp_obj.status_code}] Successfully deleted view."
+        msg = f"[{resp_obj.status_code}] Successfully deleted view ({self._view_name})."
         if resp_obj.status_code != 204:
-            msg = f"[{resp_obj.status_code}] Failed to delete view."
+            msg = f"[{resp_obj.status_code}] Failed to delete view ({self._view_name})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
         return obj
@@ -144,17 +140,14 @@ class Views:
         :raises JenkinsNotFound: If the view was not found.
         """
         built = self._jenkins._build_view_http_path(path)
-        url = self._jenkins._build_url(built, suffix=Endpoints.Instance.Standard)
+        url = self._jenkins._build_url(built)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code == 404:
             raise JenkinsNotFound(f"[{resp_obj.status_code}] {path} not found.")
         else:
-            data = orjson.loads(resp_obj.content)
-            if data['_class'] != Class.Folder:
-                return True
-            return False
+            return True
 
     def _validate_view(self, view_path) -> JenkinsValidateJob:  # TODO: Review what the heck this is doing?
         job = self._jenkins._build_view_http_path(view_path)

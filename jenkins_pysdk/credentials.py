@@ -86,8 +86,7 @@ class Credential:
         """
         url = self._jenkins._build_url(Endpoints.Credential.Get.format(cred_id=self._cred_id),
                                        prefix=self.domain_url, suffix=Endpoints.Jobs.Xml)
-        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER,
-                                                     data=xml)
+        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER, data=str(xml))
         msg = f"[{resp_obj.status_code}] Successfully reconfigured {self._cred_id}."
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
