@@ -2,9 +2,8 @@
 
 [![Documentation Status](https://readthedocs.org/projects/jenkinspythonsdk/badge/?version=latest)](https://jenkinspythonsdk.readthedocs.io/en/latest/?badge=latest)
 
-# Supported for python 3.8+
-May work with older versions
-# Note: Still being developed!
+### Supported for python 3.6+
+
 
 ## Installation
 

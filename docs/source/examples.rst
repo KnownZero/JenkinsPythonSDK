@@ -670,6 +670,19 @@ Iterate all domains
 >>> print([domain.name for domain in jenkins.credentials.list_domains()])
 ['Global credentials (unrestricted)', 'domain2', 'test_domain']
 
+Create a domain
+
+
+.. autofunction:: credentials.Credentials.create_domain()
+
+>>> jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
+>>>                   passw="11e8e294cee85ee88b60d99328284d7608")
+>>> from builders import Builder
+>>> new_user = Builder.Credentials.Domain(name="global2", description="new global domain")
+>>> print(jenkins.credentials.create_domain("global2", new_user))
+request=<HTTPSessionRequestObject object at 1593952704992> content='[200] Successfully created domain (global2).' status_code=200
+
+
 Domain
 -----------
 
@@ -731,6 +744,27 @@ List credentials in the domain
 >>> print([cred.id for cred in domain.list()])
 ['3f2ba384-a1bc-4785-86d0-1c82d4e8be03', '95b47fec-c078-4821-b05b-c7149f549429']
 
+Create a credential in the domain
+
+
+.. autofunction:: credentials.Domain.create()
+
+>>> jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
+>>>                   passw="11e8e294cee85ee88b60d99328284d7608")
+>>> from builders import Builder
+>>>
+>>> new_cred = Builder.Credentials.UsernamePassword(cred_id="gitlab_login", username="new_username", password="new_pasw")
+>>> print(new_cred)
+>>> print(jenkins.credentials.search_domains("global2").create("new_cred", new_cred))
+<com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl>
+    <scope>GLOBAL</scope>
+    <id>gitlab_login</id>
+    <username>new_username</username>
+    <password>new_pasw</password>
+</com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl>
+request=<HTTPSessionRequestObject object at 2307040044480> content='[200] Successfully created credential (new_cred).' status_code=200
+
+
 Credential
 -----------
 
@@ -781,6 +815,18 @@ Reconfigure the credential
 >>>                 </org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl>"""
 request=<HTTPRequestObject object at 2336431155744> content='[200] Successfully reconfigured Github_PAT.' status_code=200
 
+Move a credential to another domain
+(You can't move from System to User/Local)
+
+
+.. autofunction:: credentials.Credential.move()
+
+>>> jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
+>>>                   passw="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.credentials.search_domains("global2").search("gitlab_login").move("system/test_domain"))
+request=<HTTPSessionRequestObject object at 1999299504192> content='[200] Successfully moved gitlab_login to system/test_domain.' status_code=200
+
+
 Users
 -----------
 
@@ -826,6 +872,19 @@ List all users
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
 >>> print(jenkins.users.list())
 [<jenkins_pysdk.users.User object at 0x00000207B731CE50>, <jenkins_pysdk.users.User object at 0x00000207B73DD210>, <jenkins_pysdk.users.User object at 0x00000207B73DD960>]
+
+
+Create a new user (as admin)
+
+.. autofunction:: users.Users.create()
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> from builders import Builder
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> new_user = Builder.User(username="my_new_user", password="my_new_pass", fullname="jamesJ", email="jamesj@j.com")
+>>> print(jenkins.users.create(new_user)
+request=<HTTPSessionRequestObject object at 1868709648224> content='[200] Successfully created user (my_new_user).' status_code=200
+
 
 
 User

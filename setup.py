@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='jenkins_pysdk',
-    version='0.1.1.1-dev',  # Don't forget to update version in __init__ :)
+    version='0.2',  # Don't forget to update version in __init__ :)
     packages=find_packages(),
     install_requires=[
         'httpx',

@@ -25,7 +25,7 @@ class Job:
     :type job_url: str
     """
 
-    def __init__(self, /, *, jenkins, job_path, job_url):
+    def __init__(self, *, jenkins, job_path, job_url):
         self._job_path = job_path
         self._job_url = job_url
         self._jenkins = jenkins
@@ -272,7 +272,7 @@ class Jobs:
         created = self._create_job(job_name, xml, mode, built)
         return created
 
-    def iter(self, /, folder=None, _paginate=0) -> Generator[Job]:
+    def iter(self, folder=None, _paginate=0) -> Generator[Job]:
         """
         Iterate through jobs in the Jenkins instance.
 
@@ -376,7 +376,7 @@ class Jobs:
 
 
 class Folder:
-    def __init__(self, /, *, jenkins, folder_path, folder_url):
+    def __init__(self, *, jenkins, folder_path, folder_url):
         """
         Interact with Folders on the Jenkins instance.
 
@@ -618,10 +618,8 @@ class Folders:
             if not self.is_folder(folder_parent):
                 raise JenkinsFolderNotFound(f"Failed to create folder because parent path not found: {folder_parent}.")
             raise error
-        except Exception as e:
-            raise e
 
-    def iter(self, /, folder: str = None, _paginate: int = 0) -> Generator[Folder]:
+    def iter(self, folder: str = None, _paginate: int = 0) -> Generator[Folder]:
         """
         Iterate over folders within the specified folder.
 

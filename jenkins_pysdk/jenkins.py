@@ -49,7 +49,7 @@ class Jenkins(Core):
     :type timeout: int, optional
     """
 
-    def __init__(self, /, *,
+    def __init__(self, *,
                  host: str,
                  username: Optional[str] = None,
                  passw: Optional[str] = None,
@@ -523,9 +523,8 @@ class Jenkins(Core):
         :rtype: :class:`objects.JenkinsActionObject`
         """
         # TODO: Fix 403 error
-        # TODO: Run second thread to enable quiet mode for x time
         # TODO: Unit Test
-        # TODO: Add banner message
+        # TODO: Add banner message param
         if disable:
             return self._disable_quiet_mode()
 
@@ -603,9 +602,3 @@ class Jenkins(Core):
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
         return obj
-
-
-if __name__ == "__main__":
-    jenkins = Jenkins(host="https://48b7-90-194-113-56.ngrok-free.app", username="admin",
-                      passw="jenkins", timeout=10, verify=False)
-    print(jenkins.jobs.iter())

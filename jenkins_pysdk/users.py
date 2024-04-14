@@ -6,7 +6,7 @@ from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsActionObject
 from jenkins_pysdk.exceptions import JenkinsGeneralException, JenkinsNotFound
-from jenkins_pysdk.consts import Endpoints, XML_POST_HEADER
+from jenkins_pysdk.consts import Endpoints, FORM_HEADER_DEFAULT
 from jenkins_pysdk.objects import Builder
 from jenkins_pysdk.views import View as v_view
 from jenkins_pysdk.credentials import Domain as c_domain
@@ -226,15 +226,19 @@ class Users:
         """
         return len(self.list())
 
-    def create(self, user: str or Builder.User):
+    def create(self, config: Builder.User) -> JenkinsActionObject:
         """
         Create a new user.
 
-        :param user: The user to be created.
-        :type user: Builder.User
+        :param config: The user to be created.
+        :type config: Builder.User
         """
-        url = self._jenkins._build_url(Endpoints.Users.Create)
-        print(url)
-        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER, data=str(user))
-        print(resp_obj.status_code)
-        raise NotImplemented
+        username = config['username']
+        url = self._jenkins._build_url(Endpoints.Users.CreateByAdmin)
+        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT, data=config)
+        if resp_obj.status_code != 200:
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to create user ({username}).")
+        msg = f"[{resp_obj.status_code}] Successfully created user ({username})."
+        obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
+        obj._raw = resp_obj._raw
+        return obj

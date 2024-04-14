@@ -41,7 +41,8 @@ class Core:  # TODO: Revise these messy methods
                 if key in ['url', 'absoluteUrl'] and isinstance(value, str):
                     if self.verify:
                         value = value.replace("http://", "https://")
-                    value = value.replace("localhost:8080", self.host.lstrip("http://").lstrip("https://"))  # TODO: Make this work for non 8080
+                    # TODO: Make this work for non 8080
+                    value = value.replace("localhost:8080", self.host.lstrip("http://").lstrip("https://"))
                     data[key] = value
                 else:
                     data[key] = self._validate_url_returned_from_instance(value)
@@ -59,7 +60,7 @@ class Core:  # TODO: Revise these messy methods
             job_path = "/" + job_path
         if job_path.endswith("/"):
             job_path = job_path[:-2]
-        job_path = re.sub(r"((\/)?\bjob\b(\/)?){1,}", "/", str(job_path))
+        job_path = re.sub(r"((/)?\bjob\b(/)?)+", "/", str(job_path))
         return job_path.replace("/", "/job/")
 
     @staticmethod
@@ -69,7 +70,7 @@ class Core:  # TODO: Revise these messy methods
             view_path = "/" + view_path
         if view_path.endswith("/"):
             view_path = view_path[:-2]
-        job_path = re.sub(r"((\/)?\bjob\b(\/)?){1,}", "/", str(view_path))
+        job_path = re.sub(r"((/)?\bjob\b(/)?)+", "/", str(view_path))
         return job_path.replace("/", "/view/")
 
     @staticmethod
@@ -88,7 +89,7 @@ class Core:  # TODO: Revise these messy methods
         levels = path.split('/')
         return len(levels)
 
-    def _send_http(self, /,
+    def _send_http(self, *,
                    url: HttpUrl,
                    method: str = "GET",
                    headers: dict = HTTP_HEADER_DEFAULT,

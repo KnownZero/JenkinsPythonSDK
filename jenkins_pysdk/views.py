@@ -13,7 +13,7 @@ __all__ = ["Views"]
 
 
 class View:
-    def __init__(self, /, *, jenkins, name, url):
+    def __init__(self, *, jenkins, name, url):
         """
         Interact with Views on the Jenkins instance.
 
@@ -174,7 +174,6 @@ class Views:
         return obj
 
     def _create_view(self, view_name: str, xml) -> JenkinsActionObject:
-        # TODO: Add mode with params
         params = {"name": view_name}
         url = self._jenkins._build_url(Endpoints.Views.Create)
 
@@ -211,7 +210,7 @@ class Views:
         created = self._create_view(name, xml)
         return created
 
-    def iter(self, /, folder: str = None, _paginate=0) -> Generator[View]:
+    def iter(self, folder: str = None, _paginate=0) -> Generator[View]:
         """
         Iterate through views.
 

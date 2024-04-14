@@ -48,10 +48,13 @@ class Endpoints:
 
     class Credential:
         Create = "createCredentials"
+        Get = "credential/{cred_id}"
+        Move = "doMove"
 
     class Credentials:
         Domain = "manage/credentials/store/system/domain/{domain}"
         Create = "manage/credentials/store/system/newDomain"
+        CreateDomain = "manage/credentials/store/system/createDomain"
 
     class Maintenance:
         Restart = "restart"
@@ -65,6 +68,7 @@ class Endpoints:
         List = "asynchPeople"
         User = "user/{username}"
         Create = "manage/securityRealm/addUser"
+        CreateByAdmin = "/securityRealm/createAccountByAdmin"
 
     class User:
         Logout = "logout"

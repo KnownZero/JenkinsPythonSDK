@@ -5,8 +5,8 @@ import orjson
 from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsActionObject
-from jenkins_pysdk.exceptions import JenkinsGeneralException, JenkinsNotFound
-from jenkins_pysdk.consts import Endpoints, XML_HEADER_DEFAULT, FORM_HEADER_DEFAULT, XML_POST_HEADER
+from jenkins_pysdk.exceptions import JenkinsGeneralException, JenkinsNotFound, JenkinsAlreadyExists
+from jenkins_pysdk.consts import Endpoints, XML_HEADER_DEFAULT, XML_POST_HEADER, FORM_HEADER_DEFAULT
 from jenkins_pysdk.builders import Builder
 
 
@@ -14,7 +14,7 @@ __all__ = ["Credentials", "Credential", "Domain"]
 
 
 class Credential:
-    def __init__(self, /, *, jenkins, cred_id: str, domain_url: HttpUrl):
+    def __init__(self, *, jenkins, cred_id: str, domain_url: HttpUrl):
         """
         Initialize a Credential object representing a Jenkins credential.
 
@@ -45,10 +45,11 @@ class Credential:
         Get the configuration of the credential.
 
         :return: The configuration of the credential.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        url = self._jenkins._build_url(f"/credential/{self._cred_id}", prefix=self.domain_url, suffix=Endpoints.Jobs.Xml)
+        url = self._jenkins._build_url(Endpoints.Credential.Get.format(cred_id=self._cred_id),
+                                       prefix=self.domain_url, suffix=Endpoints.Jobs.Xml)
         req_obj, resp_obj = self._jenkins._send_http(url=url, headers=XML_HEADER_DEFAULT)
         code = resp_obj.status_code
         if code != 200:
@@ -61,9 +62,10 @@ class Credential:
         Delete the credential.
 
         :return: Result of the deletion operation.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         """
-        url = self._jenkins._build_url(f"/credential/{self._cred_id}", prefix=self.domain_url, suffix=Endpoints.Jobs.Xml)
+        url = self._jenkins._build_url(Endpoints.Credential.Get.format(cred_id=self._cred_id),
+                                       prefix=self.domain_url, suffix=Endpoints.Jobs.Xml)
         req_obj, resp_obj = self._jenkins._send_http(method="DELETE", url=url)
         msg = f"[{resp_obj.status_code}] Successfully deleted credential."
         if resp_obj.status_code != 204:
@@ -79,10 +81,11 @@ class Credential:
         :param xml: The new XML content or a Credentials builder.
         :type xml: str or Builder.Credentials
         :return: Result of the reconfiguration operation.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        url = self._jenkins._build_url(f"/credential/{self._cred_id}", prefix=self.domain_url, suffix=Endpoints.Jobs.Xml)
+        url = self._jenkins._build_url(Endpoints.Credential.Get.format(cred_id=self._cred_id),
+                                       prefix=self.domain_url, suffix=Endpoints.Jobs.Xml)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER,
                                                      data=xml)
         msg = f"[{resp_obj.status_code}] Successfully reconfigured {self._cred_id}."
@@ -94,19 +97,29 @@ class Credential:
         obj._raw = resp_obj._raw
         return obj
 
-    def move(self) -> JenkinsActionObject:
+    def move(self, dest: str) -> JenkinsActionObject:
         """
         Move the credential to another domain.
 
         :return: Result of the move operation.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         """
-        # TODO: This
-        raise NotImplemented
+        url = self._jenkins._build_url(Endpoints.Credential.Get.format(cred_id=self._cred_id),
+                                       prefix=self.domain_url, suffix=Endpoints.Credential.Move)
+        data = {"destination": dest}
+        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT, data=data)
+        msg = f"[{resp_obj.status_code}] Successfully moved {self._cred_id} to {dest}."
+        if resp_obj.status_code >= 500:
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
+        elif resp_obj.status_code != 200:
+            msg = f"[{resp_obj.status_code}] Failed to move {self._cred_id} to {dest}."
+        obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
+        obj._raw = resp_obj._raw
+        return obj
 
 
 class Domain:
-    def __init__(self, /, *, jenkins, url: HttpUrl):
+    def __init__(self, *, jenkins, url: HttpUrl):
         """
         Initialize a Domain object.
 
@@ -121,7 +134,7 @@ class Domain:
 
     @property
     def name(self) -> str:
-        return str(self._raw['displayName'])
+        return str(self._raw['urlName'])
 
     @property
     def url(self) -> HttpUrl:
@@ -140,7 +153,7 @@ class Domain:
         :param cred_id: The ID of the credential to search for.
         :type cred_id: str
         :return: The credential matching the provided ID.
-        :rtype: Credential
+        :rtype: :class:`Credential`
         """
         for cred in self.iter():
             if cred.id == cred_id:
@@ -153,7 +166,7 @@ class Domain:
         Iterate over credentials within the domain.
 
         :return: A generator yielding credentials within the specified domain.
-        :rtype: Generator[Credential]
+        :rtype: Generator[:class:`Credential`]
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self.domain_url)
@@ -172,22 +185,32 @@ class Domain:
         List credentials within the domain.
 
         :return: A list of credentials within the specified domain.
-        :rtype: List[Credential]
+        :rtype: List[:class:`Credential`]
         """
         return [cred for cred in self.iter()]
 
-    def create(self, cred: Builder.Credentials) -> JenkinsActionObject:
+    def create(self, name: str, cred: str or Builder.Credentials) -> JenkinsActionObject:
         """
         Create a new credential.
 
+        :param name: The name of the domain
+        :type name: str
         :param cred: The credential object to create.
-        :type cred: Builder.Credentials
+        :type cred: str or Builder.Credentials
         :return: Result of the deletion operation.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
         """
-        url = self._jenkins._build_url(Endpoints.Users.Create)
-        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT)
-        raise NotImplemented
+        url = self._jenkins._build_url(Endpoints.Credentials.Domain.format(domain=self.name),
+                                       suffix=Endpoints.Credential.Create)
+        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_HEADER_DEFAULT, data=str(cred))
+        if resp_obj.status_code == 409:
+            raise JenkinsAlreadyExists(f"[{resp_obj.status_code}] Credential ({name}) already exists.)")
+        elif resp_obj.status_code > 200:
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to create credential ({name}).")
+        msg = f"[{resp_obj.status_code}] Successfully created credential ({name})."
+        obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
+        obj._raw = resp_obj._raw
+        return obj
 
 
 class Credentials:
@@ -207,7 +230,7 @@ class Credentials:
         :param domain: The name of the domain to search for. If None, returns all domains.
         :type domain: str, optional
         :return: The Domain object representing the found domain.
-        :rtype: Domain
+        :rtype: :class:`Domain`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         if not domain:
@@ -223,7 +246,7 @@ class Credentials:
         Iterate over domains on the Jenkins instance.
 
         :return: A generator yielding Domain objects.
-        :rtype: Generator[Domain]
+        :rtype: Generator[:class:`Domain`]
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         creds_url = self._jenkins._build_url(Endpoints.Manage.CredentialStore)
@@ -243,25 +266,31 @@ class Credentials:
         List all domains on the Jenkins instance.
 
         :return: List of Domain objects.
-        :rtype: List[Domain]
+        :rtype: List[:class:`Domain`]
         """
         return [domain for domain in self.iter_domains()]
 
-    def create_domain(self, cred: Builder.Credentials = None) -> JenkinsActionObject:
+    def create_domain(self, name: str, cred: str or Builder.Credentials.Domain) -> JenkinsActionObject:
         """
         Create a new domain.
 
+        :param name: The name of the domain
+        :type name: str
         :param cred: The credentials to associate with the domain.
-        :type cred: Builder.Credentials, optional
+        :type cred: :class:`Builder.Credentials.Domain`
         :return: Outcome of the domain creation request.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`objects.JenkinsActionObject`
+        :raises JenkinsAlreadyExists: If the domain already exists.
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
-        # TODO: Create domain
-        url = self._jenkins._build_url(Endpoints.Credentials.Create)
-        print(url)
-        data = {'name': "alex_test", 'description': "test", 'Submit': "Create"}
-        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT, params=data)
-        print(resp_obj.status_code)
-        raise NotImplemented
-
+        url = self._jenkins._build_url(Endpoints.Credentials.CreateDomain)
+        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_HEADER_DEFAULT, data=str(cred))
+        if resp_obj.status_code == 409:
+            raise JenkinsAlreadyExists(f"[{resp_obj.status_code}] Domain ({name}) already exists.)")
+        elif resp_obj.status_code > 200:
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to create domain ({name}).")
+        msg = f"[{resp_obj.status_code}] Successfully created domain ({name})."
+        obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
+        obj._raw = resp_obj._raw
+        return obj
 
