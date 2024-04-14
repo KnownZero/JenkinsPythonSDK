@@ -8,7 +8,7 @@
 ## Installation
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/installation/) and 
-[pypi.org](https://pypi.org/project/jenkins-pysdk/) to install jenkins-pysdk.
+[JenkinsPythonSDK | pypi.org](https://pypi.org/project/jenkins-pysdk/) to install jenkins-pysdk.
 
 ```bash
 pip install jenkins-pysdk

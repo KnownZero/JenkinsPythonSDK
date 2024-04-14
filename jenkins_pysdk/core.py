@@ -9,7 +9,7 @@ from jenkins_pysdk.consts import HTTP_HEADER_DEFAULT
 from jenkins_pysdk.objects import HTTPSessionRequestObject, HTTPSessionResponseObject, \
     HTTPRequestObject, HTTPResponseObject
 from jenkins_pysdk.exceptions import JenkinsConnectionException
-from __init__ import version, python_name
+from jenkins_pysdk.version import version, python_name
 
 __all__ = ["Core"]
 

@@ -8,7 +8,7 @@ from jenkins_pysdk.consts import HTTP_RETRY_COUNT, HOST_MATCH_REGEX_PATTERN
 from jenkins_pysdk.objects import HTTPRequestObject, HTTPResponseObject, HTTPSessionRequestObject, \
     HTTPSessionResponseObject
 from jenkins_pysdk.exceptions import JenkinsInvalidHost
-from _logger import logger
+# from _logger import logger
 
 __all__ = ["validate_connect_host", "validate_http_url", "interact_http", "interact_http_session"]
 
@@ -49,7 +49,7 @@ def interact_http(request: HTTPRequestObject) -> HTTPResponseObject:
         data=request.data if request.data else None,
         params=request.params if request.params else None
     )
-    logger.debugu(req.url)
+    # logger.debugu(req.url)
     exception = None
     for retry in range(HTTP_RETRY_COUNT):
         try:
@@ -62,7 +62,7 @@ def interact_http(request: HTTPRequestObject) -> HTTPResponseObject:
                 return_object = HTTPResponseObject(request=req, content=response.text,
                                                    status_code=int(response.status_code))
                 return_object._raw = response
-                logger.debuge(response.content)
+                # logger.debuge(response.content)
                 return return_object
         except (EnvironmentError, ConnectError) as error:
             # TODO: below lines suck
@@ -75,7 +75,7 @@ def interact_http(request: HTTPRequestObject) -> HTTPResponseObject:
         msg = "Request failed due to an exception. See _raw field."
         return_object = HTTPResponseObject(request=req, content=msg, status_code=-1)
         return_object._raw = exception
-        logger.debuge(exception)
+        # logger.debuge(exception)
         return return_object
 
 
@@ -90,7 +90,7 @@ def interact_http_session(request: HTTPSessionRequestObject) -> HTTPSessionRespo
         data=request.data,
         params=request.params,
     )
-    logger.debugu(req.url)
+    # logger.debugu(req.url)
     exception: Exception = Exception()
     for retry in range(HTTP_RETRY_COUNT):
         # TODO: SSL/certs
@@ -106,7 +106,7 @@ def interact_http_session(request: HTTPSessionRequestObject) -> HTTPSessionRespo
             return_object = HTTPSessionResponseObject(request=req, content=response.text,
                                                       status_code=int(response.status_code), session=session)
             return_object._raw = response
-            logger.debuge(response.content)
+            # logger.debuge(response.content)
             return return_object
         except (EnvironmentError, ConnectError) as error:
             # TODO: below lines suck
@@ -121,6 +121,6 @@ def interact_http_session(request: HTTPSessionRequestObject) -> HTTPSessionRespo
         msg = "Request failed due to an exception. See _raw field."
         return_object = HTTPSessionResponseObject(request=req, content=msg, status_code=-1, session=None)
         return_object._raw = exception
-        logger.debuge(exception)
+        # logger.debuge(exception)
         return return_object
 
