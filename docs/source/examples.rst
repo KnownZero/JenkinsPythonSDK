@@ -10,6 +10,7 @@ Connect to the application
 
 
 .. autofunction:: jenkins.Jenkins.connect()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -20,6 +21,7 @@ Get the Jenkins version
 
 
 .. autofunction:: jenkins.Jenkins.version()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -30,6 +32,7 @@ Restart the application
 
 
 .. autofunction:: jenkins.Jenkins.restart()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -40,6 +43,7 @@ Enable Quiet Mode
 
 
 .. autofunction:: jenkins.Jenkins.quiet_mode()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -50,6 +54,7 @@ Shutdown the application
 
 
 .. autofunction:: jenkins.Jenkins.shutdown()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -60,6 +65,7 @@ Logout
 
 
 .. autofunction:: jenkins.Jenkins.logout()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -70,6 +76,7 @@ Reload config from disk
 
 
 .. autofunction:: jenkins.Jenkins.reload()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -80,6 +87,7 @@ Get the available executors
 
 
 .. autofunction:: jenkins.Jenkins.available_executors()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -96,6 +104,7 @@ Interact with a folder
 
 
 .. autofunction:: jobs.Folders.search()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -106,6 +115,7 @@ List all folders
 
 
 .. autofunction:: jobs.Folders.list()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -125,6 +135,7 @@ Iterate all folders
 
 
 .. autofunction:: jobs.Folders.iter()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -145,6 +156,7 @@ Create a new folder
 
 .. autofunction:: builders.Builder.Folder()
 .. autofunction:: jobs.Folders.create()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> from builders import Builder
@@ -158,6 +170,7 @@ Check if the path is a folder
 
 
 .. autofunction:: jobs.Folders.is_folder()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -173,6 +186,7 @@ Reconfigure a folder
 
 
 .. autofunction:: jobs.Folder.reconfig()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> from builders.builder import Builder
@@ -186,6 +200,7 @@ Get the first folder URL
 
 
 .. autofunction:: jobs.Folder.url()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> from builders.builder import Builder
@@ -197,6 +212,7 @@ Get the first folder Path
 
 
 .. autofunction:: jobs.Folder.path()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -208,6 +224,7 @@ Copy a folder
 (You are interacting with a specific folder location, so you can't copy a folder up a level)
 
 .. autofunction:: jobs.Folder.copy()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -219,6 +236,7 @@ Delete the current folder
 
 
 .. autofunction:: jobs.Folder.delete()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -230,6 +248,7 @@ Create a folder
 (You are interacting with a specific folder location, so you can only create sub-folders)
 
 .. autofunction:: jobs.Folder.create()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> from builders import Builder
@@ -242,6 +261,7 @@ Get the folder config
 
 
 .. autofunction:: jobs.Folder.config()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -275,6 +295,7 @@ Interact with a job
 
 
 .. autofunction:: jobs.Jobs.search()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -285,6 +306,7 @@ List all jobs
 
 
 .. autofunction:: jobs.Jobs.list()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -294,6 +316,7 @@ List all jobs
 Iterate all jobs
 
 .. autofunction:: jobs.Jobs.iter()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -304,6 +327,7 @@ Create a freestyle job
 
 
 .. autofunction:: jobs.Jobs.create()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -329,6 +353,7 @@ Check if the path is a job
 
 
 .. autofunction:: jobs.Jobs.is_job()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -343,6 +368,7 @@ Disable a job
 
 
 .. autofunction:: jobs.Job.disable()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -353,6 +379,7 @@ Get a job URL
 
 
 .. autofunction:: jobs.Job.url()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -363,6 +390,7 @@ Get a job path
 
 
 .. autofunction:: jobs.Job.path()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -374,6 +402,7 @@ Get job URL
 
 
 .. autofunction:: jobs.Job.enable()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -383,7 +412,8 @@ request=<HTTPRequestObject object at 1986068844192> content='[200] Successfully 
 Reconfigure a job
 
 
-.. autofunction:: jobs.Job.reconfig())
+.. autofunction:: jobs.Job.reconfig()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> from jenkins_pysdk.builders import Builder
@@ -396,6 +426,7 @@ Delete a job
 
 
 .. autofunction:: jobs.Job.delete()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -406,6 +437,7 @@ Get job config
 
 
 .. autofunction:: jobs.Job.config()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -431,6 +463,7 @@ Get a job's builds
 
 
 .. autofunction:: jobs.Job.builds()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -445,6 +478,7 @@ Search for a build
 
 
 .. autofunction:: builds.Builds.search()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -457,6 +491,7 @@ Get the total build history of a job
 
 
 .. autofunction:: builds.Builds.total()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -468,6 +503,7 @@ Iterate all job's builds
 
 
 .. autofunction:: builds.Builds.iter()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -485,6 +521,7 @@ List all job's builds
 
 
 .. autofunction:: builds.Builds.list()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -497,6 +534,7 @@ Get the latest saved build
 
 
 .. autofunction:: builds.Builds.latest()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -508,6 +546,7 @@ Get the oldest saved build
 
 
 .. autofunction:: builds.Builds.oldest()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -519,13 +558,24 @@ Trigger a new build
 
 
 .. autofunction:: builds.Builds.build()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
->>> my_job = jenkins.jobs.search("new_freestyle")
->>> params = {}  # For build parameters
->>> print(my_job.builds.build())
-request=<HTTPRequestObject object at 2421026107968> content='[201] Successfully triggered a new build.' status_code=201
+>>> print(jenkins.jobs.search("new_freestyle").builds.build({"choises": "A", "a_bool": False}, delay=10))
+request=<HTTPRequestObject object at 1874065655344> content='[201] Successfully triggered a new build.' status_code=201
+
+
+Rebuild the last build
+
+
+.. autofunction:: builds.Builds.rebuild_last()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.jobs.search("new_freestyle").builds.rebuild_last)
+request=<HTTPRequestObject object at 2881680762624> content='[200] Successfully triggered a rebuild of the last build.' status_code=200
 
 
 Build
@@ -535,6 +585,7 @@ Get the build number
 
 
 .. autofunction:: builds.Build.number()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -546,6 +597,7 @@ Get the build URL
 
 
 .. autofunction:: builds.Build.url()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -564,21 +616,34 @@ Get the build result
 >>> print(my_job_build_2.result)
 SUCCESS
 
+Get the build timestamp
+
+
+.. autofunction:: builds.Build.timestamp()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.jobs.search("new_freestyle").builds.latest.timestamp)
+1711475427971
+
+
 Get the build description
 
 
 .. autofunction:: builds.Build.description()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
->>> my_job_build_2 = jenkins.jobs.search("new_freestyle").builds.search(2)
->>> print(my_job_build_2.description)
+>>> print(jenkins.jobs.search("new_freestyle").builds.latest.description)
 None
 
 Check if the build is done
 
 
 .. autofunction:: builds.Build.done()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -590,6 +655,7 @@ Get the build duration
 
 
 .. autofunction:: builds.Build.duration()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -601,6 +667,7 @@ Get the build console logs
 
 
 .. autofunction:: builds.Build.console()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -615,6 +682,7 @@ Delete the build
 
 
 .. autofunction:: builds.Build.delete()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -633,6 +701,44 @@ Get the build changes
 >>> print(my_job_build_2.changes)
 <HTML output>
 
+Get the next build
+(Beta - if you delete some builds then ordering will be broken)
+
+
+.. autofunction:: builds.Build.changes()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> my_job_build_2 = jenkins.jobs.search("new_freestyle").builds.search(2)
+>>> print(jenkins.jobs.search("new_freestyle").builds.oldest.next)
+<jenkins_pysdk.builds.Build object at 0x000001FE5F797D30>
+
+Get the previous build
+(Beta - if you delete some builds then ordering will be broken)
+
+
+.. autofunction:: builds.Build.changes()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> my_job_build_2 = jenkins.jobs.search("new_freestyle").builds.search(2)
+>>> print(jenkins.jobs.search("new_freestyle").builds.oldest.next)
+<jenkins_pysdk.builds.Build object at 0x000001FE5F797D30>
+
+
+Rebuild current build
+
+
+.. autofunction:: builds.Build.rebuild()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.jobs.search("new_freestyle").builds.search(9).rebuild)
+request=<HTTPRequestObject object at 1582937378384> content='[200] Successfully triggered a rebuild of this build (9).' status_code=200
+
 
 Credentials
 -----------
@@ -641,6 +747,7 @@ Search for a system domain
 
 
 .. autofunction:: credentials.Credentials.search_domains()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -651,6 +758,7 @@ Iterate all domains
 
 
 .. autofunction:: credentials.Credentials.iter_domains()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -664,6 +772,7 @@ Iterate all domains
 
 
 .. autofunction:: credentials.Credentials.list_domains()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -674,6 +783,7 @@ Create a domain
 
 
 .. autofunction:: credentials.Credentials.create_domain()
+.. code-block:: python
 
 >>> jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
 >>>                   passw="11e8e294cee85ee88b60d99328284d7608")
@@ -690,6 +800,7 @@ Get the domain name
 
 
 .. autofunction:: credentials.Domain.name()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -701,6 +812,7 @@ Get the domain URL
 
 
 .. autofunction:: credentials.Domain.url()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -712,6 +824,7 @@ Search for a credential in the domain
 
 
 .. autofunction:: credentials.Domain.search()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -724,6 +837,7 @@ Iterate credentials in the domain
 
 
 .. autofunction:: credentials.Domain.iter()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -737,6 +851,7 @@ List credentials in the domain
 
 
 .. autofunction:: credentials.Domain.list()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -748,6 +863,7 @@ Create a credential in the domain
 
 
 .. autofunction:: credentials.Domain.create()
+.. code-block:: python
 
 >>> jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
 >>>                   passw="11e8e294cee85ee88b60d99328284d7608")
@@ -772,6 +888,7 @@ Get the credential ID
 
 
 .. autofunction:: credentials.Credential.id()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -783,6 +900,7 @@ Get the credential config
 
 
 .. autofunction:: credentials.Credential.config()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -801,6 +919,7 @@ Reconfigure the credential
 
 
 .. autofunction:: credentials.Credential.reconfig()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -820,6 +939,7 @@ Move a credential to another domain
 
 
 .. autofunction:: credentials.Credential.move()
+.. code-block:: python
 
 >>> jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
 >>>                   passw="11e8e294cee85ee88b60d99328284d7608")
@@ -834,6 +954,7 @@ Search for a user
 
 
 .. autofunction:: users.Users.search()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -844,6 +965,7 @@ Get total users
 
 
 .. autofunction:: users.Users.total()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -867,6 +989,7 @@ List all users
 
 
 .. autofunction:: users.Users.list()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -877,6 +1000,7 @@ List all users
 Create a new user (as admin)
 
 .. autofunction:: users.Users.create()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> from builders import Builder
@@ -894,6 +1018,7 @@ Get the user name
 
 
 .. autofunction:: users.User.name()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -916,6 +1041,7 @@ Get the user description
 
 
 .. autofunction:: users.User.description()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -927,6 +1053,7 @@ Get the user's credentials
 
 
 .. autofunction:: users.User.credentials()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -938,6 +1065,7 @@ Get the user's views
 
 
 .. autofunction:: users.User.views()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -949,6 +1077,7 @@ Get the user's builds
 
 
 .. autofunction:: users.User.builds()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -961,6 +1090,7 @@ Delete the user
 
 
 .. autofunction:: users.User.delete()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -972,6 +1102,7 @@ Terminate a users' sessions
 
 
 .. autofunction:: users.User.logout()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -987,6 +1118,7 @@ Get my username
 
 
 .. autofunction:: users.User.name()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -997,6 +1129,7 @@ Get my user URL
 
 
 .. autofunction:: users.User.url()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -1008,6 +1141,7 @@ Get my user description
 
 
 .. autofunction:: users.User.description()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -1018,6 +1152,7 @@ Get my user credentials
 
 
 .. autofunction:: users.User.credentials()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -1029,6 +1164,7 @@ Get my user views
 
 
 .. autofunction:: users.User.views()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -1040,6 +1176,7 @@ Get my user builds
 
 
 .. autofunction:: users.User.builds()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -1051,6 +1188,7 @@ Terminate my session
 
 
 .. autofunction:: users.User.logout()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -1065,6 +1203,7 @@ Search for a view
 
 
 .. autofunction:: views.Views.search()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -1074,6 +1213,7 @@ Iterate all views
 
 
 .. autofunction:: views.Views.iter()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -1087,6 +1227,7 @@ List all views
 
 
 .. autofunction:: views.Views.list()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -1097,6 +1238,7 @@ Create a view
 
 
 .. autofunction:: views.Views.create()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -1128,6 +1270,7 @@ Get the view name
 
 
 .. autofunction:: views.View.name()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -1138,6 +1281,7 @@ Get the view URL
 
 
 .. autofunction:: views.View.url()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -1150,6 +1294,7 @@ E.g.
 builder_e is higher up in the list of jobs so it goes above builder_folder, which is underneath it in the list :)
 
 .. autofunction:: views.View.reconfig()
+.. code-block:: python
 
 >>> from jenkins_pysdk.jenkins import Jenkins
 >>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
@@ -1179,3 +1324,185 @@ builder_e is higher up in the list of jobs so it goes above builder_folder, whic
 >>>   print(jenkins.views.search("my_view").reconfig(xml))
 request=<HTTPRequestObject object at 2153302882832> content='[200] Successfully reconfigured view (my_view).' status_code=200
 
+
+Plugins
+-----------
+
+Interact with available plugins
+
+
+.. autofunction:: plugins.Plugins.available()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.plugins.available)
+<jenkins_pysdk.plugins.PluginGroup object at 0x000001E53CD5B070>
+
+Interact with update plugins
+
+
+.. autofunction:: plugins.Plugins.updates()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.plugins.updates)
+<jenkins_pysdk.plugins.PluginGroup object at 0x000001A3830FB070>
+
+Upload a plugin
+
+
+.. autofunction:: plugins.Plugins.upload()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>>
+
+
+Interact with UpdateCenter
+
+
+.. autofunction:: plugins.Plugins.sites()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>>
+
+
+Available
+-----------
+
+Search for an available plugin
+(A plugin that is not already installed)
+
+The plugin ID/Name is found in the plugin docs 'ID' field
+In the below link you will see ID: blueocean-rest
+https://plugins.jenkins.io/blueocean-rest/
+
+.. autofunction:: plugins.PluginGroup.search()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.plugins.available.search("blueocean-rest"))
+<jenkins_pysdk.plugins.Plugin object at 0x000001AB664C0370>
+
+Iterate all available plugins
+
+.. autofunction:: plugins.PluginGroup.iter()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> for plugin in jenkins.plugins.available.iter(_paginate=500):
+>>>     print(plugin.name, plugin.version)
+pipeline-rest-api 2.34
+pipeline-stage-view 2.34
+jdk-tool 73.vddf737284550
+command-launcher 107.v773860566e2e
+jsch 0.2.16-86.v42e010d9484b_
+sshd 3.322.v159e91f6a_550
+authentication-tokens 1.53.v1c90fd9191a_b_
+javadoc 243.vb_b_503b_b_45537
+<truncated...>
+
+List all available plugins
+
+.. autofunction:: plugins.PluginGroup.list()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.plugins.available.list(_paginate=1000))
+[<jenkins_pysdk.plugins.Plugin object at 0x000002316EB50520>, <jenkins_pysdk.plugins.Plugin object at 0x000002316EB50130>, <jenkins_pysdk.plugins.Plugin object at 0x000002316EB50160>, <truncated...>]
+
+
+Updates
+-----------
+
+Search for a plugin needing an update
+
+The plugin ID/Name is found in the plugin docs 'ID' field
+In the below link you will see ID: ssh-credentials
+https://plugins.jenkins.io/ssh-credentials/
+
+.. autofunction:: plugins.PluginGroup.search()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.plugins.updates.search("ssh-credentials").name)
+ssh-credentials
+
+Iterate all plugins needing an updates
+
+.. autofunction:: plugins.PluginGroup.iter()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> for plugin in jenkins.plugins.updates.iter(_paginate=500):
+>>>     print(plugin.name, plugin.version, plugin.url)
+checks-api 2.2.0 https://updates.jenkins.io/download/plugins/checks-api/2.2.0/checks-api.hpi
+github-branch-source 1787.v8b_8cd49a_f8f1 https://updates.jenkins.io/download/plugins/github-branch-source/1787.v8b_8cd49a_f8f1/github-branch-source.hpi
+gradle 2.11 https://updates.jenkins.io/download/plugins/gradle/2.11/gradle.hpi
+ionicons-api 70.v2959a_b_74e3cf https://updates.jenkins.io/download/plugins/ionicons-api/70.v2959a_b_74e3cf/ionicons-api.hpi
+jackson2-api 2.17.0-379.v02de8ec9f64c https://updates.jenkins.io/download/plugins/jackson2-api/2.17.0-379.v02de8ec9f64c/jackson2-api.hpi
+<truncated...>
+
+List all plugins needing an updates
+
+.. autofunction:: plugins.PluginGroup.list()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.plugins.updates.list(_paginate=500))
+[<jenkins_pysdk.plugins.Plugin object at 0x000001CF357C4B20>, <truncated...>]
+
+
+Installed
+-----------
+
+Search for an installed plugin
+
+The plugin ID/Name is found in the plugin docs 'ID' field
+In the below link you will see ID: ssh-credentials
+https://plugins.jenkins.io/ssh-credentials/
+
+.. autofunction:: plugins.PluginGroup.search()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.plugins.installed.search("ant").version)
+497.v94e7d9fffa_b_9
+
+Iterate all installed plugins
+
+.. autofunction:: plugins.PluginGroup.iter()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> for plugin in jenkins.plugins.installed.iter(_paginate=500):
+>>>     print(plugin.name, plugin.active)
+ant True
+antisamy-markup-formatter True
+apache-httpcomponents-client-4-api True
+bootstrap5-api True
+bouncycastle-api True
+<truncated...>
+
+List all installed plugins
+
+.. autofunction:: plugins.PluginGroup.list()
+.. code-block:: python
+
+>>> from jenkins_pysdk.jenkins import Jenkins
+>>> jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+>>> print(jenkins.plugins.updates.list(_paginate=500))
+[<jenkins_pysdk.plugins.Installed object at 0x0000021DBB290A30>, <truncated...>]

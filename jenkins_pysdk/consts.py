@@ -40,6 +40,9 @@ class Endpoints:
         Delete = "doDelete"
         Changes = "changes"
         Build = "build"
+        buildWithParameters = "buildWithParameters"
+        RebuildLast = "lastCompletedBuild/rebuild"
+        RebuildCurrent = "rebuild"
 
     class Views:
         View = "view"
@@ -80,7 +83,10 @@ class Endpoints:
         Boot = "user/{user}/descriptorByName/jenkins.security.seed.UserSeedProperty/renewSessionSeed"
 
     class Plugins:
-        pass
+        PluginManager = "pluginManager"
+        UpdateCenter = "updateCenter"
+        UpdateCenterIter = "sites[{p_type}[*]{paginate}]"
+        PluginManagerIter = "{p_type}[*]{paginate}"
 
 
 class Class:

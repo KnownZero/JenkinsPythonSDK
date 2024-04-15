@@ -12,7 +12,7 @@ setup(
         'urllib3',
     ],
     author='KnownZero',
-    author_email="gihjeeds@protonmail.com",
+    author_email="gihjeefs@protonmail.com",
     description='2024 Python SDK for Jenkins',
     url='https://github.com/KnownZero/JenkinsPythonSDK',
 )

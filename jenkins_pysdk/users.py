@@ -149,7 +149,7 @@ class User:
         Terminate all the users' sessions.
 
         :return: Result of the logout request
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         url = self._jenkins._build_url(Endpoints.User.Boot.format(user=self.name))
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)

@@ -55,7 +55,7 @@ class View:
         :param xml: The XML configuration of the view, defaults to None.
         :type xml: str, optional
         :return: Jenkins action object indicating the reconfiguration status.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.Jobs.Xml, prefix=self._view_url)
@@ -76,7 +76,7 @@ class View:
         Delete the view.
 
         :return: Jenkins action object indicating the delete status.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         url = self._jenkins._build_url("/", prefix=self._view_url)
         req_obj, resp_obj = self._jenkins._send_http(method="DELETE", url=url)
@@ -191,7 +191,7 @@ class Views:
         :param xml: The XML configuration or Builder.View object for the new view.
         :type xml: str or Builder.View
         :return: JenkinsActionObject indicating the result of the creation.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         try:

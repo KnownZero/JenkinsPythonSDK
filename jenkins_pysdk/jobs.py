@@ -36,7 +36,7 @@ class Job:
         Disable the job.
 
         :return: Result of the request to disable the job.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.Jobs.Disable, prefix=self._job_url)
@@ -56,7 +56,7 @@ class Job:
         Get the URL of the job.
 
         :return: The URL of the job.
-        :rtype: HttpUrl
+        :rtype: :class:`HttpUrl`
         """
         return HttpUrl(self._job_url)
 
@@ -76,7 +76,7 @@ class Job:
         Enable the job.
 
         :return: The outcome of enabling the job.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.Jobs.Enable, prefix=self._job_url)
@@ -99,7 +99,7 @@ class Job:
         :param builder: The builder to use for generating XML configuration, defaults to None.
         :type builder: Builder, optional
         :return: The outcome of reconfiguring the job.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         if not xml and not builder:
@@ -122,7 +122,7 @@ class Job:
         Delete the folder.
 
         :return: Result of the delete operation.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         url = self._jenkins._build_url("/", prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(method="DELETE", url=url)
@@ -256,7 +256,7 @@ class Jobs:
         :param args: Additional parameters for job creation.
         :type args: :class:`objects.Jobs` (Default: Freestyle)
         :return: Object representing the result of the creation action.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         try:
@@ -301,6 +301,8 @@ class Jobs:
                 req_obj, resp_obj = self._jenkins._send_http(url=url, params=params)
                 if resp_obj.status_code > 200 and start > 0:
                     break  # Pagination finished, Jenkins doesn't return a nice response
+                elif resp_obj.status_code != 200:
+                    raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get job information.")
 
                 data = orjson.loads(resp_obj.content)
                 data = self._jenkins._validate_url_returned_from_instance(data)
@@ -316,7 +318,7 @@ class Jobs:
                     break
 
                 if _paginate > 0:
-                    start += _paginate
+                    start += _paginate + 1
                 elif _paginate == 0:
                     break
 
@@ -393,7 +395,7 @@ class Folder:
         :param xml: The XML configuration or Builder.Folder object.
         :type xml: str or Builder.Folder
         :return: Action outcome
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.Jobs.Xml, prefix=self._folder_url)
@@ -437,7 +439,7 @@ class Folder:
         :param copy_job_name: The name of the job to copy.
         :type copy_job_name: str
         :return: Result of the copy operation.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         import re
@@ -463,7 +465,7 @@ class Folder:
         Delete the folder.
 
         :return: Result of the delete operation.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url("/", prefix=self._folder_url)
@@ -486,7 +488,7 @@ class Folder:
         :param xml: The XML configuration for the folder. Can be a string or a Builder.Folder object.
         :type xml: str or Builder.Folder
         :return: The result of the action.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         try:
@@ -599,7 +601,7 @@ class Folders:
         :param xml: The XML configuration for the folder.
         :type xml: str or Builder.Folder
         :return: The result of the folder creation operation.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsFolderNotFound: If the folder was not found.
         """
         folder_name, folder_parent = self._jenkins._get_folder_parent(folder_path)
@@ -648,6 +650,8 @@ class Folders:
                 req_obj, resp_obj = self._jenkins._send_http(url=json_url, params=params)
                 if resp_obj.status_code > 200 and start > 0:
                     break  # Pagination finished, Jenkins doesn't return a nice response
+                elif resp_obj.status_code != 200:
+                    raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get folder information.")
 
                 data = orjson.loads(resp_obj.content)
                 data = self._jenkins._validate_url_returned_from_instance(data)
@@ -661,7 +665,7 @@ class Folders:
                     break
 
                 if _paginate > 0:
-                    start += _paginate
+                    start += _paginate + 1
                 elif _paginate == 0:
                     break
 
@@ -671,15 +675,12 @@ class Folders:
         data = orjson.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
 
-        try:
-            if data['_class'] == Class.Folder:
-                folders = data.get('jobs', [])
-                for item in folders:
-                    yield from self._fetch_folder_iter(item['url'])
-                if not folders:
-                    yield from self._fetch_folder(data['url'])
-        except Exception as error:
-            print(error)
+        if data['_class'] == Class.Folder:
+            folders = data.get('jobs', [])
+            for item in folders:
+                yield from self._fetch_folder_iter(item['url'])
+            if not folders:
+                yield from self._fetch_folder(data['url'])
 
     def _fetch_folder(self, folder_url) -> Generator[Folder]:
         json_url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=folder_url)
