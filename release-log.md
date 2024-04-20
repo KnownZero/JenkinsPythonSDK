@@ -1,10 +1,11 @@
 # Release log
 
 
-## Release (Major/Fixes) 1.2 - <DATEHERE>
+## Release (Major/Fixes) 1.2 - 20/04/2024
 ### Fixes:
 - General cleanup
 - Fixed Build.oldest()
+- Some actions were called as properties
 
 ### New:
 - Improved documentation
@@ -13,7 +14,7 @@
 - Added build parameters & delay to Build
 - Added Build.next(), Build.previous() functionality
 - Added Rebuild options in Build/Builds
-- Added Plugins functionality (Beta - won't work properly if multiple UpdateCenter sites configured)
+- Added Plugins functionality (Beta)
 - Added Nodes module
 - Added UpdateCenter class with Site interation
 

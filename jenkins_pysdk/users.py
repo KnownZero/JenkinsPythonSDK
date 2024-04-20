@@ -120,7 +120,6 @@ class User:
             raise JenkinsGeneralException(f"[{code}] Failed to get users' builds.")
         return resp_obj.content
 
-    @property
     def delete(self) -> JenkinsActionObject:
         """
         Delete the user.
@@ -143,7 +142,6 @@ class User:
         obj._raw = resp_obj._raw
         return obj
 
-    @property
     def logout(self) -> JenkinsActionObject:
         """
         Terminate all the users' sessions.

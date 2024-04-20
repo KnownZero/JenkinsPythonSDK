@@ -97,6 +97,7 @@ class Core:  # TODO: Revise these messy methods
                    headers: dict = HTTP_HEADER_DEFAULT,
                    params: dict = None,
                    data: dict = None,
+                   files: dict = None,
                    username: str = None,
                    passw_or_token: str = None,
                    timeout: int = None,
@@ -110,15 +111,19 @@ class Core:  # TODO: Revise these messy methods
         :param headers: request headers
         :param params: request parameters
         :param data: request data
+        :param files: upload files
         :param username: user where authentication is needed
         :param passw_or_token: password or API token for authentication
         :param timeout: request timeout
         :return:
         """
+        if not isinstance(headers, dict):
+            headers = dict()
         headers.update({"User-Agent": f"{python_name}/{version}"})
         # TODO: Unit Test
         if self.token:
-            request_obj = HTTPRequestObject(method=method, url=url, headers=headers, params=params, data=data,
+            request_obj = HTTPRequestObject(method=method, url=url, headers=headers, params=params,
+                                            data=data, files=files,
                                             username=username if username else self.username,
                                             passw_or_token=self.token if self.token else self.passw,
                                             verify=self.verify,
@@ -143,7 +148,8 @@ class Core:  # TODO: Revise these messy methods
                 raise JenkinsConnectionException(crumbed_session._raw)
             crumbed_data = orjson.loads(crumbed_session.content)
             headers.update({crumbed_data['crumbRequestField']: crumbed_data['crumb']})
-            request_obj = HTTPSessionRequestObject(method=method, url=url, headers=headers, params=params, data=data,
+            request_obj = HTTPSessionRequestObject(method=method, url=url, headers=headers, params=params,
+                                                   data=data, files=files,
                                                    username=username if username else self.username,
                                                    passw_or_token=passw_or_token if passw_or_token else self.passw,
                                                    verify=self.verify,

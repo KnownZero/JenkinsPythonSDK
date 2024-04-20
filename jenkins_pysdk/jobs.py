@@ -30,7 +30,6 @@ class Job:
         self._job_url = job_url
         self._jenkins = jenkins
 
-    @property
     def disable(self) -> JenkinsActionObject:
         """
         Disable the job.
@@ -70,7 +69,6 @@ class Job:
         """
         return self._job_path
 
-    @property
     def enable(self) -> JenkinsActionObject:
         """
         Enable the job.
@@ -90,23 +88,19 @@ class Job:
         obj._raw = resp_obj._raw
         return obj
 
-    def reconfig(self, xml: str = None, builder: Builder = None) -> JenkinsActionObject:
+    def reconfig(self, xml: str or Builder = None) -> JenkinsActionObject:
         """
         Reconfigure the job.
 
         :param xml: The XML configuration to use for reconfiguration.
         :type xml: str, optional
-        :param builder: The builder to use for generating XML configuration, defaults to None.
-        :type builder: Builder, optional
         :return: The outcome of reconfiguring the job.
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        if not xml and not builder:
-            raise JenkinsGeneralException("Missing job configuration.")
         url = self._jenkins._build_url(Endpoints.Jobs.Xml, prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER,
-                                                     data=xml)
+                                                     data=str(xml))
         msg = f"[{resp_obj.status_code}] Successfully reconfigured {self._job_path}."
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
@@ -116,7 +110,6 @@ class Job:
         obj._raw = resp_obj._raw
         return obj
 
-    @property
     def delete(self) -> JenkinsActionObject:
         """
         Delete the folder.
@@ -459,7 +452,6 @@ class Folder:
         obj._raw = resp_obj._raw
         return obj
 
-    @property
     def delete(self) -> JenkinsActionObject:
         """
         Delete the folder.

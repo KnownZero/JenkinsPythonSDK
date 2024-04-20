@@ -84,6 +84,27 @@ class Builder:
             'email': email
         }
 
+    @classmethod
+    def Node(cls,
+             description: str,
+             remote_fs: str,
+             executors: int = 1,
+             label: str = "",
+             mode: str = "NORMAL"):
+        node = {
+            'nodeDescription': description,
+            'numExecutors': executors,
+            'remoteFS': remote_fs,
+            'labelString': label,
+            'mode': mode,
+            'retentionStrategy': {
+                'stapler-class': 'hudson.slaves.RetentionStrategy$Always'
+            },
+            'nodeProperties': {'stapler-class-bag': 'true'},
+            'launcher': {'stapler-class': 'hudson.slaves.JNLPLauncher'}
+        }
+        return node
+
     class _Templates:
         Folder = \
         """<com.cloudbees.hudson.plugins.folder.Folder>

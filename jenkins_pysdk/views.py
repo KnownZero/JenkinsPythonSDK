@@ -9,7 +9,7 @@ from jenkins_pysdk.exceptions import JenkinsNotFound, JenkinsGeneralException
 from jenkins_pysdk.consts import Endpoints, XML_HEADER_DEFAULT, XML_POST_HEADER
 from jenkins_pysdk.builders import Builder
 
-__all__ = ["Views"]
+__all__ = ["Views", "View"]
 
 
 class View:
@@ -70,7 +70,6 @@ class View:
         obj._raw = resp_obj._raw
         return obj
 
-    @property
     def delete(self) -> JenkinsActionObject:
         """
         Delete the view.
@@ -78,10 +77,10 @@ class View:
         :return: Jenkins action object indicating the delete status.
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
-        url = self._jenkins._build_url("/", prefix=self._view_url)
-        req_obj, resp_obj = self._jenkins._send_http(method="DELETE", url=url)
+        url = self._jenkins._build_url(Endpoints.Views.Delete, prefix=self._view_url)
+        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
         msg = f"[{resp_obj.status_code}] Successfully deleted view ({self._view_name})."
-        if resp_obj.status_code != 204:
+        if resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to delete view ({self._view_name})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw

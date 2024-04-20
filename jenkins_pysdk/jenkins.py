@@ -20,6 +20,7 @@ from jenkins_pysdk.views import Views
 from jenkins_pysdk.users import Users, User
 from jenkins_pysdk.credentials import Credentials
 from jenkins_pysdk.plugins import Plugins
+from jenkins_pysdk.nodes import Nodes
 
 import orjson
 
@@ -74,6 +75,7 @@ class Jenkins(Core):
         self._credentials = Credentials(self)
         self._users = Users(self)
         self._plugins = Plugins(self)
+        self._nodes = Nodes(self)
 
         self._logging_level = 0
 
@@ -264,6 +266,11 @@ class Jenkins(Core):
         return self._plugins
 
     @property
+    def nodes(self) -> Nodes:
+        # TODO: Document
+        return self._nodes
+
+    @property
     def version(self) -> str:
         """
         Get the version information of the Jenkins instance.
@@ -430,6 +437,7 @@ class Jenkins(Core):
         :rtype: int
         :raises JenkinsGeneralException: If a general exception occurs.
         """
+        # TODO: Fix endpoitn remove api json
         _fields = ['_class', 'totalQueueLength']
         url = self._build_url(Endpoints.Instance.OverallLoad)
         req_obj, resp_obj = self._send_http(url=url)
@@ -449,6 +457,7 @@ class Jenkins(Core):
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         # TODO: Unit Test
+        # TODO: Add restart message
         url = self._build_url(Endpoints.Maintenance.Restart)
         if graceful:
             url = self._build_url(Endpoints.Maintenance.SafeRestart)
@@ -590,7 +599,6 @@ class Jenkins(Core):
         obj._raw = resp_obj._raw
         return obj
 
-    @property
     def reload(self) -> JenkinsActionObject:
         """
         Reload configuration from disk.
@@ -606,10 +614,3 @@ class Jenkins(Core):
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
         return obj
-
-
-if __name__ == "__main__":
-    jenkins = Jenkins(host="https://d0c8-90-194-113-56.ngrok-free.app", username="admin",
-                      token="11e8e294cee85ee88b60d99328284d7608", verify=False)
-
-    print(jenkins.jobs.search("new_freestyle").builds.rebuild_last)

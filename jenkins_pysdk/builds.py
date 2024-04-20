@@ -82,7 +82,6 @@ class Build:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch build logs.")
         return resp_obj.content
 
-    @property
     def delete(self) -> JenkinsActionObject:
         """
         Delete the build.
@@ -115,7 +114,6 @@ class Build:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch build changes.")
         return resp_obj.content
 
-    @property
     def rebuild(self) -> JenkinsActionObject:
         """
         Rebuild the build.
@@ -361,7 +359,6 @@ class Builds:
             return obj
         raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to trigger a new build.")
 
-    @property
     def rebuild_last(self) -> JenkinsActionObject:
         """
         Trigger a rebuild of the last build of the job.

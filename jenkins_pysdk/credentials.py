@@ -56,7 +56,6 @@ class Credential:
             raise JenkinsGeneralException(f"[{code}] Failed to download credential XML.")
         return resp_obj.content
 
-    @property
     def delete(self) -> JenkinsActionObject:
         """
         Delete the credential.
