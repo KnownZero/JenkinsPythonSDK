@@ -120,7 +120,6 @@ class User:
             raise JenkinsGeneralException(f"[{code}] Failed to get users' builds.")
         return resp_obj.content
 
-    @property
     def delete(self) -> JenkinsActionObject:
         """
         Delete the user.
@@ -143,13 +142,12 @@ class User:
         obj._raw = resp_obj._raw
         return obj
 
-    @property
     def logout(self) -> JenkinsActionObject:
         """
         Terminate all the users' sessions.
 
         :return: Result of the logout request
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         url = self._jenkins._build_url(Endpoints.User.Boot.format(user=self.name))
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)

@@ -45,12 +45,13 @@ def interact_http(request: HTTPRequestObject) -> HTTPResponseObject:
     req = Request(
         method=request.method,
         url=str(request.url),
-        headers=request.headers if request.headers else None,
-        data=request.data if request.data else None,
-        params=request.params if request.params else None
+        headers=request.headers,
+        data=request.data,
+        params=request.params,
+        files=request.files
     )
     # logger.debugu(req.url)
-    exception = None
+    exception: Exception = Exception()
     for retry in range(HTTP_RETRY_COUNT):
         try:
             # TODO: SSL/certs
@@ -89,6 +90,7 @@ def interact_http_session(request: HTTPSessionRequestObject) -> HTTPSessionRespo
         headers=request.headers,
         data=request.data,
         params=request.params,
+        files=request.files
     )
     # logger.debugu(req.url)
     exception: Exception = Exception()

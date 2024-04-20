@@ -7,8 +7,8 @@ sys.path.insert(0, project_root)
 import re
 import time
 
-from typing import Optional
 import threading
+from typing import Optional
 
 from jenkins_pysdk.core import Core
 from jenkins_pysdk.consts import Endpoints, FORM_HEADER_DEFAULT, Class
@@ -20,6 +20,7 @@ from jenkins_pysdk.views import Views
 from jenkins_pysdk.users import Users, User
 from jenkins_pysdk.credentials import Credentials
 from jenkins_pysdk.plugins import Plugins
+from jenkins_pysdk.nodes import Nodes
 
 import orjson
 
@@ -74,6 +75,7 @@ class Jenkins(Core):
         self._credentials = Credentials(self)
         self._users = Users(self)
         self._plugins = Plugins(self)
+        self._nodes = Nodes(self)
 
         self._logging_level = 0
 
@@ -86,7 +88,7 @@ class Jenkins(Core):
         Retrieve information about jobs.
 
         :return: A Jobs object representing the jobs on the system.
-        :rtype: :class:`jobs.Jobs`
+        :rtype: :class:`jenkins_pysdk.jobs.Jobs`
         """
         return self._jobs
 
@@ -96,7 +98,7 @@ class Jenkins(Core):
         Retrieve information about folders.
 
         :return: A Folders object representing the folders on the system.
-        :rtype: :class:`jobs.Folders`
+        :rtype: :class:`jenkins_pysdk.jobs.Folders`
         """
         return self._folders
 
@@ -106,7 +108,7 @@ class Jenkins(Core):
         Retrieve information about views.
 
         :return: A Views object representing the views on the system.
-        :rtype: :class:`views.Views`
+        :rtype: :class:`jenkins_pysdk.views.Views`
         """
         return self._views
 
@@ -116,7 +118,7 @@ class Jenkins(Core):
         Retrieve information about credentials.
 
         :return: A Credentials object representing the credentials on the system.
-        :rtype: :class:`credentials.Credentials`
+        :rtype: :class:`jenkins_pysdk.credentials.Credentials`
         """
         return self._credentials
 
@@ -132,30 +134,30 @@ class Jenkins(Core):
     @property
     def ListView(self) -> r_views:
         """
-        Flag used to create a ListView View in Views.create method.
+        Flag used to create a ListView View in Views.create() method.
 
         :return: Flag for creating a ListView View
-        :rtype: :class:`objects.Flags.Views`
+        :rtype: :class:`jenkins_pysdk.objects.Flags.Views`
         """
         return r_views(value=Class.ListView)
 
     @property
     def MyView(self) -> r_views:
         """
-        Flag used to create a MyView View in Views.create method.
+        Flag used to create a MyView View in Views.create() method.
 
         :return: Flag for creating a MyView View
-        :rtype: :class:`objects.Flags.Views`
+        :rtype: :class:`jenkins_pysdk.objects.Flags.Views`
         """
         return r_views(value=Class.MyView)
 
     @property
     def FreeStyle(self) -> r_jobs:
         """
-        Flag used to create FreeStyle jobs in Jobs.create method.
+        Flag used to create FreeStyle jobs in Jobs.create() method.
 
         :return: Flag for creating FreeStyle jobs
-        :rtype: :class:`objects.Flags.Jobs`
+        :rtype: :class:`jenkins_pysdk.objects.Flags.Jobs`
         """
         return r_jobs(value=Class.Freestyle)
 
@@ -183,7 +185,7 @@ class Jenkins(Core):
         Test the connection to the Jenkins instance.
 
         :return: Object containing connection information.
-        :rtype: :class:`objects.JenkinsConnectObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsConnectObject`
         :raises JenkinsConnectionException: If a connection exception if it fails to connect.
         :raises JenkinsUnauthorisedException: If the credentials aren't valid.
         """
@@ -238,7 +240,7 @@ class Jenkins(Core):
         Retrieve information about users.
 
         :return: A Users object representing the users on the system.
-        :rtype: :class:`users.Users`
+        :rtype: :class:`jenkins_pysdk.users.Users`
         """
         return self._users
 
@@ -248,7 +250,7 @@ class Jenkins(Core):
         Retrieve information about the authenticated user.
 
         :return: Information about the authenticated user
-        :rtype: :class:`users.User`
+        :rtype: :class:`jenkins_pysdk.users.User`
         """
         url = self._build_url(Endpoints.User.Me)
         return User(self, url)
@@ -259,9 +261,14 @@ class Jenkins(Core):
         Retrieve information about plugins.
 
         :return: A Plugins object representing the plugins on the system.
-        :rtype: :class:`plugins.Plugins`
+        :rtype: :class:`jenkins_pysdk.plugins.Plugins`
         """
         return self._plugins
+
+    @property
+    def nodes(self) -> Nodes:
+        # TODO: Document
+        return self._nodes
 
     @property
     def version(self) -> str:
@@ -430,6 +437,7 @@ class Jenkins(Core):
         :rtype: int
         :raises JenkinsGeneralException: If a general exception occurs.
         """
+        # TODO: Fix endpoitn remove api json
         _fields = ['_class', 'totalQueueLength']
         url = self._build_url(Endpoints.Instance.OverallLoad)
         req_obj, resp_obj = self._send_http(url=url)
@@ -446,9 +454,10 @@ class Jenkins(Core):
         :param graceful: (optional) If True, restart after all jobs have finished, defaults to False
         :type graceful: bool
         :return: Restart status
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         # TODO: Unit Test
+        # TODO: Add restart message
         url = self._build_url(Endpoints.Maintenance.Restart)
         if graceful:
             url = self._build_url(Endpoints.Maintenance.SafeRestart)
@@ -476,7 +485,7 @@ class Jenkins(Core):
         Enable Quiet Mode on the Jenkins instance.
 
         :return: Result of the request to enable Quiet Mode
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         url = self._build_url(Endpoints.Maintenance.QuietDown)
         req_obj, resp_obj = self._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT)
@@ -496,7 +505,7 @@ class Jenkins(Core):
         :param wait_time: (optional) Time to wait before disabling Quiet Mode, in seconds (default is 0)
         :type wait_time: int
         :return: Result of the request to disable Quiet Mode
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         time.sleep(wait_time)
         url = self._build_url(Endpoints.Maintenance.NoQuietDown)
@@ -520,11 +529,15 @@ class Jenkins(Core):
         :param disable: (optional) If True, disable Quiet Mode, defaults to False
         :type disable: bool
         :return: Result of the request to enable or disable Quiet Mode
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         # TODO: Fix 403 error
         # TODO: Unit Test
         # TODO: Add banner message param
+        if duration and disable:
+            raise JenkinsGeneralException("You can't enable and disable at the same time.")
+
         if disable:
             return self._disable_quiet_mode()
 
@@ -550,7 +563,7 @@ class Jenkins(Core):
         :param graceful: (Default: False) If True, pause new jobs and wait for all jobs to complete.
         :type graceful: bool
         :return: Result of the shutdown request
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         url = self._build_url(Endpoints.Maintenance.Shutdown)
         if graceful:
@@ -572,7 +585,7 @@ class Jenkins(Core):
         :param boot: (Default: False) If True, terminate all the users' sessions. (Caution if it's a service account!)
         :type boot: bool
         :return: Result of the logout request
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         url = self._build_url(Endpoints.User.Logout)
         if boot:
@@ -586,13 +599,12 @@ class Jenkins(Core):
         obj._raw = resp_obj._raw
         return obj
 
-    @property
     def reload(self) -> JenkinsActionObject:
         """
         Reload configuration from disk.
 
         :return: Result of request
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         url = self._build_url(Endpoints.Manage.Reload)
         req_obj, resp_obj = self._send_http(method="POST", url=url)

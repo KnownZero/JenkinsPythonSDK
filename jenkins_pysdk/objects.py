@@ -28,6 +28,7 @@ class HTTPRequestObject(JenkinsSafe):
     headers: Optional[dict] = None
     params: Optional[dict] = None
     data: Optional[Any] = None
+    files: Optional[Any] = None
     username: str
     passw_or_token: str  # TODO: MASK
     verify: bool
