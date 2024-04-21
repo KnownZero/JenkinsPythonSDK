@@ -16,7 +16,6 @@ class Endpoints:
     class Instance:
         Crumb = "crumbIssuer/api/json"
         Connect = "login"
-        # Jobs = "api/json?tree="  # TODO: Change ?tree= maybe?
         Standard = "api/json"
         About = "about"  # For plugins list etc
         OverallLoad = "overallLoad/api/json"
@@ -32,6 +31,11 @@ class Endpoints:
         Xml = "config.xml"
         Iter = "jobs[fullName,url,jobs[fullName,url,jobs]]"
 
+    class Workspace:
+        Download = "ws/*zip*/{name}.zip"
+        DownloadFile = "ws/{path}"
+        Wipe = "doWipeOutWorkspace"
+
     class Builds:
         BuildNumber = "buildNumber"
         BuildConsoleText = "consoleText"
@@ -43,6 +47,10 @@ class Endpoints:
         buildWithParameters = "buildWithParameters"
         RebuildLast = "lastCompletedBuild/rebuild"
         RebuildCurrent = "rebuild"
+
+    class Queue:
+        Queue = "queue"
+        QueueIter = "items[*,task[url,fullName,nextBuildNumber]]{paginate}"
 
     class Views:
         View = "view"

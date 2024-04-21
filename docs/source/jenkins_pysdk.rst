@@ -28,6 +28,22 @@ jenkins\_pysdk.builds module
    :undoc-members:
    :show-inheritance:
 
+jenkins\_pysdk.workspace module
+----------------------------
+
+.. automodule:: jenkins_pysdk.workspace
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+jenkins\_pysdk.queues module
+----------------------------
+
+.. automodule:: jenkins_pysdk.queues
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 jenkins\_pysdk.views module
 ---------------------------
 
@@ -56,6 +72,14 @@ jenkins\_pysdk.plugins module
 -----------------------------
 
 .. automodule:: jenkins_pysdk.plugins
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+jenkins\_pysdk.nodes module
+----------------------------
+
+.. automodule:: jenkins_pysdk.nodes
    :members:
    :undoc-members:
    :show-inheritance:

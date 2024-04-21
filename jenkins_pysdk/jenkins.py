@@ -21,6 +21,7 @@ from jenkins_pysdk.users import Users, User
 from jenkins_pysdk.credentials import Credentials
 from jenkins_pysdk.plugins import Plugins
 from jenkins_pysdk.nodes import Nodes
+from jenkins_pysdk.queues import Queue
 
 import orjson
 
@@ -76,6 +77,7 @@ class Jenkins(Core):
         self._users = Users(self)
         self._plugins = Plugins(self)
         self._nodes = Nodes(self)
+        self._queue = Queue(self)
 
         self._logging_level = 0
 
@@ -267,8 +269,23 @@ class Jenkins(Core):
 
     @property
     def nodes(self) -> Nodes:
-        # TODO: Document
+        """
+        Retrieve information about nodes.
+
+        :return: A Nodes object representing the nodes on the system.
+        :rtype: :class:`jenkins_pysdk.nodes.Nodes`
+        """
         return self._nodes
+
+    @property
+    def queue(self) -> Queue:
+        """
+        Retrieve information about the queue.
+
+        :return: A Queue object representing the queue on the system.
+        :rtype: :class:`jenkins_pysdk.queues.Queue`
+        """
+        return self._queue
 
     @property
     def version(self) -> str:

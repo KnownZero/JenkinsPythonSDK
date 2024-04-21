@@ -18,7 +18,7 @@ class View:
         Interact with Views on the Jenkins instance.
 
         :param jenkins: Connection to Jenkins instance.
-        :type jenkins: Jenkins
+        :type jenkins: jenkins_pysdk.jenkins.Jenkins
         :param name: The name of the view.
         :type name: str
         :param url: The URL of the view.
@@ -53,7 +53,7 @@ class View:
         Reconfigure the view with XML configuration or a builder.
 
         :param xml: The XML configuration of the view, defaults to None.
-        :type xml: str, optional
+        :type xml: str or :class:`jenkins_pysdk.builders.Builder`, optional
         :return: Jenkins action object indicating the reconfiguration status.
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
@@ -109,6 +109,7 @@ class Views:
         Interact with Views on the Jenkins instance.
 
         :param jenkins: Connection to the Jenkins instance.
+        :type jenkins: jenkins_pysdk.jenkins.Jenkins
         """
         self._jenkins = jenkins
 
@@ -119,7 +120,7 @@ class Views:
         :param view_path: The path of the view to search for.
         :type view_path: str
         :return: The View object representing the found view.
-        :rtype: View
+        :rtype: :class:`jenkins_pysdk.views.View`
         :raises JenkinsNotFound: If the view was not found.
         """
         # TODO: Get view_name from API as results won't be consistent with User Views
@@ -137,6 +138,7 @@ class Views:
         :return: True if the path corresponds to a view, False otherwise.
         :rtype: bool
         :raises JenkinsNotFound: If the view was not found.
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         built = self._jenkins._build_view_http_path(path)
         url = self._jenkins._build_url(built)
@@ -211,7 +213,7 @@ class Views:
         :param _paginate: Pagination option. Default is 0 (no pagination).
         :type _paginate: int, optional
         :return: A generator yielding View objects.
-        :rtype: Generator[:class:`View`]
+        :rtype: Generator[:class:`jenkins_pysdk.views.View`]
         """
         if folder:
             path = self._jenkins._build_job_http_path(folder)
@@ -278,7 +280,7 @@ class Views:
         :param _paginate: Pagination option. Default is 0 (no pagination).
         :type _paginate: int, optional
         :return: A list of View objects.
-        :rtype: List[:class:`View`]
+        :rtype: List[:class:`jenkins_pysdk.views.View`]
         """
         return [item for item in self.iter(folder=folder, _paginate=_paginate)]
 

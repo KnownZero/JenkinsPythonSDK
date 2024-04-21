@@ -18,7 +18,7 @@ class Node:
     Represents a node in Jenkins.
 
     :param jenkins: The Jenkins instance this node belongs to.
-    :type jenkins: Jenkins
+    :type jenkins: jenkins_pysdk.jenkins.Jenkins
     :param name: The name of the node.
     :type name: str
     :param node_url: The URL of the node.
@@ -233,7 +233,7 @@ class Nodes:
         Iterate over the nodes.
 
         :return: A generator yielding Node objects.
-        :rtype: Generator[Node]
+        :rtype: Generator[:class:`jenkins_pysdk.nodes.Node`]
         :raises JenkinsGeneralException: If a general exception occurs.
 
         """
@@ -256,7 +256,7 @@ class Nodes:
         Get a list of all nodes.
 
         :return: A list of Node objects.
-        :rtype: List[Node]
+        :rtype: List[:class:`jenkins_pysdk.nodes.Node`]
         """
         return [node for node in self.iter()]
 

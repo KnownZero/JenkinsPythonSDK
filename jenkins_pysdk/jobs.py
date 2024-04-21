@@ -5,10 +5,11 @@ import orjson
 from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsValidateJob, JenkinsActionObject, Jobs as r_jobs
-from jenkins_pysdk.exceptions import JenkinsJobNotFound, JenkinsFolderNotFound, JenkinsGeneralException
+from jenkins_pysdk.exceptions import JenkinsNotFound, JenkinsGeneralException
 from jenkins_pysdk.consts import Endpoints, Class, XML_HEADER_DEFAULT, XML_POST_HEADER
 from jenkins_pysdk.builders import Builder
 from jenkins_pysdk.builds import Builds
+from jenkins_pysdk.workspace import Workspace
 
 __all__ = ["Jobs", "Folders", "Job", "Folder"]
 
@@ -18,7 +19,7 @@ class Job:
     Represents a job in Jenkins.
 
     :param jenkins: The Jenkins instance associated with the job.
-    :type jenkins: Jenkins
+    :type jenkins: jenkins_pysdk.jenkins.Jenkins
     :param job_path: The path of the job.
     :type job_path: str
     :param job_url: The URL of the job.
@@ -148,9 +149,14 @@ class Job:
         Access the builds associated with this job.
 
         :return: Builds associated with this job.
-        :rtype: :class:`builds.Builds`
+        :rtype: :class:`jenkins_pysdk.builds.Builds`
         """
         return Builds(self._jenkins, self._job_url)
+
+    @property
+    def workspace(self) -> Workspace:
+        name = self.path.split("/")[-1]
+        return Workspace(self._jenkins, name, self._job_url)
 
 
 class Jobs:
@@ -170,12 +176,12 @@ class Jobs:
         :param job_path: The path of the job to search for.
         :type job_path: str
         :return: The job object.
-        :rtype: :class:`Job`
-        :raises: JenkinsJobNotFound: If the job wasn't found.
+        :rtype: :class:`jenkins_pysdk.jobs.Job`
+        :raises: JenkinsNotFound: If the job wasn't found.
         """
         validated = self._validate_job(job_path)
         if not validated.is_valid:
-            raise JenkinsJobNotFound(f"Could not retrieve {job_path} because it doesn't exist.")
+            raise JenkinsNotFound(f"Could not retrieve {job_path} because it doesn't exist.")
         return Job(jenkins=self._jenkins, job_path=job_path, job_url=validated.url)
 
     def is_job(self, path: str) -> bool:
@@ -187,7 +193,7 @@ class Jobs:
         :return: True if the path corresponds to a job, False otherwise.
         :rtype: bool
         :raises JenkinsGeneralException: If a general exception occurs.
-        :raises JenkinsJobNotFound: If the job is not found.
+        :raises JenkinsNotFound: If the job is not found.
         """
         built = self._jenkins._build_job_http_path(path)
         endpoint = f"{built}/{Endpoints.Instance.Standard}"
@@ -196,14 +202,15 @@ class Jobs:
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code == 404:
-            raise JenkinsJobNotFound(f"[{resp_obj.status_code}] {path} not found.")
+            raise JenkinsNotFound(f"[{resp_obj.status_code}] {path} not found.")
         else:
             data = orjson.loads(resp_obj.content)
             if data['_class'] != Class.Folder:
                 return True
             return False
 
-    def _validate_job(self, job_path: str) -> JenkinsValidateJob or JenkinsGeneralException:
+    def _validate_job(self, job_path: str) -> JenkinsValidateJob:
+        # TODO: Review mess
         job = self._jenkins._build_job_http_path(job_path)
         url = self._jenkins._build_url(job)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
@@ -221,7 +228,7 @@ class Jobs:
         return obj
 
     def _create_job(self, job_name: str, xml, mode: r_jobs, folder_path: HttpUrl = None) \
-            -> JenkinsActionObject or JenkinsFolderNotFound:
+            -> JenkinsActionObject or JenkinsNotFound:
         create_endpoint = Endpoints.Jobs.Create
         endpoint = f"{folder_path}/{create_endpoint}" if folder_path else create_endpoint
         url = self._jenkins._build_url(endpoint)
@@ -229,7 +236,7 @@ class Jobs:
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_HEADER_DEFAULT,
                                                      params=params, data=xml)
         if resp_obj.status_code == 404:
-            raise JenkinsFolderNotFound(f"Parent path {str(folder_path)} not found.")
+            raise JenkinsNotFound(f"Parent path {str(folder_path)} not found.")
         elif resp_obj.status_code == 200:
             msg = f"[{resp_obj.status_code}] Successfully created {job_name}."
         else:
@@ -238,7 +245,7 @@ class Jobs:
         obj._raw = resp_obj._raw
         return obj
 
-    def create(self, job_path: str, xml: str, *args: r_jobs) -> JenkinsActionObject or JenkinsGeneralException:
+    def create(self, job_path: str, xml: str, *args: r_jobs) -> JenkinsActionObject:
         """
         Create a job on the Jenkins instance.
 
@@ -247,7 +254,7 @@ class Jobs:
         :param xml: XML configuration for the job.
         :type xml: str
         :param args: Additional parameters for job creation.
-        :type args: :class:`objects.Jobs` (Default: Freestyle)
+        :type args: :class:`jenkins_pysdk.objects.Jobs` (Default: Freestyle)
         :return: Object representing the result of the creation action.
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
@@ -255,7 +262,7 @@ class Jobs:
         try:
             self.is_job(job_path)
             raise JenkinsGeneralException(f"{job_path} already exists.")
-        except JenkinsJobNotFound:
+        except JenkinsNotFound:
             pass
 
         # TODO: Add all other jobs types
@@ -274,7 +281,7 @@ class Jobs:
         :param _paginate: Pagination flag. Defaults to 0 (disabled).
         :type _paginate: int, optional
         :return: Generator yielding Job objects.
-        :rtype: Generator[:class:`Job`]
+        :rtype: Generator[:class:`jenkins_pysdk.jobs.Job`]
         """
         if folder:
             path = self._jenkins._build_job_http_path(folder)
@@ -348,7 +355,7 @@ class Jobs:
             Set to 0 to disable pagination.
         :type _paginate: int
         :return: A list of Job objects representing the jobs in the specified folder.
-        :rtype: List[:class:`Job`]
+        :rtype: List[:class:`jenkins_pysdk.jobs.Job`]
         """
         return [item for item in self.iter(folder=folder, _paginate=_paginate)]
 
@@ -483,10 +490,7 @@ class Folder:
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        try:
-            return Folders(self._jenkins)._create_folder(folder_name, xml, self.path)
-        except:
-            raise
+        return Folders(self._jenkins)._create_folder(folder_name, xml, self.path)
 
     @property
     def config(self) -> str:
@@ -521,12 +525,13 @@ class Folders:
         :param folder_path: The path of the folder to search for.
         :type folder_path: str
         :return: The folder object if found.
-        :rtype: :class:`Folder`
-        :raises JenkinsFolderNotFound: If the folder was not found.
+        :rtype: :class:`jenkins_pysdk.jobs.Folder`
+        :raises JenkinsNotFound: If the folder was not found.
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         validated = self._validate_job(folder_path)
         if not validated.is_valid:
-            raise JenkinsFolderNotFound(f"Could not retrieve {folder_path} because it doesn't exist.")
+            raise JenkinsNotFound(f"Could not retrieve {folder_path} because it doesn't exist.")
         return Folder(jenkins=self._jenkins, folder_path=folder_path, folder_url=validated.url)
 
     def _validate_job(self, job_path) -> JenkinsValidateJob:
@@ -554,6 +559,7 @@ class Folders:
         :type path: str
         :return: True if the path corresponds to a folder, False otherwise.
         :rtype: bool
+        :raises JenkinsNotFound: If the folder was not found.
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         built = self._jenkins._build_job_http_path(path)
@@ -562,7 +568,7 @@ class Folders:
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code != 200:
-            raise JenkinsFolderNotFound(f"{path} not found.")
+            raise JenkinsNotFound(f"{path} not found.")
         data = orjson.loads(resp_obj.content)
         if data['_class'] == Class.Folder:
             return True
@@ -575,7 +581,7 @@ class Folders:
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_HEADER_DEFAULT,
                                                      params=params, data=xml)
         if resp_obj.status_code == 404:
-            raise JenkinsFolderNotFound(f"Parent path {str(folder_path)} not found.")
+            raise JenkinsNotFound(f"Parent path {str(folder_path)} not found.")
         elif resp_obj.status_code == 200:
             msg = f"[{resp_obj.status_code}] Successfully created {folder_name}."
         else:
@@ -594,7 +600,8 @@ class Folders:
         :type xml: str or Builder.Folder
         :return: The result of the folder creation operation.
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
-        :raises JenkinsFolderNotFound: If the folder was not found.
+        :raises JenkinsNotFound: If the folder was not found.
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         folder_name, folder_parent = self._jenkins._get_folder_parent(folder_path)
 
@@ -602,15 +609,15 @@ class Folders:
             built_path = self._jenkins._build_job_http_path(folder_name, folder_parent)
             self.search(built_path)
             raise JenkinsGeneralException(f"{folder_path} already exists.")
-        except JenkinsFolderNotFound:
+        except JenkinsNotFound:
             pass
 
         try:
             built_path = self._jenkins._build_job_http_path(folder_parent)
             return self._create_folder(folder_name, xml, built_path)
-        except JenkinsFolderNotFound as error:
+        except JenkinsNotFound as error:
             if not self.is_folder(folder_parent):
-                raise JenkinsFolderNotFound(f"Failed to create folder because parent path not found: {folder_parent}.")
+                raise JenkinsNotFound(f"Failed to create folder because parent path not found: {folder_parent}.")
             raise error
 
     def iter(self, folder: str = None, _paginate: int = 0) -> Generator[Folder]:
@@ -622,7 +629,7 @@ class Folders:
         :param _paginate: Number of items to paginate. Default is 0 (no pagination).
         :type _paginate: int, optional
         :return: A generator yielding Folder objects.
-        :rtype: Generator[:class:`Folder`]
+        :rtype: Generator[:class:`jenkins_pysdk.jobs.Folder`]
         """
         if folder:
             path = self._jenkins._build_job_http_path(folder)
@@ -691,7 +698,7 @@ class Folders:
             Set to 0 to disable pagination.
         :type _paginate: int
         :return: A list of Job objects representing the jobs in the specified folder.
-        :rtype: List[:class:`Folder`]
+        :rtype: List[:class:`jenkins_pysdk.jobs.Folder`]
         """
         return [item for item in self.iter(folder=folder, _paginate=_paginate)]
 

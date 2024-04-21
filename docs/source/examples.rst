@@ -15,6 +15,7 @@ Connect to the application
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.connect())
+    
 The above code will output:
 
 ::
@@ -29,6 +30,7 @@ Get the Jenkins version
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.version)
+
 The above code will output:
 
 ::
@@ -43,6 +45,7 @@ Restart the application
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.restart(graceful=True))
+
 The above code will output:
 
 ::
@@ -57,6 +60,7 @@ Enable Quiet Mode
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.quiet_mode(duration=30))
+
 The above code will output:
 
 ::
@@ -71,6 +75,7 @@ Shutdown the application
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.shutdown())
+
 The above code will output:
 
 ::
@@ -85,6 +90,7 @@ Logout
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.logout())
+
 The above code will output:
 
 ::
@@ -99,6 +105,7 @@ Reload config from disk
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.reload())
+
 The above code will output:
 
 ::
@@ -113,6 +120,7 @@ Get the available executors
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.available_executors)
+
 The above code will output:
 
 ::
@@ -133,6 +141,7 @@ Interact with a folder
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.folders.search("my_new_folder_name"))
+
 The above code will output:
 
 ::
@@ -148,6 +157,7 @@ List all folders
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     for folder in jenkins.folders.list():
         print(folder.path, folder.url)
+
 The above code will output:
 
 ::
@@ -171,6 +181,7 @@ Iterate all folders
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     for folder in jenkins.folders.iter():
         print(folder.path, folder.url)
+
 The above code will output:
 
 ::
@@ -196,10 +207,11 @@ The above code will output:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
-    from builders import Builder
+    from jenkins_pysdk.builders import Builder
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_folder = Builder.Folder(name="my_new_folder_name", description="my description is pretty simple.")
     print(jenkins.folders.create("my_new_folder_name", my_folder))
+
 The above code will output:
 
 ::
@@ -215,6 +227,7 @@ Check if the path is a folder
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.folders.is_folder("folder3/sub_folder"))
+
 The above code will output:
 
 ::
@@ -236,6 +249,7 @@ Reconfigure a folder
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     new_folder = Builder.Folder(name="my_new_folder_name", description="Reconfigured")
     print(jenkins.folders.search("my_new_folder_name").reconfig(new_folder))
+
 The above code will output:
 
 ::
@@ -252,6 +266,7 @@ Get the first folder URL
     from builders.builder import Builder
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.folders.list()[0].url)
+
 The above code will output:
 
 ::
@@ -266,6 +281,7 @@ Get the first folder Path
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.folders.list()[0].path)
+
 The above code will output:
 
 ::
@@ -282,6 +298,7 @@ Copy a folder
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_folder = jenkins.folders.search("folder3")
     print(my_folder.copy(new_job_name="another_sub_folder", copy_job_name="sub_folder"))
+
 The above code will output:
 
 ::
@@ -296,6 +313,7 @@ Delete the current folder
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.folders.search("folder3/another_sub_folder").delete())
+
 The above code will output:
 
 ::
@@ -309,10 +327,11 @@ Create a folder
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
-    from builders import Builder
+    from jenkins_pysdk.builders import Builder
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_folder = Builder.Folder(name="my_new_folder_name", description="my description is pretty simple.")
     print(jenkins.folders.search("folder3/sub_folder").create("another_sub_folder", my_folder))
+
 The above code will output:
 
 ::
@@ -327,6 +346,7 @@ Get the folder config
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.folders.search("folder3/another_sub_folder").config)
+
 The above code will output:
 
 ::
@@ -364,6 +384,7 @@ Interact with a job
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.search("new_freestyle"))
+
 The above code will output:
 
 ::
@@ -378,6 +399,7 @@ List all jobs
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.list())
+
 The above code will output:
 
 ::
@@ -392,6 +414,7 @@ Iterate all jobs
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.iter())
+
 The above code will output:
 
 ::
@@ -421,6 +444,7 @@ Create a freestyle job
                     <buildWrappers/>
                    </project>"""
     print(jenkins.jobs.create("freestyle_created", freestyle, jenkins.FreeStyle))
+
 The above code will output:
 
 ::
@@ -435,6 +459,7 @@ Check if the path is a job
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.is_job("folder3/freestyle_4"))
+
 The above code will output:
 
 ::
@@ -453,6 +478,7 @@ Disable a job
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.search("folder3/freestyle_4").disable())
+
 The above code will output:
 
 ::
@@ -467,6 +493,7 @@ Get a job URL
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.search("folder3/freestyle_4").url)
+
 The above code will output:
 
 ::
@@ -481,6 +508,7 @@ Get a job path
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.search("folder3/freestyle_4").path)
+
 The above code will output:
 
 ::
@@ -496,6 +524,7 @@ Get job URL
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.search("folder3/freestyle_4").enable())
+
 The above code will output:
 
 ::
@@ -512,6 +541,7 @@ Reconfigure a job
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     config = Builder._Templates.Freestyle.format(description="New desc", disabled=True)
     print(jenkins.jobs.search("freestyle_created").reconfig(config))
+
 The above code will output:
 
 ::
@@ -526,6 +556,7 @@ Delete a job
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.search("freestyle_created").delete())
+
 The above code will output:
 
 ::
@@ -540,6 +571,7 @@ Get job config
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.search("new_freestyle").config)
+
 The above code will output:
 
 ::
@@ -569,11 +601,27 @@ Get a job's builds
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.search("new_freestyle").builds)
+
 The above code will output:
 
 ::
 
     <jenkins_pysdk.builds.Builds object at 0x000001EF9C34A860>
+
+Interact with the job workspace
+
+.. autofunction:: jobs.Job.workspace
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.jobs.search("freestyle_created").workspace)
+
+The above code will output:
+
+::
+
+    <jenkins_pysdk.workspace.Workspace object at 0x00000153D2E27580>
 
 
 Builds
@@ -588,6 +636,7 @@ Search for a build
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job = jenkins.jobs.search("new_freestyle")
     print(my_job.builds.search(10))
+
 The above code will output:
 
 ::
@@ -603,6 +652,7 @@ Get the total build history of a job
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job = jenkins.jobs.search("new_freestyle")
     print(my_job.builds.total)
+
 The above code will output:
 
 ::
@@ -619,6 +669,7 @@ Iterate all job's builds
     my_job = jenkins.jobs.search("new_freestyle")
     for build in my_job.builds.iter():
         print(build.number)
+
 The above code will output:
 
 ::
@@ -630,7 +681,7 @@ The above code will output:
     2
     1
 
-List all job's builds
+List all jobs' builds
 
 .. autofunction:: builds.Builds.list
 .. code-block:: python
@@ -639,6 +690,7 @@ List all job's builds
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job = jenkins.jobs.search("new_freestyle")
     print(my_job.builds.list())
+
 The above code will output:
 
 ::
@@ -655,6 +707,7 @@ Get the latest saved build
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job = jenkins.jobs.search("new_freestyle")
     print(my_job.builds.latest.url)
+
 The above code will output:
 
 ::
@@ -670,6 +723,7 @@ Get the oldest saved build
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job = jenkins.jobs.search("new_freestyle")
     print(my_job.builds.latest.url)
+
 The above code will output:
 
 ::
@@ -684,6 +738,7 @@ Trigger a new build
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.search("new_freestyle").builds.build({"choises": "A", "a_bool": False}, delay=10))
+
 The above code will output:
 
 ::
@@ -699,6 +754,7 @@ Rebuild the last build
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.search("new_freestyle").builds.rebuild_last())
+
 The above code will output:
 
 ::
@@ -718,6 +774,7 @@ Get the build number
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job_build_10 = jenkins.jobs.search("new_freestyle").builds.search(10)
     print(my_job_build_10.number)
+
 The above code will output:
 
 ::
@@ -733,6 +790,7 @@ Get the build URL
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job_build_2 = jenkins.jobs.search("new_freestyle").builds.search(2)
     print(my_job_build_2.url)
+
 The above code will output:
 
 ::
@@ -748,6 +806,7 @@ Get the build result
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job_build_2 = jenkins.jobs.search("new_freestyle").builds.search(2)
     print(my_job_build_2.result)
+
 The above code will output:
 
 ::
@@ -762,6 +821,7 @@ Get the build timestamp
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.search("new_freestyle").builds.latest.timestamp)
+
 The above code will output:
 
 ::
@@ -777,6 +837,7 @@ Get the build description
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.search("new_freestyle").builds.latest.description)
+
 The above code will output:
 
 ::
@@ -792,6 +853,7 @@ Check if the build is done
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job_build_2 = jenkins.jobs.search("new_freestyle").builds.search(2)
     print(my_job_build_2.done)
+
 The above code will output:
 
 ::
@@ -807,6 +869,7 @@ Get the build duration
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job_build_2 = jenkins.jobs.search("new_freestyle").builds.search(2)
     print(my_job_build_2.duration)
+
 The above code will output:
 
 ::
@@ -822,6 +885,7 @@ Get the build console logs
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job_build_10 = jenkins.jobs.search("new_freestyle").builds.search(10)
     print(my_job_build_10.console())
+
 The above code will output:
 
 ::
@@ -840,6 +904,7 @@ Delete the build
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job_build_10 = jenkins.jobs.search("new_freestyle").builds.search(10)
     print(my_job_build_10.delete())
+
 The above code will output:
 
 ::
@@ -855,6 +920,7 @@ Get the build changes
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job_build_2 = jenkins.jobs.search("new_freestyle").builds.search(2)
     print(my_job_build_2.changes)
+
 The above code will output:
 
 ::
@@ -871,6 +937,7 @@ Get the next build
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job_build_2 = jenkins.jobs.search("new_freestyle").builds.search(2)
     print(jenkins.jobs.search("new_freestyle").builds.oldest.next)
+
 The above code will output:
 
 ::
@@ -887,6 +954,7 @@ Get the previous build
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job_build_2 = jenkins.jobs.search("new_freestyle").builds.search(2)
     print(jenkins.jobs.search("new_freestyle").builds.oldest.next)
+
 The above code will output:
 
 ::
@@ -902,11 +970,282 @@ Rebuild current build
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.jobs.search("new_freestyle").builds.search(9).rebuild())
+
 The above code will output:
 
 ::
 
     request=<HTTPRequestObject object at 1582937378384> content='[200] Successfully triggered a rebuild of this build (9).' status_code=200
+
+
+Workspace
+-----------
+
+Download the workspace files
+
+.. autofunction:: workspace.Workspace.download
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.jobs.search("new_freestyle").workspace.download(f"C:/Users/UnknownUser/Desktop/workspace.zip"))
+
+The above code will output:
+
+::
+
+    request=<HTTPRequestObject object at 2314487495104> content='[200] Successfully Downloaded workspace files for new_freestyle.' status_code=200
+
+Download a workspace file
+
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    ws = jenkins.jobs.search("new_freestyle").workspace
+    print(ws.download(f"C:/Users/UnknownUser/Desktop/useSocket.ts", workspace_file="apps/native/hooks/useSocket.ts"))
+
+The above code will output:
+
+::
+
+    request=<HTTPRequestObject object at 2207675860768> content='[200] Successfully downloaded workspace files for new_freestyle.' status_code=200
+
+Wipe the workspace
+
+.. autofunction:: workspace.Workspace.wipe
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.jobs.search("new_freestyle").workspace.wipe())
+
+The above code will output:
+
+::
+
+    request=<HTTPRequestObject object at 2300540877328> content='[200] Successfully wiped workspace for new_freestyle.' status_code=200
+
+
+Queue
+-----------
+Iterate all queue items
+
+.. autofunction:: queues.Queue.iter
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    for item in jenkins.queue.iter():
+        print(item.number, item.job.path)
+
+The above code will output:
+
+::
+
+    52 new_freestyle
+    54 folder1
+
+List all queue items
+
+.. autofunction:: queues.Queue.list
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.queue.list())
+
+The above code will output:
+
+::
+
+    [<jenkins_pysdk.queues.QueueItem object at 0x00000221F99323B0>, <jenkins_pysdk.queues.QueueItem object at 0x00000221F9932350>]
+
+Get the newest item in the queue
+
+.. autofunction:: queues.Queue.newest
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    newest = jenkins.queue.newest
+    print(newest.job.path, newest.number)
+
+The above code will output:
+
+::
+
+    new_freestyle 52
+
+Get the oldest item in the queue
+
+.. autofunction:: queues.Queue.oldest
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    oldest = jenkins.queue.oldest
+    print(oldest.job.path, oldest.number)
+
+The above code will output:
+
+::
+
+    folder1 54
+
+Get total queue items
+
+.. autofunction:: queues.Queue.total
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.queue.total)
+
+The above code will output:
+
+::
+
+    1
+
+
+QueueItem
+-----------
+
+Get the item queue ID
+
+.. autofunction:: queues.QueueItem.id
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.queue.oldest.id)
+
+The above code will output:
+
+::
+
+    56
+
+Get the item build number
+
+.. autofunction:: queues.QueueItem.number
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.queue.oldest.number)
+
+The above code will output:
+
+::
+
+    50
+
+Get the item scheduled time
+
+.. autofunction:: queues.QueueItem.scheduled
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.queue.oldest.scheduled)
+
+The above code will output:
+
+::
+
+    1713706848264
+
+Get the item blocked status
+
+.. autofunction:: queues.QueueItem.blocked
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.queue.oldest.blocked)
+
+The above code will output:
+
+::
+
+    True
+
+Get the item stuck status
+
+.. autofunction:: queues.QueueItem.stuck
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.queue.oldest.stuck)
+
+The above code will output:
+
+::
+
+    False
+
+Get the item queue reason
+
+.. autofunction:: queues.QueueItem.reason
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.queue.oldest.reason)
+
+The above code will output:
+
+::
+
+    Build #49 is already in progress (ETA: 3 min 48 sec)
+
+Get the item job type
+
+.. autofunction:: queues.QueueItem.type
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.queue.oldest.type)
+
+The above code will output:
+
+::
+
+    hudson.model.FreeStyleProject
+
+Interact with the item Build
+
+.. autofunction:: queues.QueueItem.build
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.queue.oldest.build.console())
+
+The above code will output:
+
+::
+
+    http://JenkinsDNS/job/new_freestyle/50
+
+Interact with the item Job
+
+.. autofunction:: queues.QueueItem.job
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.queue.oldest.job.delete())
+
+The above code will output:
+
+::
+
+    request=<HTTPRequestObject object at 2191625717376> content='[204] Successfully deleted job.' status_code=204
 
 
 Credentials
@@ -920,6 +1259,7 @@ Search for a system domain
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.credentials.search_domains("domain2"))
+
 The above code will output:
 
 ::
@@ -935,6 +1275,7 @@ Iterate all domains
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     for domain in jenkins.credentials.iter_domains():
         print(domain.name)
+
 The above code will output:
 
 ::
@@ -951,6 +1292,7 @@ Iterate all domains
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print([domain.name for domain in jenkins.credentials.list_domains()])
+
 The above code will output:
 
 ::
@@ -964,9 +1306,10 @@ Create a domain
 
     jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
                       passw="11e8e294cee85ee88b60d99328284d7608")
-    from builders import Builder
+    from jenkins_pysdk.builders import Builder
     new_user = Builder.Credentials.Domain(name="global2", description="new global domain")
     print(jenkins.credentials.create_domain("global2", new_user))
+
 The above code will output:
 
 ::
@@ -986,6 +1329,7 @@ Get the domain name
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     domain = jenkins.credentials.search_domains()
     print(domain.name)
+
 The above code will output:
 
 ::
@@ -1001,6 +1345,7 @@ Get the domain URL
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     domain = jenkins.credentials.search_domains()
     print(domain.url)
+
 The above code will output:
 
 ::
@@ -1016,6 +1361,7 @@ Search for a credential in the domain
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     github_pat = jenkins.credentials.search_domains("domain2").search("Github_PAT")
        print(github_pat)
+
 The above code will output:
 
 ::
@@ -1032,6 +1378,7 @@ Iterate credentials in the domain
     domain = jenkins.credentials.search_domains()  # Defaults to Global domain
     for cred in domain.iter():
         print(cred.id)
+
 The above code will output:
 
 ::
@@ -1048,6 +1395,7 @@ List credentials in the domain
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     domain = jenkins.credentials.search_domains()  # Defaults to Global domain
     print([cred.id for cred in domain.list()])
+
 The above code will output:
 
 ::
@@ -1061,11 +1409,12 @@ Create a credential in the domain
 
     jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
                       passw="11e8e294cee85ee88b60d99328284d7608")
-    from builders import Builder
-   
+    from jenkins_pysdk.builders import Builder
+
     new_cred = Builder.Credentials.UsernamePassword(cred_id="gitlab_login", username="new_username", password="new_pasw")
     print(new_cred)
     print(jenkins.credentials.search_domains("global2").create("new_cred", new_cred))
+
 The above code will output:
 
 ::
@@ -1091,6 +1440,7 @@ Get the credential ID
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     github_pat = jenkins.credentials.search_domains("domain2").search("Github_PAT")
     print(github_pat.id)
+
 The above code will output:
 
 ::
@@ -1106,6 +1456,7 @@ Get the credential config
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     github_pat = jenkins.credentials.search_domains("domain2").search("Github_PAT")
     print(github_pat.config)
+
 The above code will output:
 
 ::
@@ -1135,6 +1486,7 @@ Reconfigure the credential
                         new_password
                         </secret>
                     </org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl>"""
+
 The above code will output:
 
 ::
@@ -1150,6 +1502,7 @@ Move a credential to another domain
     jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
                       passw="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.credentials.search_domains("global2").search("gitlab_login").move("system/test_domain"))
+
 The above code will output:
 
 ::
@@ -1164,6 +1517,7 @@ Delete the credential
     jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
                       passw="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.credentials.search_domains("test_domain").search("gitlab_login").delete())
+
 The above code will output:
 
 ::
@@ -1181,6 +1535,7 @@ Search for a user
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.users.search("test"))
+
 The above code will output:
 
 ::
@@ -1195,6 +1550,7 @@ Get total users
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.users.search("test"))
+
 The above code will output:
 
 ::
@@ -1210,6 +1566,7 @@ Iterate all users
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
         for user in jenkins.users.iter():
            print(user.name)
+
 The above code will output:
 
 ::
@@ -1226,6 +1583,7 @@ List all users
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.users.list())
+
 The above code will output:
 
 ::
@@ -1238,10 +1596,11 @@ Create a new user (as admin)
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
-    from builders import Builder
+    from jenkins_pysdk.builders import Builder
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     new_user = Builder.User(username="my_new_user", password="my_new_pass", fullname="jamesJ", email="jamesj@j.com")
     print(jenkins.users.create(new_user)
+
 The above code will output:
 
 ::
@@ -1261,6 +1620,7 @@ Get the user name
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     user = jenkins.users.search("test")
     print(user.name)
+
 The above code will output:
 
 ::
@@ -1276,6 +1636,7 @@ Get the user URL
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     user = jenkins.users.search("test")
     print(user.url)
+
 The above code will output:
 
 ::
@@ -1291,6 +1652,7 @@ Get the user description
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     user = jenkins.users.search("test")
     print(user.description)
+
 The above code will output:
 
 ::
@@ -1306,6 +1668,7 @@ Get the user's credentials
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     user = jenkins.users.search("admin")
     print([cred.id for cred in user.credentials(domain="my_creds_store").list()])
+
 The above code will output:
 
 ::
@@ -1321,6 +1684,7 @@ Get the user's views
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     user = jenkins.users.search("test")
     print(user.views)
+
 The above code will output:
 
 ::
@@ -1336,6 +1700,7 @@ Get the user's builds
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     user = jenkins.users.search("admin")
     print(user.builds)
+
 The above code will output:
 
 ::
@@ -1352,6 +1717,7 @@ Delete the user
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     user = jenkins.users.search("test")
     print(user.delete())
+
 The above code will output:
 
 ::
@@ -1367,6 +1733,7 @@ Terminate a users' sessions
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     user = jenkins.users.search("test")
     print(user.logout())
+
 The above code will output:
 
 ::
@@ -1385,6 +1752,7 @@ Get my username
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.me.name)
+
 The above code will output:
 
 ::
@@ -1399,6 +1767,7 @@ Get my user URL
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.me.url)
+
 The above code will output:
 
 ::
@@ -1413,6 +1782,7 @@ Get my user description
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.me.description)
+
 The above code will output:
 
 ::
@@ -1427,6 +1797,7 @@ Get my user credentials
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print([passw.id for passw in jenkins.me.credentials(domain="admin_domain").list()])
+
 The above code will output:
 
 ::
@@ -1441,6 +1812,7 @@ Get my user views
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print([view.name for view in jenkins.me.views])
+
 The above code will output:
 
 ::
@@ -1455,6 +1827,7 @@ Get my user builds
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.me.builds)
+
 The above code will output:
 
 ::
@@ -1470,6 +1843,7 @@ Terminate my session
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
      print(jenkins.me.logout())
+
 The above code will output:
 
 ::
@@ -1488,6 +1862,7 @@ Search for a view
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.views.search("All"))
+
 The above code will output:
 
 ::
@@ -1504,6 +1879,7 @@ Iterate all views
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     for view in jenkins.views.iter():
         print(view.name)
+
 The above code will output:
 
 ::
@@ -1520,6 +1896,7 @@ List all views
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.views.list())
+
 The above code will output:
 
 ::
@@ -1551,7 +1928,12 @@ Create a view
        </hudson.model.ListView>
        """
     print(jenkins.views.create("my_view", xml))
-request=<HTTPRequestObject object at 2275566295520> content='[200] Successfully created my_view.' status_code=200
+
+The above code will output:
+
+::
+
+    request=<HTTPRequestObject object at 2275566295520> content='[200] Successfully created my_view.' status_code=200
 
 
 View
@@ -1565,6 +1947,7 @@ Get the view name
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.views.search("All").name)
+
 The above code will output:
 
 ::
@@ -1579,6 +1962,7 @@ Get the view URL
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.views.search("All").url)
+
 The above code will output:
 
 ::
@@ -1619,6 +2003,7 @@ builder_e is higher up in the list of jobs so it goes above builder_folder, whic
        </hudson.model.ListView>
       """
       print(jenkins.views.search("my_view").reconfig(xml))
+
 The above code will output:
 
 ::
@@ -1633,6 +2018,7 @@ Delete the view
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.views.search("YourViewName").delete())
+
 The above code will output:
 
 ::
@@ -1654,6 +2040,7 @@ Example plugin: https://plugins.jenkins.io/pipeline-stage-view/
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.plugins.install("pipeline-stage-view", 2.18))
+
 The above code will output:
 
 ::
@@ -1677,6 +2064,7 @@ https://plugins.jenkins.io/blueocean-rest/
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.plugins.available.search("blueocean-rest"))
+
 The above code will output:
 
 ::
@@ -1692,6 +2080,7 @@ Iterate all available plugins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     for plugin in jenkins.plugins.available.iter(_paginate=500):
         print(plugin.name, plugin.version)
+
 The above code will output:
 
 ::
@@ -1714,6 +2103,7 @@ List all available plugins
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.plugins.available.list(_paginate=1000))
+
 The above code will output:
 
 ::
@@ -1736,6 +2126,7 @@ https://plugins.jenkins.io/ssh-credentials/
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.plugins.updates.search("ssh-credentials").name)
+
 The above code will output:
 
 ::
@@ -1751,6 +2142,7 @@ Iterate all plugins needing an updates
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     for plugin in jenkins.plugins.updates.iter(_paginate=500):
         print(plugin.name, plugin.version, plugin.url)
+
 The above code will output:
 
 ::
@@ -1770,6 +2162,7 @@ List all plugins needing an updates
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.plugins.updates.list(_paginate=500))
+
 The above code will output:
 
 ::
@@ -1792,6 +2185,7 @@ https://plugins.jenkins.io/ssh-credentials/
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.plugins.installed.search("ant").version)
+
 The above code will output:
 
 ::
@@ -1807,6 +2201,7 @@ Iterate all installed plugins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     for plugin in jenkins.plugins.installed.iter(_paginate=500):
         print(plugin.name, plugin.active)
+
 The above code will output:
 
 ::
@@ -1826,6 +2221,7 @@ List all installed plugins
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.plugins.updates.list(_paginate=500))
+
 The above code will output:
 
 ::
@@ -1844,6 +2240,7 @@ Search for a site
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.plugins.sites.search("default"))
+
 The above code will output:
 
 ::
@@ -1859,6 +2256,7 @@ Iterate all sites
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     for site in jenkins.plugins.sites.iter():
         print(site.id)
+
 The above code will output:
 
 ::
@@ -1873,6 +2271,7 @@ List all sites
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.plugins.sites.search("default"))
+
 The above code will output:
 
 ::
@@ -1895,6 +2294,7 @@ Get the available plugin name
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     av = jenkins.plugins.availables.search("pipeline-stage-view")
     print(av.name)
+
 The above code will output:
 
 ::
@@ -1910,6 +2310,7 @@ Get the available plugin version
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     av = jenkins.plugins.availables.search("pipeline-stage-view")
     print(av.version)
+
 The above code will output:
 
 ::
@@ -1925,6 +2326,7 @@ Get the available plugin URL
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     av = jenkins.plugins.availables.search("pipeline-stage-view")
     print(av.url)
+
 The above code will output:
 
 ::
@@ -1940,6 +2342,7 @@ Check if the available plugin is compatible
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     av = jenkins.plugins.availables.search("pipeline-stage-view")
     print(av.compatible)
+
 The above code will output:
 
 ::
@@ -1955,6 +2358,7 @@ Get the available plugin dependencies
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     av = jenkins.plugins.availables.search("pipeline-stage-view")
     print(av.dependencies)
+
 The above code will output:
 
 ::
@@ -1970,6 +2374,7 @@ Get the available plugin required core version
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     av = jenkins.plugins.availables.search("pipeline-stage-view")
     print(av.requires)
+
 The above code will output:
 
 ::
@@ -1985,6 +2390,7 @@ Get the available plugin docs page
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     av = jenkins.plugins.availables.search("pipeline-stage-view")
     print(av.docs)
+
 The above code will output:
 
 ::
@@ -2000,6 +2406,7 @@ Get the update centre of the available plugin
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     av = jenkins.plugins.availables.search("pipeline-stage-view")
     print(av.site.url)
+
 The above code will output:
 
 ::
@@ -2019,6 +2426,7 @@ Get the installed plugin name
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     ins = jenkins.plugins.installed.search("maven-plugin")
     print(ins.name)
+
 The above code will output:
 
 ::
@@ -2034,6 +2442,7 @@ Get the active status of the installed plugin
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     ins = jenkins.plugins.installed.search("maven-plugin")
     print(ins.active)
+
 The above code will output:
 
 ::
@@ -2049,6 +2458,7 @@ Enable the installed plugin
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     ins = jenkins.plugins.installed.search("maven-plugin")
     print(ins.enable())
+
 The above code will output:
 
 ::
@@ -2064,6 +2474,7 @@ Disable the installed plugin
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     ins = jenkins.plugins.installed.search("maven-plugin")
     print(ins.disable())
+
 The above code will output:
 
 ::
@@ -2079,6 +2490,7 @@ Get the installed plugin version
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     ins = jenkins.plugins.installed.search("maven-plugin")
     print(ins.version)
+
 The above code will output:
 
 ::
@@ -2094,6 +2506,7 @@ Get the installed plugin URL
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     ins = jenkins.plugins.installed.search("maven-plugin")
     print(ins.url)
+
 The above code will output:
 
 ::
@@ -2109,6 +2522,7 @@ Get the installed plugin dependencies
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     ins = jenkins.plugins.installed.search("maven-plugin")
     print(ins.dependencies)
+
 The above code will output:
 
 ::
@@ -2125,6 +2539,7 @@ Get the installed plugin required core version
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     ins = jenkins.plugins.installed.search("maven-plugin")
     print(ins.requires)
+
 The above code will output:
 
 ::
@@ -2140,6 +2555,7 @@ Get the installed plugin pinned status
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     ins = jenkins.plugins.installed.search("maven-plugin")
     print(ins.requires)
+
 The above code will output:
 
 ::
@@ -2155,6 +2571,7 @@ Delete the installed plugin
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     ins = jenkins.plugins.installed.search("maven-plugin")
     print(ins.delete())
+
 The above code will output:
 
 ::
@@ -2174,6 +2591,7 @@ Get the update plugin name
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     up = jenkins.plugins.updates.search("checks-api")
     print(up.name)
+
 The above code will output:
 
 ::
@@ -2189,6 +2607,7 @@ Get the update plugin version
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     up = jenkins.plugins.updates.search("checks-api")
     print(up.version)
+
 The above code will output:
 
 ::
@@ -2204,6 +2623,7 @@ Get the update plugin URL
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     up = jenkins.plugins.updates.search("checks-api")
     print(up.url)
+
 The above code will output:
 
 ::
@@ -2219,6 +2639,7 @@ Get the update plugin compatible status
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     up = jenkins.plugins.updates.search("checks-api")
     print(up.compatible)
+
 The above code will output:
 
 ::
@@ -2234,6 +2655,7 @@ Get the update plugin dependencies
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     up = jenkins.plugins.updates.search("checks-api")
     print(up.dependencies)
+
 The above code will output:
 
 ::
@@ -2249,6 +2671,7 @@ Get the update plugin required core version
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     up = jenkins.plugins.updates.search("checks-api")
     print(up.requires)
+
 The above code will output:
 
 ::
@@ -2264,6 +2687,7 @@ Get the update plugin docs page
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     up = jenkins.plugins.updates.search("checks-api")
     print(up.docs)
+
 The above code will output:
 
 ::
@@ -2279,6 +2703,7 @@ Get the update plugin update centre site
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     up = jenkins.plugins.updates.search("checks-api")
     print(up.site.url)
+
 The above code will output:
 
 ::
@@ -2298,6 +2723,7 @@ Get the update centre site ID
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     site = jenkins.plugins.sites.search("default")
     print(site.id)
+
 The above code will output:
 
 ::
@@ -2313,6 +2739,7 @@ Get the update centre site URL
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     site = jenkins.plugins.sites.search("default")
     print(site.url)
+
 The above code will output:
 
 ::
@@ -2328,6 +2755,7 @@ Check if the update centre has updates
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     site = jenkins.plugins.sites.search("default")
     print(site.has_updates)
+
 The above code will output:
 
 ::
@@ -2343,6 +2771,7 @@ Get the plugin suggested url from the site
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     site = jenkins.plugins.sites.search("default")
     print(site.suggested_plugins_url)
+
 The above code will output:
 
 ::
@@ -2358,6 +2787,7 @@ Get the connection check url for the site
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     site = jenkins.plugins.sites.search("default")
     print(site.connection_check_url)
+
 The above code will output:
 
 ::
@@ -2373,6 +2803,7 @@ Get the site data timestamp
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     site = jenkins.plugins.sites.search("default")
     print(site.timestamp)
+
 The above code will output:
 
 ::
@@ -2390,6 +2821,7 @@ Search for a node
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.nodes.search("sdk_test").url)
+
 The above code will output:
 
 ::
@@ -2403,10 +2835,11 @@ Create a node
 
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
-   
-    from builders import Builder
+
+    from jenkins_pysdk.builders import Builder
     config = Builder.Node(description="test 2", remote_fs="/jen")
     print(jenkins.nodes.create("docs_node", config))
+
 The above code will output:
 
 ::
@@ -2422,6 +2855,7 @@ Iterate all nodes
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     for node in jenkins.nodes.iter():
        print(node.url)
+
 The above code will output:
 
 ::
@@ -2440,6 +2874,7 @@ List all nodes
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.nodes.list())
+
 The above code will output:
 
 ::
@@ -2454,6 +2889,7 @@ Get total nodes
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.nodes.total)
+
 The above code will output:
 
 ::
@@ -2472,6 +2908,7 @@ Get the node name
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.nodes.search("sdk_test").name)
+
 The above code will output:
 
 ::
@@ -2486,6 +2923,7 @@ Get the node URL
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.nodes.search("sdk_test").url)
+
 The above code will output:
 
 ::
@@ -2501,6 +2939,7 @@ Check if the node is idle
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     node = jenkins.nodes.search("sdk_test")
     print(node.idle)
+
 The above code will output:
 
 ::
@@ -2516,6 +2955,7 @@ Get the node config
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     node = jenkins.nodes.search("sdk_test")
     print(node.config)
+
 The above code will output:
 
 ::
@@ -2569,6 +3009,7 @@ Reconfigure the node
        </slave>
        """
     print(jenkins.nodes.search("sdk_test").reconfig(config))
+
 The above code will output:
 
 ::
@@ -2583,6 +3024,7 @@ Disable the node
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.nodes.search("sdk_test").disable("disabling for test"))
+
 The above code will output:
 
 ::
@@ -2597,6 +3039,7 @@ Enable the node
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.nodes.search("sdk_test").enable())
+
 The above code will output:
 
 ::
@@ -2611,6 +3054,7 @@ Delete the node
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(jenkins.nodes.search("sdk_test").delete())
+
 The above code will output:
 
 ::
