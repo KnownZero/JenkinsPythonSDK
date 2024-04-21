@@ -1,4 +1,4 @@
-from typing import Union, Tuple
+from typing import Union, Tuple, Any
 
 import orjson
 from pydantic import HttpUrl
@@ -20,6 +20,7 @@ class Core:  # TODO: Revise these messy methods
         raise NotImplemented
 
     def _build_url(self, endpoint: str, prefix: str = None, suffix: str = None) -> HttpUrl:
+        endpoint = str(endpoint)
         if not self.host.startswith("http://") and not self.host.startswith("https://"):
             host = f"http://{self.host}"
         else:
@@ -96,7 +97,7 @@ class Core:  # TODO: Revise these messy methods
                    method: str = "GET",
                    headers: dict = HTTP_HEADER_DEFAULT,
                    params: dict = None,
-                   data: dict = None,
+                   data: Any = None,
                    files: dict = None,
                    username: str = None,
                    passw_or_token: str = None,

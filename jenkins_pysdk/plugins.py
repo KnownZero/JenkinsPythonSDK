@@ -1,5 +1,5 @@
 from collections.abc import Generator
-from typing import List, Union
+from typing import List, Union, Dict
 
 import orjson
 from pydantic import HttpUrl
@@ -17,7 +17,7 @@ class Site:
     Represents a site in Jenkins.
 
     :param jenkins: The Jenkins instance this site belongs to.
-    :type jenkins: Jenkins
+    :type jenkins: jenkins_pysdk.jenkins.Jenkins
     :param site_id: The ID of the site.
     :type site_id: str
     """
@@ -108,7 +108,7 @@ class UpdateCenter:
     Represents the update center in Jenkins.
 
     :param jenkins: The Jenkins instance this update center belongs to.
-    :type jenkins: Jenkins
+    :type jenkins: jenkins_pysdk.jenkins.Jenkins
     """
     def __init__(self, jenkins):
         self._jenkins = jenkins
@@ -120,7 +120,7 @@ class UpdateCenter:
         :param name: The name of the site to search for.
         :type name: str
         :return: The Site object if found, otherwise raise an exception.
-        :rtype: Site
+        :rtype: :class:`jenkins_pysdk.plugins.Site`
         :raises JenkinsNotFound: If the site with the specified name is not found.
         """
         for site in self.iter():
@@ -134,7 +134,7 @@ class UpdateCenter:
         Iterate over the sites in the update center.
 
         :return: A generator yielding Site objects.
-        :rtype: Generator[Site]
+        :rtype: Generator[:class:`jenkins_pysdk.plugins.Site`]
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.Plugins.UpdateCenter, suffix=Endpoints.Instance.Standard)
@@ -152,7 +152,7 @@ class UpdateCenter:
         Get a list of all sites in the update center.
 
         :return: A list of Site objects.
-        :rtype: List[Site]
+        :rtype: List[:class:`jenkins_pysdk.plugins.Site`]
         """
         return [site for site in self.iter()]
 
@@ -171,7 +171,7 @@ class Plugin:
     Represents a plugin in Jenkins.
 
     :param jenkins: The Jenkins instance this plugin belongs to.
-    :type jenkins: Jenkins
+    :type jenkins: jenkins_pysdk.jenkins.Jenkins
     :param plugin_info: Information about the plugin.
     :type plugin_info: dict
     """
@@ -365,14 +365,14 @@ class Installed:
     #     return bool(self._plugin_info['compatible'])
 
     @property
-    def dependencies(self) -> List[dict]:
+    def dependencies(self) -> List[Dict]:
         """
         The dependencies of the installed plugin.
 
         :return: A list of dictionaries representing the dependencies,
                  where each dictionary contains the dependency name as key
                  and the dependency version as value.
-        :rtype: List[dict]
+        :rtype: List[Dict]
         """
         return self._plugin_info['dependencies']
 
@@ -421,7 +421,7 @@ class PluginGroup:
     Represents a group of plugins in Jenkins.
 
     :param jenkins: The Jenkins instance this plugin group belongs to.
-    :type jenkins: Jenkins
+    :type jenkins: jenkins_pysdk.jenkins.Jenkins
     :param p_type: The type of the plugin group.
     :type p_type: str
     """
@@ -440,7 +440,7 @@ class PluginGroup:
         :param _paginate: The number of items to paginate. Default is 500.
         :type _paginate: int, optional
         :return: A Plugin or Installed object representing the found plugin.
-        :rtype: Union[Plugin, Installed]
+        :rtype: Union[jenkins_pysdk.plugins.Plugin, jenkins_pysdk.plugins.Installed]
         :raises JenkinsNotFound: If the plugin with the specified name is not found.
         """
         for plugin in self.iter(site=site, _paginate=_paginate):
@@ -458,7 +458,7 @@ class PluginGroup:
         :param _paginate: The number of items to paginate. Default is 0.
         :type _paginate: int, optional
         :return: A generator that yields Plugin or Installed objects.
-        :rtype: Generator[Union[Plugin, Installed]]
+        :rtype: Generator[Union[jenkins_pysdk.plugins.Plugin, jenkins_pysdk.plugins.Installed]]
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         endpoint = Endpoints.Plugins.PluginManager if self.type == "plugins" else Endpoints.Plugins.UpdateCenter
@@ -507,7 +507,7 @@ class PluginGroup:
         :param _paginate: The number of items to paginate. Default is 0.
         :type _paginate: int, optional
         :return: A list of Plugin or Installed objects.
-        :rtype: List[Union[Plugin, Installed]]
+        :rtype: List[Union[jenkins_pysdk.plugins.Plugin, jenkins_pysdk.plugins.Installed]]
         """
         return [plugin for plugin in self.iter(_paginate=_paginate)]
 
@@ -517,7 +517,7 @@ class Plugins:
     Represents a collection of plugins in Jenkins.
 
     :param jenkins: The Jenkins instance containing the plugins.
-    :type jenkins: Jenkins
+    :type jenkins: jenkins_pysdk.jenkins.Jenkins
     """
     def __init__(self, jenkins):
         self._jenkins = jenkins
@@ -528,7 +528,7 @@ class Plugins:
         Represents a group of available plugins in Jenkins.
 
         :return: A PluginGroup instance representing the available plugins.
-        :rtype: PluginGroup
+        :rtype: jenkins_pysdk.plugins.PluginGroup
         """
         return PluginGroup(self._jenkins, p_type="availables")
 
@@ -538,7 +538,7 @@ class Plugins:
         Represents a group of plugins with available updates in Jenkins.
 
         :return: A PluginGroup instance representing the plugins with available updates.
-        :rtype: PluginGroup
+        :rtype: jenkins_pysdk.plugins.PluginGroup
         """
         return PluginGroup(self._jenkins, p_type="updates")
 
@@ -548,7 +548,7 @@ class Plugins:
         Represents a group of installed plugins in Jenkins.
 
         :return: A PluginGroup instance representing the installed plugins.
-        :rtype: PluginGroup
+        :rtype: jenkins_pysdk.plugins.PluginGroup
         """
         return PluginGroup(self._jenkins, p_type="plugins")
 
@@ -624,6 +624,6 @@ class Plugins:
         Represents the update centers for managing plugin sites in Jenkins.
 
         :return: An UpdateCenter instance representing the update centers.
-        :rtype: UpdateCenter
+        :rtype: jenkins_pysdk.plugins.UpdateCenter
         """
         return UpdateCenter(self._jenkins)

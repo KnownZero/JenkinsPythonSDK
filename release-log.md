@@ -1,5 +1,18 @@
 # Release log
 
+## Release (Minor/Fixes) 1.3 - 21/04/2024
+### Fixes:
+- Fix documentation links + some examples using Builder
+- Fix views pagination
+- Replaced exceptions - JenkinsJobNotFound and JenkinsFolderNotFound with generic JenkinsNotFound
+- General functionality fixes
+
+### New:
+- new JenkinsBaseException is now a catchall for all Jenkins exceptions
+- Added Workspace module
+- Added Queue module
+
+###
 
 ## Release (Major/Fixes) 1.2 - 20/04/2024
 ### Fixes:

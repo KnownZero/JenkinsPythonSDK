@@ -21,7 +21,9 @@ class User:
         Interact with a user on the Jenkins instance.
 
         :param jenkins: Connection to the Jenkins instance.
+        :type jenkins: jenkins_pysdk.jenkins.Jenkins
         :param user_url: URL of the user.
+        :type user_url: :class:`HttpUrl`
         """
         self._jenkins = jenkins
         self._user_url = user_url
@@ -71,7 +73,7 @@ class User:
         :param domain: The domain to search for credentials (default is "_").
         :type domain: str, optional
         :return: A domain object representing the user's personal credential safe.
-        :rtype: :class:`credentials.Domain`
+        :rtype: :class:`jenkins_pysdk.credentials.Domain`
         :raises: JenkinsNotFound: If the users credentials were not found.
         """
         endpoint = Endpoints.User.Credentials.format(domain=domain)
@@ -87,7 +89,7 @@ class User:
         Get a list of views associated with the user.
 
         :return: A list of view objects associated with the user.
-        :rtype: List[v_view]
+        :rtype: List[jenkins_pysdk.views.View]
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.User.Views, prefix=self._user_url, suffix=Endpoints.Instance.Standard)
@@ -106,7 +108,7 @@ class User:
         Get a list of builds associated with the user.
 
         :return: A list of build objects associated with the user.
-        :rtype: List[Build]
+        :rtype: List[jenkins_pysdk.builds.Build]
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         import time
@@ -125,7 +127,7 @@ class User:
         Delete the user.
 
         :return: Action object representing the result of the deletion operation.
-        :rtype: JenkinsActionObject
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         url = self._jenkins._build_url("/", prefix=self._user_url, suffix=Endpoints.User.Delete)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
@@ -169,6 +171,7 @@ class Users:
         Interact with users on the Jenkins instance.
 
         :param jenkins: Connection to the Jenkins instance.
+        :type jenkins: jenkins_pysdk.jenkins.Jenkins
         """
         self._jenkins = jenkins
 
@@ -179,7 +182,7 @@ class Users:
         :param username: The username of the user to search for.
         :type username: str
         :return: User object corresponding to the username.
-        :rtype: User
+        :rtype: :class:`jenkins_pysdk.users.User`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.Users.User.format(username=username), suffix=Endpoints.Instance.Standard)
@@ -195,7 +198,7 @@ class Users:
         Iterate over all users.
 
         :return: Generator yielding User objects.
-        :rtype: Generator[User]
+        :rtype: Generator[:class:`jenkins_pysdk.usersUser`]
         """
         url = self._jenkins._build_url(Endpoints.Users.List, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
@@ -210,7 +213,7 @@ class Users:
         Get a list of all users.
 
         :return: List of User objects.
-        :rtype: List[User]
+        :rtype: List[:class:`jenkins_pysdk.users.User`]
         """
         return [user for user in self.iter()]
 
@@ -226,10 +229,12 @@ class Users:
 
     def create(self, config: Builder.User) -> JenkinsActionObject:
         """
-        Create a new user.
+         Create a new user.
 
         :param config: The user to be created.
-        :type config: Builder.User
+        :type config: :class:`jenkins_pysdk.builders.Builder`
+        :return: An object representing the action performed in Jenkins.
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         username = config['username']
         url = self._jenkins._build_url(Endpoints.Users.CreateByAdmin)

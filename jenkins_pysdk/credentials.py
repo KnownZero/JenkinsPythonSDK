@@ -19,7 +19,7 @@ class Credential:
         Initialize a Credential object representing a Jenkins credential.
 
         :param jenkins: The Jenkins instance associated with the credential.
-        :type jenkins: Jenkins
+        :type jenkins: jenkins_pysdk.jenkins.Jenkins
         :param cred_id: The ID of the credential.
         :type cred_id: str
         :param domain_url: The URL of the domain associated with the credential.
@@ -45,7 +45,7 @@ class Credential:
         Get the configuration of the credential.
 
         :return: The configuration of the credential.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.Credential.Get.format(cred_id=self._cred_id),
@@ -61,7 +61,7 @@ class Credential:
         Delete the credential.
 
         :return: Result of the deletion operation.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         url = self._jenkins._build_url(Endpoints.Credential.Get.format(cred_id=self._cred_id),
                                        prefix=self.domain_url, suffix=Endpoints.Jobs.Xml)
@@ -80,7 +80,7 @@ class Credential:
         :param xml: The new XML content or a Credentials builder.
         :type xml: str or Builder.Credentials
         :return: Result of the reconfiguration operation.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.Credential.Get.format(cred_id=self._cred_id),
@@ -100,7 +100,7 @@ class Credential:
         Move the credential to another domain.
 
         :return: Result of the move operation.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         url = self._jenkins._build_url(Endpoints.Credential.Get.format(cred_id=self._cred_id),
                                        prefix=self.domain_url, suffix=Endpoints.Credential.Move)
@@ -132,10 +132,22 @@ class Domain:
 
     @property
     def name(self) -> str:
+        """
+        The name of the domain.
+
+        :return: The name of the domain.
+        :rtype: str
+        """
         return str(self._raw['urlName'])
 
     @property
     def url(self) -> HttpUrl:
+        """
+        The domain URL.
+
+        :return: The domain URL in HttpUrl format.
+        :rtype: HttpUrl
+        """
         return self.domain_url
 
     def _get_raw(self) -> orjson.loads:
@@ -151,11 +163,11 @@ class Domain:
         :param cred_id: The ID of the credential to search for.
         :type cred_id: str
         :return: The credential matching the provided ID.
-        :rtype: :class:`Credential`
+        :rtype: :class:`jenkins_pysdk.credentials.Credential`
         """
         for cred in self.iter():
             if cred.id == cred_id:
-                return Credential(jenkins=self._jenkins, cred_id=cred.id, domain_url=self.domain_url)
+                return cred
         else:
             raise JenkinsNotFound(f"Credential ({cred_id}) was not found in domain ({self.name}).")
 
@@ -164,7 +176,7 @@ class Domain:
         Iterate over credentials within the domain.
 
         :return: A generator yielding credentials within the specified domain.
-        :rtype: Generator[:class:`Credential`]
+        :rtype: Generator[:class:`jenkins_pysdk.credentials.Credential`]
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self.domain_url)
@@ -183,7 +195,7 @@ class Domain:
         List credentials within the domain.
 
         :return: A list of credentials within the specified domain.
-        :rtype: List[:class:`Credential`]
+        :rtype: List[:class:`jenkins_pysdk.credentials.Credential`]
         """
         return [cred for cred in self.iter()]
 
@@ -196,7 +208,7 @@ class Domain:
         :param cred: The credential object to create.
         :type cred: str or Builder.Credentials
         :return: Result of the deletion operation.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         url = self._jenkins._build_url(Endpoints.Credentials.Domain.format(domain=self.name),
                                        suffix=Endpoints.Credential.Create)
@@ -217,7 +229,7 @@ class Credentials:
         Interact with Credentials on the Jenkins instance.
 
         :param jenkins: The Jenkins instance.
-        :type jenkins: Jenkins
+        :type jenkins: jenkins_pysdk.jenkins.Jenkins
         """
         self._jenkins = jenkins
 
@@ -228,7 +240,7 @@ class Credentials:
         :param domain: The name of the domain to search for. If None, returns all domains.
         :type domain: str, optional
         :return: The Domain object representing the found domain.
-        :rtype: :class:`Domain`
+        :rtype: :class:`jenkins_pysdk.credentials.Domain`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         if not domain:
@@ -244,7 +256,7 @@ class Credentials:
         Iterate over domains on the Jenkins instance.
 
         :return: A generator yielding Domain objects.
-        :rtype: Generator[:class:`Domain`]
+        :rtype: Generator[:class:`jenkins_pysdk.credentials.Domain`]
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         creds_url = self._jenkins._build_url(Endpoints.Manage.CredentialStore)
@@ -264,7 +276,7 @@ class Credentials:
         List all domains on the Jenkins instance.
 
         :return: List of Domain objects.
-        :rtype: List[:class:`Domain`]
+        :rtype: List[:class:`jenkins_pysdk.credentials.Domain`]
         """
         return [domain for domain in self.iter_domains()]
 
@@ -277,7 +289,7 @@ class Credentials:
         :param cred: The credentials to associate with the domain.
         :type cred: :class:`Builder.Credentials.Domain`
         :return: Outcome of the domain creation request.
-        :rtype: :class:`objects.JenkinsActionObject`
+        :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsAlreadyExists: If the domain already exists.
         :raises JenkinsGeneralException: If a general exception occurs.
         """
@@ -291,4 +303,3 @@ class Credentials:
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
         return obj
-

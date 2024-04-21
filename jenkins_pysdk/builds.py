@@ -19,7 +19,7 @@ class Build:
         Initialize a Build object.
 
         :param jenkins: The Jenkins instance associated with the build.
-        :type jenkins: Jenkins
+        :type jenkins: jenkins_pysdk.jenkins.Jenkins
         :param build_url: The URL of the build.
         :type build_url: HttpUrl
         """
@@ -76,6 +76,7 @@ class Build:
         :rtype: str
         :raises JenkinsGeneralException: If a general exception occurs.
         """
+        # TODO: Implement params
         url = self._jenkins._build_url(Endpoints.Builds.BuildConsoleText, prefix=self._build_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         if resp_obj.status_code != 200:
@@ -123,7 +124,7 @@ class Build:
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         try:
-            enabled = self._jenkins.plugins.installed.search("rebuild").enabled
+            enabled = self._jenkins.plugins.installed.search("rebuild")._plugin_info['enabled']
             if not enabled:
                 raise JenkinsGeneralException(f"You must enable the rebuild plugin first!\n"
                                               f"https://plugins.jenkins.io/rebuild/")
@@ -139,16 +140,16 @@ class Build:
             return obj
         raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to trigger a rebuild of this build ({self.number}).")
 
-    @property
-    def timings(self):
-        """
-        Get the timings information of the build.
-
-        :return: Timings information of the build.
-        :rtype: dict
-        """
-        # TODO: Whatever this is going to be
-        raise NotImplemented
+    # @property
+    # def timings(self):
+    #     """
+    #     Get the timings information of the build.
+    #
+    #     :return: Timings information of the build.
+    #     :rtype: dict
+    #     """
+    #     # TODO: Whatever this is going to be
+    #     raise NotImplemented
 
     @property
     def next(self) -> ...:
@@ -234,7 +235,7 @@ class Builds:
         Initializes a Builds object.
 
         :param jenkins: The Jenkins instance.
-        :type jenkins: Jenkins
+        :type jenkins: jenkins_pysdk.jenkins.Jenkins
         :param job_url: The URL of the job.
         :type job_url: HttpUrl
         """
@@ -320,9 +321,13 @@ class Builds:
 
         :return: The Build object representing the last build.
         :rtype: :class:`jenkins_pysdk.builds.Build`
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         # TODO: Add filtering for success=False, failed=False
-        return self.list()[0]
+        try:
+            return self.list()[0]
+        except IndexError:
+            raise JenkinsGeneralException("No builds")
 
     @property
     def oldest(self) -> Build:
@@ -331,9 +336,13 @@ class Builds:
 
         :return: The Build object representing the oldest saved build.
         :rtype: :class:`jenkins_pysdk.builds.Build`
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
         # TODO: Add filtering for success=False, failed=False
-        return self.list()[-1]
+        try:
+            return self.list()[-1]
+        except IndexError:
+            raise JenkinsGeneralException("No builds.")
 
     def build(self, parameters: Optional[dict] = None, delay: int = 0) -> JenkinsActionObject:
         """
@@ -368,7 +377,7 @@ class Builds:
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         try:
-            enabled = self._jenkins.plugins.installed.search("rebuild").enabled
+            enabled = self._jenkins.plugins.installed.search("rebuild")._plugin_info['enabled']
             if not enabled:
                 raise JenkinsGeneralException(f"You must enable the rebuild plugin first!\n"
                                               f"https://plugins.jenkins.io/rebuild/")
