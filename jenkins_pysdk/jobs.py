@@ -293,8 +293,7 @@ class Jobs:
             while True:
                 limit = _paginate + start
                 job_param = Endpoints.Jobs.Iter
-                if _paginate > 0:
-                    job_param = f"{job_param}{{{start},{limit}}}"
+                job_param = f"{job_param}{{{start},{limit if limit > 0 else ''}}}"
                 params = {"tree": job_param}
                 url = self._jenkins._build_url(Endpoints.Instance.Standard)
 
@@ -641,8 +640,7 @@ class Folders:
             while True:
                 limit = _paginate + start
                 job_param = Endpoints.Jobs.Iter
-                if _paginate > 0:
-                    job_param = f"{job_param}{{{start},{limit}}}"
+                job_param = f"{job_param}{{{start},{limit}}}"
                 params = {"tree": job_param}
                 json_url = self._jenkins._build_url(Endpoints.Instance.Standard)
 

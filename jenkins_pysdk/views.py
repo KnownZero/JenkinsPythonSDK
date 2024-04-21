@@ -225,8 +225,7 @@ class Views:
             while True:
                 limit = _paginate + start
                 job_param = Endpoints.Views.Iter
-                if _paginate > 0:
-                    job_param = f"{job_param}{{{start},{limit}}}"
+                job_param = f"{job_param}{{{start},{limit if limit > 0 else ''}}}"
                 params = {"tree": job_param}
                 url = self._jenkins._build_url(Endpoints.Instance.Standard)
 
@@ -246,7 +245,7 @@ class Views:
                     yield View(jenkins=self._jenkins, name=item['name'], url=item['url'])
 
                 if _paginate > 0:
-                    start += _paginate
+                    start += _paginate + 1
                 elif _paginate == 0:
                     break
 
