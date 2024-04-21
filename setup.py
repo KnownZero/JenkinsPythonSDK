@@ -22,7 +22,7 @@ setup(
     long_description_content_type="text/markdown",
     license='MIT',
     classifiers=[
-        'Development Status :: 3 - Production',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 3',
     ],
