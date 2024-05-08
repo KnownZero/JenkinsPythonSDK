@@ -1,5 +1,16 @@
 # Release log
 
+## Release (Minor/Fixes) 1.3.2 - 08/05/2024
+### Fixes:
+- Fix documentation inaccuracies
+
+### New:
+- Functionality to configure new update center sites
+- Run commands in the script console
+- Upload plugins functionality
+
+###
+
 ## Release (Minor/Fixes) 1.3 - 21/04/2024
 ### Fixes:
 - Fix documentation links + some examples using Builder
@@ -12,7 +23,6 @@
 - Added Workspace module
 - Added Queue module
 
-###
 
 ## Release (Major/Fixes) 1.2 - 20/04/2024
 ### Fixes:

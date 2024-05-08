@@ -1,5 +1,5 @@
 from collections.abc import Generator
-from typing import List, Union, Dict
+from typing import List, Union, Dict, BinaryIO
 
 import orjson
 from pydantic import HttpUrl
@@ -156,14 +156,23 @@ class UpdateCenter:
         """
         return [site for site in self.iter()]
 
-    def create(self) -> JenkinsActionObject:
+    def create(self, site_url: str or HttpUrl) -> JenkinsActionObject:
         """
         Create a new site in the update center.
 
-        :return: JenkinsActionObject representing the create action.
+        :return: JenkinsActionObject representing the create update center operation.
         :rtype: jenkins_pysdk.objects.JenkinsActionObject
+        :raises JenkinsGeneralException: If a general exception occurs.
         """
-        pass
+        url = self._jenkins._build_url(Endpoints.UpdateCenter.Create)
+        params = {"site": site_url}
+        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, params=params)
+        if resp_obj.status_code != 200:
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to add update center ({site_url}).")
+        msg = f"[{resp_obj.status_code}] Successfully added update center ({site_url})."
+        obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
+        obj._raw = resp_obj._raw
+        return obj
 
 
 class Plugin:
@@ -552,29 +561,33 @@ class Plugins:
         """
         return PluginGroup(self._jenkins, p_type="plugins")
 
-    # def upload(self, filename: str, file_content: bytes) -> JenkinsActionObject:
-    #     """
-    #     Uploads a plugin to Jenkins.
-    #
-    #     :param filename: The name of the plugin file.
-    #     :type filename: str
-    #     :param file_content: The content of the plugin file as bytes.
-    #     :type file_content: bytes
-    #     :return: A JenkinsActionObject representing the upload action.
-    #     :rtype: jenkins_pysdk.objects.JenkinsActionObject
-    #     :raises JenkinsGeneralException: If a general exception occurs.
-    #     """
-    #     url = self._jenkins._build_url(Endpoints.Plugins.Upload)
-    #     req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=None,
-    #                                                  files={"file": (filename, file_content)})
-    #     msg = f"[{resp_obj.status_code}] Successfully uploaded plugin ({filename})."
-    #     if resp_obj.status_code >= 500:
-    #         raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
-    #     elif resp_obj.status_code != 204:
-    #         msg = f"[{resp_obj.status_code}] Failed to upload plugin ({[filename]})."
-    #     obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-    #     obj._raw = resp_obj._raw
-    #     return obj
+    def upload(self, filename: str, file_content: BinaryIO or bytes) -> JenkinsActionObject:
+        """
+        Uploads a plugin to Jenkins.
+
+        :param filename: The name of the plugin file.
+        :type filename: str
+        :param file_content: The content of the plugin file as bytes.
+        :type file_content: bytes
+        :return: A JenkinsActionObject representing the upload action.
+        :rtype: jenkins_pysdk.objects.JenkinsActionObject
+        :raises JenkinsGeneralException: If a general exception occurs.
+        """
+        # Solution: https://issues.jenkins.io/browse/JENKINS-68443
+        # Make it a form submission ^
+        if isinstance(file_content, BinaryIO):
+            file_content = file_content.read()
+        url = self._jenkins._build_url(Endpoints.Plugins.Upload)
+        file = {"file": (filename, file_content, "application/java-archive"), "submit": ""}
+        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=dict(), files=file)
+        msg = f"[{resp_obj.status_code}] Successfully uploaded plugin ({filename})."
+        if resp_obj.status_code >= 500:
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
+        elif resp_obj.status_code != 200:
+            msg = f"[{resp_obj.status_code}] Failed to upload plugin ({filename})."
+        obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
+        obj._raw = resp_obj._raw
+        return obj
 
     def install(self, name: str, version: str or int or float = "latest", restart: bool = False) -> JenkinsActionObject:
         """

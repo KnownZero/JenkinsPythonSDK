@@ -164,10 +164,6 @@ class Jenkins(Core):
         return r_jobs(value=Class.Freestyle)
 
     # @property
-    # def UsernamePassword(self) -> r_builder.Credential:
-    #     return r_builder.Credential(value=Class.UsernamePassword)
-
-    # @property
     # def enable_logging(self):
     #     """
     #     Get the logging level.
@@ -311,7 +307,7 @@ class Jenkins(Core):
         """
         # TODO: FIX CODE COPY & PASTE BELOW... maybe singledispatch
         _fields = ['_class', 'availableExecutors']
-        url = self._build_url(Endpoints.Instance.OverallLoad)
+        url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['availableExecutors']
@@ -329,7 +325,7 @@ class Jenkins(Core):
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         _fields = ['_class', 'busyExecutors']
-        url = self._build_url(Endpoints.Instance.OverallLoad)
+        url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['busyExecutors']
@@ -347,7 +343,7 @@ class Jenkins(Core):
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         _fields = ['_class', 'connectingExecutors']
-        url = self._build_url(Endpoints.Instance.OverallLoad)
+        url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['connectingExecutors']
@@ -365,7 +361,7 @@ class Jenkins(Core):
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         _fields = ['_class', 'definedExecutors']
-        url = self._build_url(Endpoints.Instance.OverallLoad)
+        url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['definedExecutors']
@@ -383,7 +379,7 @@ class Jenkins(Core):
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         _fields = ['_class', 'idleExecutors']
-        url = self._build_url(Endpoints.Instance.OverallLoad)
+        url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['idleExecutors']
@@ -401,7 +397,7 @@ class Jenkins(Core):
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         _fields = ['_class', 'onlineExecutors']
-        url = self._build_url(Endpoints.Instance.OverallLoad)
+        url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['onlineExecutors']
@@ -419,7 +415,7 @@ class Jenkins(Core):
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         _fields = ['_class', 'queueLength']
-        url = self._build_url(Endpoints.Instance.OverallLoad)
+        url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['queueLength']
@@ -437,7 +433,7 @@ class Jenkins(Core):
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         _fields = ['_class', 'totalExecutors']
-        url = self._build_url(Endpoints.Instance.OverallLoad)
+        url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['totalExecutors']
@@ -456,7 +452,7 @@ class Jenkins(Core):
         """
         # TODO: Fix endpoitn remove api json
         _fields = ['_class', 'totalQueueLength']
-        url = self._build_url(Endpoints.Instance.OverallLoad)
+        url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['totalQueueLength']
@@ -631,3 +627,10 @@ class Jenkins(Core):
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
         return obj
+
+    def script_console(self, commands: str) -> str:
+        url = self._build_url(Endpoints.Instance.Console)
+        req_obj, resp_obj = self._send_http(method="POST", url=url, data={"script": commands}, headers=dict())
+        if resp_obj.status_code != 200:
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to send commands to the script console.")
+        return resp_obj.content

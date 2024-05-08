@@ -8,7 +8,7 @@ from jenkins_pysdk.consts import HTTP_RETRY_COUNT, HOST_MATCH_REGEX_PATTERN
 from jenkins_pysdk.objects import HTTPRequestObject, HTTPResponseObject, HTTPSessionRequestObject, \
     HTTPSessionResponseObject
 from jenkins_pysdk.exceptions import JenkinsInvalidHost
-# from _logger import logger
+
 
 __all__ = ["validate_connect_host", "validate_http_url", "interact_http", "interact_http_session"]
 
@@ -38,8 +38,6 @@ def validate_http_url(url: HttpUrl) -> ...:
 
 
 def interact_http(request: HTTPRequestObject) -> HTTPResponseObject:
-    # TODO: Add retry option in HTTPRequestObject and Jenkins __init__??
-    # TODO: should this be in utils :(
     if validate_http_url(request.url) is False:
         raise JenkinsInvalidHost(f"{request.url.host} is not a valid target.")
     req = Request(
@@ -83,7 +81,6 @@ def interact_http(request: HTTPRequestObject) -> HTTPResponseObject:
 def interact_http_session(request: HTTPSessionRequestObject) -> HTTPSessionResponseObject:
     if validate_http_url(request.url) is False:
         raise JenkinsInvalidHost(f"{request.url.host} is not a valid target.")
-
     req = Request(
         method=request.method,
         url=str(request.url),
