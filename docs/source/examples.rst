@@ -1,6 +1,7 @@
 Examples
 ========
 
+
 System
 -----------
 
@@ -9,7 +10,7 @@ System
 Connect to the application
 
 
-.. autofunction:: jenkins.Jenkins.connect
+.. autofunction:: jenkins.Jenkins.connect()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -24,7 +25,7 @@ The above code will output:
 
 Get the Jenkins version
 
-.. autofunction:: jenkins.Jenkins.version
+.. autofunction:: jenkins.Jenkins.version()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -39,7 +40,7 @@ The above code will output:
 
 Restart the application
 
-.. autofunction:: jenkins.Jenkins.restart
+.. autofunction:: jenkins.Jenkins.restart()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -54,7 +55,7 @@ The above code will output:
 
 Enable Quiet Mode
 
-.. autofunction:: jenkins.Jenkins.quiet_mode
+.. autofunction:: jenkins.Jenkins.quiet_mode()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -69,7 +70,7 @@ The above code will output:
 
 Shutdown the application
 
-.. autofunction:: jenkins.Jenkins.shutdown
+.. autofunction:: jenkins.Jenkins.shutdown()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -84,7 +85,7 @@ The above code will output:
 
 Logout
 
-.. autofunction:: jenkins.Jenkins.logout
+.. autofunction:: jenkins.Jenkins.logout()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -99,7 +100,7 @@ The above code will output:
 
 Reload config from disk
 
-.. autofunction:: jenkins.Jenkins.reload
+.. autofunction:: jenkins.Jenkins.reload()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -114,7 +115,7 @@ The above code will output:
 
 Get the available executors
 
-.. autofunction:: jenkins.Jenkins.available_executors
+.. autofunction:: jenkins.Jenkins.available_executors()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -127,6 +128,30 @@ The above code will output:
 
     No executors are available.
 
+Execute commands in the script console
+
+.. autofunction:: jenkins.Jenkins.script_console()
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS",
+                      username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    import pathlib
+    file = pathlib.Path("C:\\Users\\alex\\Desktop\\commands.groovy")
+    commands = file.read_text()
+    print(f"Running commands:\n{commands}")
+
+    print(jenkins.script_console(commands))
+
+The above code will output:
+
+::
+
+    Running commands:
+    println("Hello from Jenkins Script Console!")
+
+    Hello from Jenkins Script Console!
+
 
 Folders
 -----------
@@ -135,7 +160,7 @@ Folders
 
 Interact with a folder
 
-.. autofunction:: jobs.Folders.search
+.. autofunction:: jobs.Folders.search()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -150,7 +175,7 @@ The above code will output:
 
 List all folders
 
-.. autofunction:: jobs.Folders.list
+.. autofunction:: jobs.Folders.list()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -174,7 +199,7 @@ The above code will output:
 
 Iterate all folders
 
-.. autofunction:: jobs.Folders.iter
+.. autofunction:: jobs.Folders.iter()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -196,14 +221,8 @@ The above code will output:
     new_folder/new_job23 https://JenkinsDNS/job/new_folder/job/new_job23/
     new_folder/test_folder https://JenkinsDNS/job/new_folder/job/test_folder/
 
-The above code will output:
-
-::
-
-    Create a new folder
-
-.. autofunction:: builders.Builder.Folder
-.. autofunction:: jobs.Folders.create
+.. autofunction:: builders.Builder.Folder()
+.. autofunction:: jobs.Folders.create()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -221,7 +240,7 @@ The above code will output:
 
 Check if the path is a folder
 
-.. autofunction:: jobs.Folders.is_folder
+.. autofunction:: jobs.Folders.is_folder()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -241,7 +260,7 @@ Folder
 
 Reconfigure a folder
 
-.. autofunction:: jobs.Folder.reconfig
+.. autofunction:: jobs.Folder.reconfig()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -259,7 +278,7 @@ The above code will output:
 
 Get the first folder URL
 
-.. autofunction:: jobs.Folder.url
+.. autofunction:: jobs.Folder.url()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -275,7 +294,7 @@ The above code will output:
 
 Get the first folder Path
 
-.. autofunction:: jobs.Folder.path
+.. autofunction:: jobs.Folder.path()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -291,7 +310,7 @@ The above code will output:
 Copy a folder
 (You are interacting with a specific folder location, so you can't copy a folder up a level)
 
-.. autofunction:: jobs.Folder.copy
+.. autofunction:: jobs.Folder.copy()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -307,7 +326,7 @@ The above code will output:
 
 Delete the current folder
 
-.. autofunction:: jobs.Folder.delete
+.. autofunction:: jobs.Folder.delete()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -323,7 +342,7 @@ The above code will output:
 Create a folder
 (You are interacting with a specific folder location, so you can only create sub-folders)
 
-.. autofunction:: jobs.Folder.create
+.. autofunction:: jobs.Folder.create()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -340,7 +359,7 @@ The above code will output:
 
 Get the folder config
 
-.. autofunction:: jobs.Folder.config
+.. autofunction:: jobs.Folder.config()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -378,7 +397,7 @@ Jobs
 
 Interact with a job
 
-.. autofunction:: jobs.Jobs.search
+.. autofunction:: jobs.Jobs.search()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -393,7 +412,7 @@ The above code will output:
 
 List all jobs
 
-.. autofunction:: jobs.Jobs.list
+.. autofunction:: jobs.Jobs.list()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -408,7 +427,7 @@ The above code will output:
 
 Iterate all jobs
 
-.. autofunction:: jobs.Jobs.iter
+.. autofunction:: jobs.Jobs.iter()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -423,7 +442,7 @@ The above code will output:
 
 Create a freestyle job
 
-.. autofunction:: jobs.Jobs.create
+.. autofunction:: jobs.Jobs.create()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -453,7 +472,7 @@ The above code will output:
 
 Check if the path is a job
 
-.. autofunction:: jobs.Jobs.is_job
+.. autofunction:: jobs.Jobs.is_job()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -472,7 +491,7 @@ Job
 
 Disable a job
 
-.. autofunction:: jobs.Job.disable
+.. autofunction:: jobs.Job.disable()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -487,7 +506,7 @@ The above code will output:
 
 Get a job URL
 
-.. autofunction:: jobs.Job.url
+.. autofunction:: jobs.Job.url()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -502,7 +521,7 @@ The above code will output:
 
 Get a job path
 
-.. autofunction:: jobs.Job.path
+.. autofunction:: jobs.Job.path()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -518,7 +537,7 @@ The above code will output:
 
 Get job URL
 
-.. autofunction:: jobs.Job.enable
+.. autofunction:: jobs.Job.enable()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -533,7 +552,7 @@ The above code will output:
 
 Reconfigure a job
 
-.. autofunction:: jobs.Job.reconfig
+.. autofunction:: jobs.Job.reconfig()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -550,7 +569,7 @@ The above code will output:
 
 Delete a job
 
-.. autofunction:: jobs.Job.delete
+.. autofunction:: jobs.Job.delete()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -565,7 +584,7 @@ The above code will output:
 
 Get job config
 
-.. autofunction:: jobs.Job.config
+.. autofunction:: jobs.Job.config()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -595,7 +614,7 @@ The above code will output:
 
 Get a job's builds
 
-.. autofunction:: jobs.Job.builds
+.. autofunction:: jobs.Job.builds()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -610,7 +629,7 @@ The above code will output:
 
 Interact with the job workspace
 
-.. autofunction:: jobs.Job.workspace
+.. autofunction:: jobs.Job.workspace()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -629,7 +648,7 @@ Builds
 
 Search for a build
 
-.. autofunction:: builds.Builds.search
+.. autofunction:: builds.Builds.search()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -645,7 +664,7 @@ The above code will output:
 
 Get the total build history of a job
 
-.. autofunction:: builds.Builds.total
+.. autofunction:: builds.Builds.total()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -661,7 +680,7 @@ The above code will output:
 
 Iterate all job's builds
 
-.. autofunction:: builds.Builds.iter
+.. autofunction:: builds.Builds.iter()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -683,7 +702,7 @@ The above code will output:
 
 List all jobs' builds
 
-.. autofunction:: builds.Builds.list
+.. autofunction:: builds.Builds.list()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -700,7 +719,7 @@ The above code will output:
 
 Get the latest saved build
 
-.. autofunction:: builds.Builds.latest
+.. autofunction:: builds.Builds.latest()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -716,7 +735,7 @@ The above code will output:
 
 Get the oldest saved build
 
-.. autofunction:: builds.Builds.oldest
+.. autofunction:: builds.Builds.oldest()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -732,7 +751,7 @@ The above code will output:
 
 Trigger a new build
 
-.. autofunction:: builds.Builds.build
+.. autofunction:: builds.Builds.build()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -748,7 +767,7 @@ The above code will output:
 
 Rebuild the last build
 
-.. autofunction:: builds.Builds.rebuild_last
+.. autofunction:: builds.Builds.rebuild_last()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -767,7 +786,7 @@ Build
 
 Get the build number
 
-.. autofunction:: builds.Build.number
+.. autofunction:: builds.Build.number()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -783,7 +802,7 @@ The above code will output:
 
 Get the build URL
 
-.. autofunction:: builds.Build.url
+.. autofunction:: builds.Build.url()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -799,7 +818,7 @@ The above code will output:
 
 Get the build result
 
-.. autofunction:: builds.Build.result
+.. autofunction:: builds.Build.result()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -815,7 +834,7 @@ The above code will output:
 
 Get the build timestamp
 
-.. autofunction:: builds.Build.timestamp
+.. autofunction:: builds.Build.timestamp()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -831,7 +850,7 @@ The above code will output:
 
 Get the build description
 
-.. autofunction:: builds.Build.description
+.. autofunction:: builds.Build.description()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -846,7 +865,7 @@ The above code will output:
 
 Check if the build is done
 
-.. autofunction:: builds.Build.done
+.. autofunction:: builds.Build.done()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -862,7 +881,7 @@ The above code will output:
 
 Get the build duration
 
-.. autofunction:: builds.Build.duration
+.. autofunction:: builds.Build.duration()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -878,7 +897,7 @@ The above code will output:
 
 Get the build console logs
 
-.. autofunction:: builds.Build.console
+.. autofunction:: builds.Build.console()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -897,7 +916,7 @@ The above code will output:
 
 Delete the build
 
-.. autofunction:: builds.Build.delete
+.. autofunction:: builds.Build.delete()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -913,7 +932,7 @@ The above code will output:
 
 Get the build changes
 
-.. autofunction:: builds.Build.changes
+.. autofunction:: builds.Build.changes()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -930,7 +949,7 @@ The above code will output:
 Get the next build
 (Beta - if you delete some builds then ordering will be broken)
 
-.. autofunction:: builds.Build.changes
+.. autofunction:: builds.Build.changes()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -947,7 +966,7 @@ The above code will output:
 Get the previous build
 (Beta - if you delete some builds then ordering will be broken)
 
-.. autofunction:: builds.Build.changes
+.. autofunction:: builds.Build.changes()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -964,7 +983,7 @@ The above code will output:
 
 Rebuild current build
 
-.. autofunction:: builds.Build.rebuild
+.. autofunction:: builds.Build.rebuild()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -983,7 +1002,7 @@ Workspace
 
 Download the workspace files
 
-.. autofunction:: workspace.Workspace.download
+.. autofunction:: workspace.Workspace.download()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1013,7 +1032,7 @@ The above code will output:
 
 Wipe the workspace
 
-.. autofunction:: workspace.Workspace.wipe
+.. autofunction:: workspace.Workspace.wipe()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1031,7 +1050,7 @@ Queue
 -----------
 Iterate all queue items
 
-.. autofunction:: queues.Queue.iter
+.. autofunction:: queues.Queue.iter()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1048,7 +1067,7 @@ The above code will output:
 
 List all queue items
 
-.. autofunction:: queues.Queue.list
+.. autofunction:: queues.Queue.list()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1063,7 +1082,7 @@ The above code will output:
 
 Get the newest item in the queue
 
-.. autofunction:: queues.Queue.newest
+.. autofunction:: queues.Queue.newest()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1079,7 +1098,7 @@ The above code will output:
 
 Get the oldest item in the queue
 
-.. autofunction:: queues.Queue.oldest
+.. autofunction:: queues.Queue.oldest()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1095,7 +1114,7 @@ The above code will output:
 
 Get total queue items
 
-.. autofunction:: queues.Queue.total
+.. autofunction:: queues.Queue.total()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1114,7 +1133,7 @@ QueueItem
 
 Get the item queue ID
 
-.. autofunction:: queues.QueueItem.id
+.. autofunction:: queues.QueueItem.id()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1129,7 +1148,7 @@ The above code will output:
 
 Get the item build number
 
-.. autofunction:: queues.QueueItem.number
+.. autofunction:: queues.QueueItem.number()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1144,7 +1163,7 @@ The above code will output:
 
 Get the item scheduled time
 
-.. autofunction:: queues.QueueItem.scheduled
+.. autofunction:: queues.QueueItem.scheduled()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1159,7 +1178,7 @@ The above code will output:
 
 Get the item blocked status
 
-.. autofunction:: queues.QueueItem.blocked
+.. autofunction:: queues.QueueItem.blocked()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1174,7 +1193,7 @@ The above code will output:
 
 Get the item stuck status
 
-.. autofunction:: queues.QueueItem.stuck
+.. autofunction:: queues.QueueItem.stuck()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1189,7 +1208,7 @@ The above code will output:
 
 Get the item queue reason
 
-.. autofunction:: queues.QueueItem.reason
+.. autofunction:: queues.QueueItem.reason()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1204,7 +1223,7 @@ The above code will output:
 
 Get the item job type
 
-.. autofunction:: queues.QueueItem.type
+.. autofunction:: queues.QueueItem.type()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1219,7 +1238,7 @@ The above code will output:
 
 Interact with the item Build
 
-.. autofunction:: queues.QueueItem.build
+.. autofunction:: queues.QueueItem.build()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1234,7 +1253,7 @@ The above code will output:
 
 Interact with the item Job
 
-.. autofunction:: queues.QueueItem.job
+.. autofunction:: queues.QueueItem.job()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1253,7 +1272,7 @@ Credentials
 
 Search for a system domain
 
-.. autofunction:: credentials.Credentials.search_domains
+.. autofunction:: credentials.Credentials.search_domains()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1268,7 +1287,7 @@ The above code will output:
 
 Iterate all domains
 
-.. autofunction:: credentials.Credentials.iter_domains
+.. autofunction:: credentials.Credentials.iter_domains()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1286,7 +1305,7 @@ The above code will output:
 
 Iterate all domains
 
-.. autofunction:: credentials.Credentials.list_domains
+.. autofunction:: credentials.Credentials.list_domains()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1301,7 +1320,7 @@ The above code will output:
 
 Create a domain
 
-.. autofunction:: credentials.Credentials.create_domain
+.. autofunction:: credentials.Credentials.create_domain()
 .. code-block:: python
 
     jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
@@ -1322,7 +1341,7 @@ Domain
 
 Get the domain name
 
-.. autofunction:: credentials.Domain.name
+.. autofunction:: credentials.Domain.name()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1338,7 +1357,7 @@ The above code will output:
 
 Get the domain URL
 
-.. autofunction:: credentials.Domain.url
+.. autofunction:: credentials.Domain.url()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1354,7 +1373,7 @@ The above code will output:
 
 Search for a credential in the domain
 
-.. autofunction:: credentials.Domain.search
+.. autofunction:: credentials.Domain.search()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1370,7 +1389,7 @@ The above code will output:
 
 Iterate credentials in the domain
 
-.. autofunction:: credentials.Domain.iter
+.. autofunction:: credentials.Domain.iter()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1388,7 +1407,7 @@ The above code will output:
 
 List credentials in the domain
 
-.. autofunction:: credentials.Domain.list
+.. autofunction:: credentials.Domain.list()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1404,7 +1423,7 @@ The above code will output:
 
 Create a credential in the domain
 
-.. autofunction:: credentials.Domain.create
+.. autofunction:: credentials.Domain.create()
 .. code-block:: python
 
     jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
@@ -1433,7 +1452,7 @@ Credential
 
 Get the credential ID
 
-.. autofunction:: credentials.Credential.id
+.. autofunction:: credentials.Credential.id()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1449,7 +1468,7 @@ The above code will output:
 
 Get the credential config
 
-.. autofunction:: credentials.Credential.config
+.. autofunction:: credentials.Credential.config()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1472,7 +1491,7 @@ The above code will output:
 
 Reconfigure the credential
 
-.. autofunction:: credentials.Credential.reconfig
+.. autofunction:: credentials.Credential.reconfig()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1496,7 +1515,7 @@ The above code will output:
 Move a credential to another domain
 (You can't move from System to User/Local)
 
-.. autofunction:: credentials.Credential.move
+.. autofunction:: credentials.Credential.move()
 .. code-block:: python
 
     jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
@@ -1511,7 +1530,7 @@ The above code will output:
 
 Delete the credential
 
-.. autofunction:: credentials.Credential.delete
+.. autofunction:: credentials.Credential.delete()
 .. code-block:: python
 
     jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
@@ -1529,7 +1548,7 @@ Users
 
 Search for a user
 
-.. autofunction:: users.Users.search
+.. autofunction:: users.Users.search()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1544,7 +1563,7 @@ The above code will output:
 
 Get total users
 
-.. autofunction:: users.Users.total
+.. autofunction:: users.Users.total()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1559,7 +1578,7 @@ The above code will output:
 
 Iterate all users
 
-.. autofunction:: users.Users.iter
+.. autofunction:: users.Users.iter()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1577,7 +1596,7 @@ The above code will output:
 
 List all users
 
-.. autofunction:: users.Users.list
+.. autofunction:: users.Users.list()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1592,7 +1611,7 @@ The above code will output:
 
 Create a new user (as admin)
 
-.. autofunction:: users.Users.create
+.. autofunction:: users.Users.create()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1613,7 +1632,7 @@ User
 
 Get the user name
 
-.. autofunction:: users.User.name
+.. autofunction:: users.User.name()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1629,7 +1648,7 @@ The above code will output:
 
 Get the user URL
 
-.. autofunction:: users.User.url
+.. autofunction:: users.User.url()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1645,7 +1664,7 @@ The above code will output:
 
 Get the user description
 
-.. autofunction:: users.User.description
+.. autofunction:: users.User.description()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1661,7 +1680,7 @@ The above code will output:
 
 Get the user's credentials
 
-.. autofunction:: users.User.credentials
+.. autofunction:: users.User.credentials()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1677,7 +1696,7 @@ The above code will output:
 
 Get the user's views
 
-.. autofunction:: users.User.views
+.. autofunction:: users.User.views()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1693,7 +1712,7 @@ The above code will output:
 
 Get the user's builds
 
-.. autofunction:: users.User.builds
+.. autofunction:: users.User.builds()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1710,7 +1729,7 @@ The above code will output:
 
 Delete the user
 
-.. autofunction:: users.User.delete
+.. autofunction:: users.User.delete()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1726,7 +1745,7 @@ The above code will output:
 
 Terminate a users' sessions
 
-.. autofunction:: users.User.logout
+.. autofunction:: users.User.logout()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1746,7 +1765,7 @@ Me
 
 Get my username
 
-.. autofunction:: users.User.name
+.. autofunction:: users.User.name()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1761,7 +1780,7 @@ The above code will output:
 
 Get my user URL
 
-.. autofunction:: users.User.url
+.. autofunction:: users.User.url()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1776,7 +1795,7 @@ The above code will output:
 
 Get my user description
 
-.. autofunction:: users.User.description
+.. autofunction:: users.User.description()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1791,7 +1810,7 @@ The above code will output:
 
 Get my user credentials
 
-.. autofunction:: users.User.credentials
+.. autofunction:: users.User.credentials()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1806,7 +1825,7 @@ The above code will output:
 
 Get my user views
 
-.. autofunction:: users.User.views
+.. autofunction:: users.User.views()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1821,7 +1840,7 @@ The above code will output:
 
 Get my user builds
 
-.. autofunction:: users.User.builds
+.. autofunction:: users.User.builds()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1837,7 +1856,7 @@ The above code will output:
 
 Terminate my session
 
-.. autofunction:: users.User.logout
+.. autofunction:: users.User.logout()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1856,7 +1875,7 @@ Views
 
 Search for a view
 
-.. autofunction:: views.Views.search
+.. autofunction:: views.Views.search()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1872,7 +1891,7 @@ The above code will output:
 
 Iterate all views
 
-.. autofunction:: views.Views.iter
+.. autofunction:: views.Views.iter()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1890,7 +1909,7 @@ The above code will output:
 
 List all views
 
-.. autofunction:: views.Views.list
+.. autofunction:: views.Views.list()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1905,7 +1924,7 @@ The above code will output:
 
 Create a view
 
-.. autofunction:: views.Views.create
+.. autofunction:: views.Views.create()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1941,7 +1960,7 @@ View
 
 Get the view name
 
-.. autofunction:: views.View.name
+.. autofunction:: views.View.name()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1956,7 +1975,7 @@ The above code will output:
 
 Get the view URL
 
-.. autofunction:: views.View.url
+.. autofunction:: views.View.url()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1974,7 +1993,7 @@ Reconfigure the view
 E.g.
 builder_e is higher up in the list of jobs so it goes above builder_folder, which is underneath it in the list :)
 
-.. autofunction:: views.View.reconfig
+.. autofunction:: views.View.reconfig()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2012,7 +2031,7 @@ The above code will output:
 
 Delete the view
 
-.. autofunction:: views.View.delete
+.. autofunction:: views.View.delete()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2047,6 +2066,26 @@ The above code will output:
 
     request=<HTTPRequestObject object at 2898119135520> content='[200] Successfully installed plugin (pipeline-stage-view).' status_code=200
 
+Upload a plugin
+
+.. autofunction:: plugins.Plugins.upload()
+
+Example plugin: https://plugins.jenkins.io/chucknorris/
+
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    filename = "chucknorris.hpi"
+    with open(f"C:\\Users\\UnknownUser\\Downloads\\{filename}", "rb") as file:
+        print(jenkins.plugins.upload(filename, file))
+
+The above code will output:
+
+::
+
+    request=<HTTPRequestObject object at 2188075571200> content='[200] Successfully uploaded plugin (chucknorris.hpi).' status_code=200
+
 
 Available
 ~~~~~~~~~~~~
@@ -2058,7 +2097,7 @@ The plugin ID/Name is found in the plugin docs 'ID' field
 In the below link you will see ID: blueocean-rest
 https://plugins.jenkins.io/blueocean-rest/
 
-.. autofunction:: plugins.PluginGroup.search
+.. autofunction:: plugins.PluginGroup.search()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2073,7 +2112,7 @@ The above code will output:
 
 Iterate all available plugins
 
-.. autofunction:: plugins.PluginGroup.iter
+.. autofunction:: plugins.PluginGroup.iter()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2097,7 +2136,7 @@ The above code will output:
 
 List all available plugins
 
-.. autofunction:: plugins.PluginGroup.list
+.. autofunction:: plugins.PluginGroup.list()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2120,7 +2159,7 @@ The plugin ID/Name is found in the plugin docs 'ID' field
 In the below link you will see ID: ssh-credentials
 https://plugins.jenkins.io/ssh-credentials/
 
-.. autofunction:: plugins.PluginGroup.search
+.. autofunction:: plugins.PluginGroup.search()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2135,7 +2174,7 @@ The above code will output:
 
 Iterate all plugins needing an updates
 
-.. autofunction:: plugins.PluginGroup.iter
+.. autofunction:: plugins.PluginGroup.iter()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2156,7 +2195,7 @@ The above code will output:
 
 List all plugins needing an updates
 
-.. autofunction:: plugins.PluginGroup.list
+.. autofunction:: plugins.PluginGroup.list()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2179,7 +2218,7 @@ The plugin ID/Name is found in the plugin docs 'ID' field
 In the below link you will see ID: ssh-credentials
 https://plugins.jenkins.io/ssh-credentials/
 
-.. autofunction:: plugins.PluginGroup.search
+.. autofunction:: plugins.PluginGroup.search()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2194,7 +2233,7 @@ The above code will output:
 
 Iterate all installed plugins
 
-.. autofunction:: plugins.PluginGroup.iter
+.. autofunction:: plugins.PluginGroup.iter()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2215,7 +2254,7 @@ The above code will output:
 
 List all installed plugins
 
-.. autofunction:: plugins.PluginGroup.list
+.. autofunction:: plugins.PluginGroup.list()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2229,12 +2268,12 @@ The above code will output:
     [<jenkins_pysdk.plugins.Installed object at 0x0000021DBB290A30>, <truncated...>]
 
 
-UpdateCentre
+UpdateCenter
 ~~~~~~~~~~~~
 
 Search for a site
 
-.. autofunction:: plugins.UpdateCenter.search
+.. autofunction:: plugins.UpdateCenter.search()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2249,7 +2288,7 @@ The above code will output:
 
 Iterate all sites
 
-.. autofunction:: plugins.UpdateCenter.iter
+.. autofunction:: plugins.UpdateCenter.iter()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2265,7 +2304,7 @@ The above code will output:
 
 List all sites
 
-.. autofunction:: plugins.UpdateCenter.list
+.. autofunction:: plugins.UpdateCenter.list()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2278,6 +2317,23 @@ The above code will output:
 
     [<jenkins_pysdk.plugins.Site object at 0x0000027AA7115D20>]
 
+Add a new update center
+
+List all sites
+
+.. autofunction:: plugins.UpdateCenter.create()
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    print(jenkins.plugins.sites.create("https://www.google.com/update-center.json"))
+
+The above code will output:
+
+::
+
+    request=<HTTPRequestObject object at 1985835210512> content='[200] Successfully added update center (https://www.google.com/update-center.json).' status_code=200
+
 
 Plugin
 -----------
@@ -2287,7 +2343,7 @@ Available
 
 Get the available plugin name
 
-.. autofunction:: plugins.Plugin.name
+.. autofunction:: plugins.Plugin.name()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2303,7 +2359,7 @@ The above code will output:
 
 Get the available plugin version
 
-.. autofunction:: plugins.Plugin.version
+.. autofunction:: plugins.Plugin.version()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2319,7 +2375,7 @@ The above code will output:
 
 Get the available plugin URL
 
-.. autofunction:: plugins.Plugin.url
+.. autofunction:: plugins.Plugin.url()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2335,7 +2391,7 @@ The above code will output:
 
 Check if the available plugin is compatible
 
-.. autofunction:: plugins.Plugin.compatible
+.. autofunction:: plugins.Plugin.compatible()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2351,7 +2407,7 @@ The above code will output:
 
 Get the available plugin dependencies
 
-.. autofunction:: plugins.Plugin.dependencies
+.. autofunction:: plugins.Plugin.dependencies()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2367,7 +2423,7 @@ The above code will output:
 
 Get the available plugin required core version
 
-.. autofunction:: plugins.Plugin.requires
+.. autofunction:: plugins.Plugin.requires()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2383,7 +2439,7 @@ The above code will output:
 
 Get the available plugin docs page
 
-.. autofunction:: plugins.Plugin.docs
+.. autofunction:: plugins.Plugin.docs()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2399,7 +2455,7 @@ The above code will output:
 
 Get the update centre of the available plugin
 
-.. autofunction:: plugins.Plugin.site
+.. autofunction:: plugins.Plugin.site()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2419,7 +2475,7 @@ Installed
 
 Get the installed plugin name
 
-.. autofunction:: plugins.Installed.name
+.. autofunction:: plugins.Installed.name()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2435,7 +2491,7 @@ The above code will output:
 
 Get the active status of the installed plugin
 
-.. autofunction:: plugins.Installed.active
+.. autofunction:: plugins.Installed.active()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2451,7 +2507,7 @@ The above code will output:
 
 Enable the installed plugin
 
-.. autofunction:: plugins.Installed.enable
+.. autofunction:: plugins.Installed.enable()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2467,7 +2523,7 @@ The above code will output:
 
 Disable the installed plugin
 
-.. autofunction:: plugins.Installed.disable
+.. autofunction:: plugins.Installed.disable()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2483,7 +2539,7 @@ The above code will output:
 
 Get the installed plugin version
 
-.. autofunction:: plugins.Installed.version
+.. autofunction:: plugins.Installed.version()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2499,7 +2555,7 @@ The above code will output:
 
 Get the installed plugin URL
 
-.. autofunction:: plugins.Installed.url
+.. autofunction:: plugins.Installed.url()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2515,7 +2571,7 @@ The above code will output:
 
 Get the installed plugin dependencies
 
-.. autofunction:: plugins.Installed.dependencies
+.. autofunction:: plugins.Installed.dependencies()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2532,7 +2588,7 @@ The above code will output:
 
 Get the installed plugin required core version
 
-.. autofunction:: plugins.Installed.requires
+.. autofunction:: plugins.Installed.requires()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2548,7 +2604,7 @@ The above code will output:
 
 Get the installed plugin pinned status
 
-.. autofunction:: plugins.Installed.pinned
+.. autofunction:: plugins.Installed.pinned()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2564,7 +2620,7 @@ The above code will output:
 
 Delete the installed plugin
 
-.. autofunction:: plugins.Installed.delete
+.. autofunction:: plugins.Installed.delete()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2584,7 +2640,7 @@ Updates
 
 Get the update plugin name
 
-.. autofunction:: plugins.Plugin.name
+.. autofunction:: plugins.Plugin.name()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2600,7 +2656,7 @@ The above code will output:
 
 Get the update plugin version
 
-.. autofunction:: plugins.Plugin.version
+.. autofunction:: plugins.Plugin.version()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2616,7 +2672,7 @@ The above code will output:
 
 Get the update plugin URL
 
-.. autofunction:: plugins.Plugin.url
+.. autofunction:: plugins.Plugin.url()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2632,7 +2688,7 @@ The above code will output:
 
 Get the update plugin compatible status
 
-.. autofunction:: plugins.Plugin.compatible
+.. autofunction:: plugins.Plugin.compatible()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2648,7 +2704,7 @@ The above code will output:
 
 Get the update plugin dependencies
 
-.. autofunction:: plugins.Plugin.dependencies
+.. autofunction:: plugins.Plugin.dependencies()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2664,7 +2720,7 @@ The above code will output:
 
 Get the update plugin required core version
 
-.. autofunction:: plugins.Plugin.requires
+.. autofunction:: plugins.Plugin.requires()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2680,7 +2736,7 @@ The above code will output:
 
 Get the update plugin docs page
 
-.. autofunction:: plugins.Plugin.docs
+.. autofunction:: plugins.Plugin.docs()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2696,7 +2752,7 @@ The above code will output:
 
 Get the update plugin update centre site
 
-.. autofunction:: plugins.Plugin.site
+.. autofunction:: plugins.Plugin.site()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2716,7 +2772,7 @@ Site
 
 Get the update centre site ID
 
-.. autofunction:: plugins.Site.id
+.. autofunction:: plugins.Site.id()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2732,7 +2788,7 @@ The above code will output:
 
 Get the update centre site URL
 
-.. autofunction:: plugins.Site.url
+.. autofunction:: plugins.Site.url()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2748,7 +2804,7 @@ The above code will output:
 
 Check if the update centre has updates
 
-.. autofunction:: plugins.Site.has_updates
+.. autofunction:: plugins.Site.has_updates()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2764,7 +2820,7 @@ The above code will output:
 
 Get the plugin suggested url from the site
 
-.. autofunction:: plugins.Site.suggested_plugins_url
+.. autofunction:: plugins.Site.suggested_plugins_url()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2780,7 +2836,7 @@ The above code will output:
 
 Get the connection check url for the site
 
-.. autofunction:: plugins.Site.connection_check_url
+.. autofunction:: plugins.Site.connection_check_url()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2796,7 +2852,7 @@ The above code will output:
 
 Get the site data timestamp
 
-.. autofunction:: plugins.Site.timestamp
+.. autofunction:: plugins.Site.timestamp()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2815,7 +2871,7 @@ Nodes
 
 Search for a node
 
-.. autofunction:: nodes.Nodes.search
+.. autofunction:: nodes.Nodes.search()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2830,7 +2886,7 @@ The above code will output:
 
 Create a node
 
-.. autofunction:: nodes.Nodes.create
+.. autofunction:: nodes.Nodes.create()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2848,7 +2904,7 @@ The above code will output:
 
 Iterate all nodes
 
-.. autofunction:: nodes.Nodes.iter
+.. autofunction:: nodes.Nodes.iter()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2868,7 +2924,7 @@ The above code will output:
 
 List all nodes
 
-.. autofunction:: nodes.Nodes.list
+.. autofunction:: nodes.Nodes.list()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2883,7 +2939,7 @@ The above code will output:
 
 Get total nodes
 
-.. autofunction:: nodes.Nodes.total
+.. autofunction:: nodes.Nodes.total()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2902,7 +2958,7 @@ Node
 
 Get the node name
 
-.. autofunction:: nodes.Node.name
+.. autofunction:: nodes.Node.name()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2917,7 +2973,7 @@ The above code will output:
 
 Get the node URL
 
-.. autofunction:: nodes.Node.url
+.. autofunction:: nodes.Node.url()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2932,7 +2988,7 @@ The above code will output:
 
 Check if the node is idle
 
-.. autofunction:: nodes.Node.idle
+.. autofunction:: nodes.Node.idle()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2948,7 +3004,7 @@ The above code will output:
 
 Get the node config
 
-.. autofunction:: nodes.Node.config
+.. autofunction:: nodes.Node.config()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2982,7 +3038,7 @@ The above code will output:
 
 Reconfigure the node
 
-.. autofunction:: nodes.Node.reconfig
+.. autofunction:: nodes.Node.reconfig()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -3018,7 +3074,7 @@ The above code will output:
 
 Disable the node
 
-.. autofunction:: nodes.Node.disable
+.. autofunction:: nodes.Node.disable()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -3033,7 +3089,7 @@ The above code will output:
 
 Enable the node
 
-.. autofunction:: nodes.Node.enable
+.. autofunction:: nodes.Node.enable()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -3048,7 +3104,7 @@ The above code will output:
 
 Delete the node
 
-.. autofunction:: nodes.Node.delete
+.. autofunction:: nodes.Node.delete()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins

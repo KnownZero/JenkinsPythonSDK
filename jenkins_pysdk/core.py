@@ -103,8 +103,8 @@ class Core:  # TODO: Revise these messy methods
                    passw_or_token: str = None,
                    timeout: int = None,
                    _session: HTTPSessionResponseObject = None,
-                   ) -> Union[Tuple[HTTPRequestObject, HTTPResponseObject],
-                              Tuple[HTTPSessionRequestObject, HTTPSessionResponseObject]]:
+                   ) -> (Tuple[HTTPRequestObject, HTTPResponseObject] or
+                         Tuple[HTTPSessionRequestObject, HTTPSessionResponseObject]):
         """
         Some HTTP interaction function...
         :param url: The url to hit
@@ -136,7 +136,8 @@ class Core:  # TODO: Revise these messy methods
             return req, resp
         else:
             crumbed_session_req = HTTPSessionRequestObject(
-                method="GET", url=self._build_url(Endpoints.Instance.Crumb), headers=headers,
+                method="GET", url=self._build_url(Endpoints.Instance.Crumb, suffix=Endpoints.Instance.Standard),
+                headers=headers,
                 username=username if username else self.username,
                 passw_or_token=passw_or_token if passw_or_token else self.passw,
                 verify=self.verify,
@@ -158,12 +159,3 @@ class Core:  # TODO: Revise these messy methods
                                                    timeout=timeout if timeout else self.timeout,
                                                    session=crumbed_session.session)
             return request_obj, interact_http_session(request_obj)
-
-
-# class Interact(ABC):
-#     def __init__(self, jenkins):
-#         self._jenkins = jenkins
-#
-#     @property
-#     def config(self):
-#         return

@@ -1,5 +1,6 @@
+
 Quick Start
-=====
+========
 
 .. _installation:
 
@@ -16,8 +17,8 @@ Next, test the connection to your application:
 
 .. _test_connection:
 
-To retrieve a list of random ingredients,
-You can explicitly run ``jenkins.connect()`` function:
+To test the connection to the instance,
+you can explicitly run ``jenkins.connect()`` function:
 
 .. autofunction:: jenkins.Jenkins.connect()
 
@@ -28,6 +29,7 @@ For example (using an API token):
     import jenkins_pysdk.jenkins as jenkins
     conn = jenkins.Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(conn.connect())
+
 The above code will output:
 
 ::

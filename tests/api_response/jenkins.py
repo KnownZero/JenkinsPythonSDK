@@ -1,24 +1,13 @@
-__all__ = ["HTTP_RETRY_COUNT", "HOST_MATCH_REGEX_PATTERN", "HTTP_HEADER_DEFAULT", "Endpoints",
-           "XML_HEADER_DEFAULT", "FORM_HEADER_DEFAULT", "XML_POST_HEADER", "Class",
-           "FORM_MULTIPART_HEADER"]
 
-HTTP_RETRY_COUNT = 1
-HTTP_HEADER_DEFAULT = {"Content-Type": "application/json"}
-XML_HEADER_DEFAULT = {"Content-Type": "application/xml"}
-XML_POST_HEADER = {"Content-Type": "text/xml"}
-FORM_HEADER_DEFAULT = {"Content-Type": "application/x-www-form-urlencoded"}
-FORM_MULTIPART_HEADER = {"Content-Type": "multipart/form-data"}
-
-HOST_MATCH_REGEX_PATTERN = r"^[a-zA-Z0-9.-]+$"
+__all__ = ["Endpoints"]
 
 
 class Endpoints:
     class Instance:
-        Crumb = "crumbIssuer"
+        Crumb = {"_class":"hudson.security.csrf.DefaultCrumbIssuer","crumb":"369cc2704feaf8421211cafce8060424602d497bffd490b5a0539cf6e8a41b3f","crumbRequestField":"Jenkins-Crumb"}
         Connect = "login"
         Standard = "api/json"
         OverallLoad = "overallLoad"
-        Console = "scriptText"
 
     class Manage:
         Reload = "#"
@@ -105,7 +94,6 @@ class Endpoints:
     class UpdateCenter:
         Iter = "sites[id]"
         Site = "updateCenter/site/{site}"
-        Create = "pluginManager/siteConfigure"
 
     class Nodes:
         Computer = "computer"
@@ -113,19 +101,3 @@ class Endpoints:
         Delete = "doDelete"
         Disable = "toggleOffline"
         Create = "doCreateItem"
-
-
-class Class:
-    Folder = "com.cloudbees.hudson.plugins.folder.Folder"
-    Freestyle = "hudson.model.FreeStyleProject"
-    JenkinsFile = ""
-    ListView = "hudson.model.ListView"
-    MyView = "hudson.model.MyView"
-    Dashboard = "hudson.plugins.view.dashboard.Dashboard"
-    UsernamePassword = ""
-
-
-# class References:
-#     class Jobs:
-#         JOBS = "jobs"
-#         VIEWS = "views"
