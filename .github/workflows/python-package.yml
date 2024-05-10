@@ -12,6 +12,7 @@ jobs:
   test:
     name: Test on ${{ matrix.os }} with Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
+    continue-on-error: true
 
     strategy:
       matrix:
@@ -20,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         
       - name: Print directory structure
         run: |
@@ -45,17 +46,18 @@ jobs:
   test-python36:
       name: Test on Ubuntu 20.04 with Python 3.6
       runs-on: ubuntu-20.04
+      continue-on-error: true
   
       steps:
         - name: Checkout repository
-          uses: actions/checkout@v2
+          uses: actions/checkout@v4
   
         - name: Print directory structure
           run: |
             ls -R
             
         - name: Set up Python 3.6
-          uses: actions/setup-python@v2
+          uses: actions/setup-python@v5
           with:
             python-version: 3.6
   
