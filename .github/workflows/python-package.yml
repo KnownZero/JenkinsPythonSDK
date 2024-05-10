@@ -24,6 +24,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
+          architecture: x64
+
+      - name: Print directory structure
+        run: |
+          ls -R
 
       - name: Install dependencies
         run: |
