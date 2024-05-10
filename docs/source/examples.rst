@@ -1724,7 +1724,6 @@ The above code will output:
 
 ::
 
-    No REST endpoint available... returning HTML response for the moment...
     <HTML Output>
 
 Delete the user

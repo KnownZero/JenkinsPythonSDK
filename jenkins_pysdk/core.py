@@ -1,4 +1,4 @@
-from typing import Union, Tuple, Any
+from typing import Tuple, Any
 
 import orjson
 from pydantic import HttpUrl

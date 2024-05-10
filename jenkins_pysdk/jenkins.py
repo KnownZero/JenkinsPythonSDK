@@ -1,20 +1,21 @@
 from __future__ import annotations
+import re
+import time
+import threading
+from typing import Optional
+
+import orjson
 
 import os, sys
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 
-import re
-import time
-
-import threading
-from typing import Optional
-
 from jenkins_pysdk.core import Core
 from jenkins_pysdk.consts import Endpoints, FORM_HEADER_DEFAULT, Class
 from jenkins_pysdk.exceptions import JenkinsConnectionException, JenkinsUnauthorisedException, \
     JenkinsRestartFailed, JenkinsActionFailed, JenkinsGeneralException
-from jenkins_pysdk.objects import JenkinsConnectObject, JenkinsActionObject, Views as r_views, Jobs as r_jobs
+from jenkins_pysdk.objects import JenkinsConnectObject, JenkinsActionObject
+from jenkins_pysdk.objects import Views as r_views, Jobs as r_jobs, Folders as r_folders
 from jenkins_pysdk.jobs import Jobs, Folders
 from jenkins_pysdk.views import Views
 from jenkins_pysdk.users import Users, User
@@ -22,8 +23,6 @@ from jenkins_pysdk.credentials import Credentials
 from jenkins_pysdk.plugins import Plugins
 from jenkins_pysdk.nodes import Nodes
 from jenkins_pysdk.queues import Queue
-
-import orjson
 
 
 __all__ = ["Jenkins"]
@@ -162,6 +161,56 @@ class Jenkins(Core):
         :rtype: :class:`jenkins_pysdk.objects.Flags.Jobs`
         """
         return r_jobs(value=Class.Freestyle)
+
+    @property
+    def Pipeline(self) -> r_jobs:
+        """
+        Flag used to create Pipeline jobs in Jobs.create() method.
+
+        :return: Flag for creating Pipeline jobs
+        :rtype: :class:`jenkins_pysdk.objects.Flags.Jobs`
+        """
+        return r_jobs(value=Class.Pipeline)
+
+    @property
+    def MultiBranchPipeline(self) -> r_jobs:
+        """
+        Flag used to create MultiBranchPipeline jobs in Jobs.create() method.
+
+        :return: Flag for creating MultiBranchPipeline jobs
+        :rtype: :class:`jenkins_pysdk.objects.Flags.Jobs`
+        """
+        return r_jobs(value=Class.MultiBranchPipeline)
+
+    @property
+    def MultiConfigurationProject(self) -> r_jobs:
+        """
+        Flag used to create multi-configuration project jobs in Jobs.create() method.
+
+        :return: Flag for creating multi-configuration project jobs
+        :rtype: :class:`jenkins_pysdk.objects.Flags.Jobs`
+        """
+        return r_jobs(value=Class.MultiConfigurationProject)
+
+    @property
+    def Folder(self) -> r_folders:
+        """
+        Flag used to create Folder in Folders.create() or Folder.create() method.
+
+        :return: Flag for creating Folder
+        :rtype: :class:`jenkins_pysdk.objects.Flags.Jobs`
+        """
+        return r_folders(value=Class.Folder)
+
+    @property
+    def OrganizationFolder(self) -> r_folders:
+        """
+        Flag used to create OrganizationFolder in Folders.create() or Folder.create() method.
+
+        :return: Flag for creating OrganizationFolder
+        :rtype: :class:`jenkins_pysdk.objects.Flags.Jobs`
+        """
+        return r_folders(value=Class.OrganizationFolder)
 
     # @property
     # def enable_logging(self):

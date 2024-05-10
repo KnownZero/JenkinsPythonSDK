@@ -1,7 +1,6 @@
-from collections.abc import Generator
-from typing import List, Optional
-import orjson
+from typing import List, Optional, Generator
 
+import orjson
 from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsActionObject
@@ -171,7 +170,7 @@ class Domain:
         else:
             raise JenkinsNotFound(f"Credential ({cred_id}) was not found in domain ({self.name}).")
 
-    def iter(self) -> Generator[Credential]:
+    def iter(self) -> Generator[Credential, None, None]:
         """
         Iterate over credentials within the domain.
 
@@ -251,7 +250,7 @@ class Credentials:
             raise JenkinsGeneralException(f"Couldn't find {domain} or you don't have permission to view it.")
         return Domain(jenkins=self._jenkins, url=url)
 
-    def iter_domains(self) -> Generator[Domain]:
+    def iter_domains(self) -> Generator[Domain, None, None]:
         """
         Iterate over domains on the Jenkins instance.
 

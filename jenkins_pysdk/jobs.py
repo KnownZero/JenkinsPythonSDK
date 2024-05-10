@@ -1,10 +1,10 @@
-from collections.abc import Generator
-from typing import List
+from typing import List, Generator
 
 import orjson
 from pydantic import HttpUrl
 
-from jenkins_pysdk.objects import JenkinsValidateJob, JenkinsActionObject, Jobs as r_jobs
+from jenkins_pysdk.objects import JenkinsValidateJob, JenkinsActionObject
+from jenkins_pysdk.objects import Jobs as r_jobs, Folders as r_folders
 from jenkins_pysdk.exceptions import JenkinsNotFound, JenkinsGeneralException
 from jenkins_pysdk.consts import Endpoints, Class, XML_HEADER_DEFAULT, XML_POST_HEADER
 from jenkins_pysdk.builders import Builder
@@ -196,8 +196,7 @@ class Jobs:
         :raises JenkinsNotFound: If the job is not found.
         """
         built = self._jenkins._build_job_http_path(path)
-        endpoint = f"{built}/{Endpoints.Instance.Standard}"
-        url = self._jenkins._build_url(endpoint)
+        url = self._jenkins._build_url(built, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
@@ -205,7 +204,7 @@ class Jobs:
             raise JenkinsNotFound(f"[{resp_obj.status_code}] {path} not found.")
         else:
             data = orjson.loads(resp_obj.content)
-            if data['_class'] != Class.Folder:
+            if data['_class'] not in [Class.Folder, Class.OrganizationFolder]:
                 return True
             return False
 
@@ -227,7 +226,7 @@ class Jobs:
         obj._raw = resp_obj
         return obj
 
-    def _create_job(self, job_name: str, xml, mode: r_jobs, folder_path: HttpUrl = None) \
+    def _create_job(self, job_name: str, xml, mode: str, folder_path: HttpUrl = None) \
             -> JenkinsActionObject or JenkinsNotFound:
         create_endpoint = Endpoints.Jobs.Create
         endpoint = f"{folder_path}/{create_endpoint}" if folder_path else create_endpoint
@@ -245,7 +244,7 @@ class Jobs:
         obj._raw = resp_obj._raw
         return obj
 
-    def create(self, job_path: str, xml: str, *args: r_jobs) -> JenkinsActionObject:
+    def create(self, job_path: str, xml: str, job_type: r_jobs) -> JenkinsActionObject:
         """
         Create a job on the Jenkins instance.
 
@@ -253,8 +252,8 @@ class Jobs:
         :type job_path: str
         :param xml: XML configuration for the job.
         :type xml: str
-        :param args: Additional parameters for job creation.
-        :type args: :class:`jenkins_pysdk.objects.Jobs` (Default: Freestyle)
+        :param job_type: Additional parameters for job creation.
+        :type job_type: :class:`jenkins_pysdk.objects.Jobs`
         :return: Object representing the result of the creation action.
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
@@ -265,14 +264,13 @@ class Jobs:
         except JenkinsNotFound:
             pass
 
-        # TODO: Add all other jobs types
-        mode = args[0].value if args else Class.Freestyle
+        mode = job_type.value
         job_name, job_parent = self._jenkins._get_folder_parent(job_path)
         built = self._jenkins._build_job_http_path(job_parent)
         created = self._create_job(job_name, xml, mode, built)
         return created
 
-    def iter(self, folder=None, _paginate=0) -> Generator[Job]:
+    def iter(self, folder=None, _paginate=0) -> Generator[Job, None, None]:
         """
         Iterate through jobs in the Jenkins instance.
 
@@ -321,7 +319,7 @@ class Jobs:
                 elif _paginate == 0:
                     break
 
-    def _fetch_job_iter(self, job_url) -> Generator[Job]:
+    def _fetch_job_iter(self, job_url) -> Generator[Job, None, None]:
         # Pagination not needed here because function repeats itself if needed
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
@@ -337,7 +335,7 @@ class Jobs:
         except Exception as error:
             print(error)
 
-    def _fetch_job(self, job_url) -> Generator[Job]:
+    def _fetch_job(self, job_url) -> Generator[Job, None, None]:
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         data = orjson.loads(resp_obj.content)
@@ -449,7 +447,7 @@ class Folder:
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code == 400:
-            if re.search(r"A job already exists with the name", str(resp_obj.content)):  # TODO: This is method unreliable
+            if re.search(r"A job already exists with the name", str(resp_obj.content)):  # TODO: This method doesn't seem reliable
                 raise JenkinsGeneralException(f"{new_job_name} already exists.")
             msg = f"[{resp_obj.status_code}] Failed to copy folder."
         elif resp_obj.status_code != 200:
@@ -477,7 +475,8 @@ class Folder:
         obj._raw = resp_obj._raw
         return obj
 
-    def create(self, folder_name: str, xml: str or Builder.Folder) -> JenkinsActionObject:
+    def create(self, folder_name: str, xml: str or Builder.Folder,
+               folder_type: r_folders = Class.Folder) -> JenkinsActionObject:
         """
         Creates sub-folders in the current path.
 
@@ -485,11 +484,14 @@ class Folder:
         :type folder_name: str
         :param xml: The XML configuration for the folder. Can be a string or a Builder.Folder object.
         :type xml: str or Builder.Folder
+        :param folder_type: (Optional) The type of folder to create
+        :type folder_type: :class:`jenkins_pysdk.objects.Folders`
         :return: The result of the action.
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        return Folders(self._jenkins)._create_folder(folder_name, xml, self.path)
+        mode = folder_type.value if isinstance(folder_type, r_folders) else folder_type
+        return Folders(self._jenkins)._create_folder(folder_name, xml, self.path, mode)
 
     @property
     def config(self) -> str:
@@ -569,14 +571,14 @@ class Folders:
         elif resp_obj.status_code != 200:
             raise JenkinsNotFound(f"{path} not found.")
         data = orjson.loads(resp_obj.content)
-        if data['_class'] == Class.Folder:
+        if data['_class'] in [Class.Folder, Class.OrganizationFolder]:
             return True
         return False
 
-    def _create_folder(self, folder_name: str, xml, folder_path: str = None) -> JenkinsActionObject:
+    def _create_folder(self, folder_name: str, xml, mode: str, folder_path: str = None) -> JenkinsActionObject:
         endpoint = self._jenkins._build_job_http_path(folder_path)
         url = self._jenkins._build_url(endpoint, suffix=Endpoints.Jobs.Create)
-        params = {"name": folder_name, "mode": Class.Folder}
+        params = {"name": folder_name, "mode": mode}
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_HEADER_DEFAULT,
                                                      params=params, data=xml)
         if resp_obj.status_code == 404:
@@ -589,7 +591,8 @@ class Folders:
         obj._raw = resp_obj._raw
         return obj
 
-    def create(self, folder_path: str, xml: str or Builder.Folder) -> JenkinsActionObject:
+    def create(self, folder_path: str, xml: str or Builder.Folder,
+               folder_type: r_folders = Class.Folder) -> JenkinsActionObject:
         """
         Creates a folder at the specified path with the given XML configuration.
 
@@ -597,6 +600,8 @@ class Folders:
         :type folder_path: str
         :param xml: The XML configuration for the folder.
         :type xml: str or Builder.Folder
+        :param folder_type: (Optional) The type of folder to create
+        :type folder_type: :class:`jenkins_pysdk.objects.Folders`
         :return: The result of the folder creation operation.
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsNotFound: If the folder was not found.
@@ -613,13 +618,14 @@ class Folders:
 
         try:
             built_path = self._jenkins._build_job_http_path(folder_parent)
-            return self._create_folder(folder_name, xml, built_path)
+            mode = folder_type.value
+            return self._create_folder(folder_name, xml, mode, built_path)
         except JenkinsNotFound as error:
             if not self.is_folder(folder_parent):
                 raise JenkinsNotFound(f"Failed to create folder because parent path not found: {folder_parent}.")
             raise error
 
-    def iter(self, folder: str = None, _paginate: int = 0) -> Generator[Folder]:
+    def iter(self, folder: str = None, _paginate: int = 0) -> Generator[Folder, None, None]:
         """
         Iterate over folders within the specified folder.
 
@@ -666,7 +672,7 @@ class Folders:
                 elif _paginate == 0:
                     break
 
-    def _fetch_folder_iter(self, folder_url) -> Generator[Folder]:
+    def _fetch_folder_iter(self, folder_url) -> Generator[Folder, None, None]:
         json_url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=folder_url)
         req_obj, resp_obj = self._jenkins._send_http(url=json_url)
         data = orjson.loads(resp_obj.content)
@@ -679,7 +685,7 @@ class Folders:
             if not folders:
                 yield from self._fetch_folder(data['url'])
 
-    def _fetch_folder(self, folder_url) -> Generator[Folder]:
+    def _fetch_folder(self, folder_url) -> Generator[Folder, None, None]:
         json_url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=folder_url)
         req_obj, resp_obj = self._jenkins._send_http(url=json_url)
         data = orjson.loads(resp_obj.content)

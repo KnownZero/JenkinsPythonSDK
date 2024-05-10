@@ -1,5 +1,4 @@
-from collections.abc import Generator
-from typing import List, Union, Dict, BinaryIO
+from typing import List, Union, Dict, BinaryIO, Generator
 
 import orjson
 from pydantic import HttpUrl
@@ -129,7 +128,7 @@ class UpdateCenter:
         else:
             raise JenkinsNotFound(f"Site ({name}) was not found.")
 
-    def iter(self) -> Generator[Site]:
+    def iter(self) -> Generator[Site, None, None]:
         """
         Iterate over the sites in the update center.
 
@@ -331,7 +330,7 @@ class Installed:
         :rtype: jenkins_pysdk.objects.JenkinsActionObject
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        # TODO: Add restart param
+
         url = self._jenkins._build_url(Endpoints.Plugins.PluginManager,
                                        suffix=Endpoints.Plugins.Disable.format(plugin=self.name))
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
@@ -413,7 +412,6 @@ class Installed:
         :rtype: jenkins_pysdk.objects.JenkinsActionObject
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        # TODO: Add restart param
         url = self._jenkins._build_url(Endpoints.Plugins.PluginManager,
                                        suffix=Endpoints.Plugins.Uninstall.format(plugin=self.name))
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
@@ -458,7 +456,7 @@ class PluginGroup:
         else:
             raise JenkinsNotFound(f"Plugin ({id}) was not found in {self.type}.")
 
-    def iter(self, site: str = "default", _paginate: int = 0) -> Generator[Union[Plugin, Installed]]:
+    def iter(self, site: str = "default", _paginate: int = 0) -> Generator[Union[Plugin, Installed], None, None]:
         """
         Iterate over the plugins or installed plugins within the plugin group.
 
@@ -568,7 +566,7 @@ class Plugins:
         :param filename: The name of the plugin file.
         :type filename: str
         :param file_content: The content of the plugin file as bytes.
-        :type file_content: bytes
+        :type file_content: bytes or BinaryIO
         :return: A JenkinsActionObject representing the upload action.
         :rtype: jenkins_pysdk.objects.JenkinsActionObject
         :raises JenkinsGeneralException: If a general exception occurs.

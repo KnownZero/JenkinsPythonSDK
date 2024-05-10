@@ -1,8 +1,7 @@
 import re
-from collections.abc import Generator
-from typing import List, Optional
-import orjson
+from typing import List, Optional, Generator
 
+import orjson
 from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsActionObject
@@ -270,7 +269,7 @@ class Builds:
         data = orjson.loads(resp_obj.content)
         return len(data.get('builds', []))
 
-    def iter(self) -> Generator[Build]:
+    def iter(self) -> Generator[Build, None, None]:
         """
         Iterate over builds in the build history of the job.
 
