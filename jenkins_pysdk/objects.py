@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 from typing import Any, Optional
 from pydantic import BaseModel, HttpUrl, PrivateAttr
 
@@ -93,6 +92,9 @@ class Views(Flags):
 
 
 class Jobs(Flags):
+    value: str
+
+class Folders(Flags):
     value: str
 
 

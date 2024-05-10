@@ -1,8 +1,8 @@
 import re
 from collections.abc import Generator
 from typing import List, Optional
-import orjson
 
+import orjson
 from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsActionObject

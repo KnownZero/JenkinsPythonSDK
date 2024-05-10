@@ -1,7 +1,7 @@
 from collections.abc import Generator
 from typing import List
-import orjson
 
+import orjson
 from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsValidateJob, JenkinsActionObject

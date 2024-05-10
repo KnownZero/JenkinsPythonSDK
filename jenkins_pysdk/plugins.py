@@ -331,7 +331,7 @@ class Installed:
         :rtype: jenkins_pysdk.objects.JenkinsActionObject
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        # TODO: Add restart param
+
         url = self._jenkins._build_url(Endpoints.Plugins.PluginManager,
                                        suffix=Endpoints.Plugins.Disable.format(plugin=self.name))
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
@@ -413,7 +413,6 @@ class Installed:
         :rtype: jenkins_pysdk.objects.JenkinsActionObject
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        # TODO: Add restart param
         url = self._jenkins._build_url(Endpoints.Plugins.PluginManager,
                                        suffix=Endpoints.Plugins.Uninstall.format(plugin=self.name))
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
@@ -568,7 +567,7 @@ class Plugins:
         :param filename: The name of the plugin file.
         :type filename: str
         :param file_content: The content of the plugin file as bytes.
-        :type file_content: bytes
+        :type file_content: bytes or BinaryIO
         :return: A JenkinsActionObject representing the upload action.
         :rtype: jenkins_pysdk.objects.JenkinsActionObject
         :raises JenkinsGeneralException: If a general exception occurs.

@@ -1,7 +1,7 @@
 from collections.abc import Generator
 from typing import List
-import orjson
 
+import orjson
 from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsActionObject
@@ -68,7 +68,7 @@ class User:
 
     def credentials(self, domain="_") -> c_domain:
         """
-        Search the user's personal credential safe.
+        Search the users' personal credential safe.
 
         :param domain: The domain to search for credentials (default is "_").
         :type domain: str, optional
@@ -111,10 +111,6 @@ class User:
         :rtype: List[jenkins_pysdk.builds.Build]
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        import time
-        # TODO: Something about this...
-        print(Warning("No REST endpoint available... returning HTML response for the moment..."))
-        time.sleep(1)
         url = self._jenkins._build_url(Endpoints.User.Builds, prefix=self._user_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         code = resp_obj.status_code
@@ -146,7 +142,7 @@ class User:
 
     def logout(self) -> JenkinsActionObject:
         """
-        Terminate all the users' sessions.
+        Terminate the user's session.
 
         :return: Result of the logout request
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`

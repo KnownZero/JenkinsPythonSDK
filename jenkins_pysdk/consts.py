@@ -117,15 +117,12 @@ class Endpoints:
 
 class Class:
     Folder = "com.cloudbees.hudson.plugins.folder.Folder"
+    OrganizationFolder = "jenkins.branch.OrganizationFolder"
     Freestyle = "hudson.model.FreeStyleProject"
+    Pipeline = "org.jenkinsci.plugins.workflow.job.WorkflowJob"
+    MultiConfigurationProject = "hudson.matrix.MatrixProject"
+    MultiBranchPipeline = "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject"
     JenkinsFile = ""
     ListView = "hudson.model.ListView"
     MyView = "hudson.model.MyView"
     Dashboard = "hudson.plugins.view.dashboard.Dashboard"
-    UsernamePassword = ""
-
-
-# class References:
-#     class Jobs:
-#         JOBS = "jobs"
-#         VIEWS = "views"

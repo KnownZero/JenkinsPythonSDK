@@ -28,6 +28,7 @@ jenkins = Jenkins(
 )
 ```
 #### OR
+
 ```python
 from jenkins_pysdk.jenkins import Jenkins
 jenkins = Jenkins(
@@ -36,8 +37,14 @@ jenkins = Jenkins(
     token="<token>"
 )
 ```
+#### Why is the token parameter different?
+```
+Using an API token removes the need for Crumbs in your requests. 
 
-#### See [docs](https://jenkinspythonsdk.readthedocs.io/en/latest/index.html) for full documentation.
+Of course, the SDK handles crumbs for you, but it will reduce the number of requests. 
+```
+
+### See [[JenkinsPythonSDK Docs](https://jenkinspythonsdk.readthedocs.io/en/latest/index.html)] for full documentation.
 
 ## Contributing
 
@@ -74,7 +81,7 @@ SOFTWARE.
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
-This code is free to use, and I will not take ANY responsibility for any damage that you create yourself.
+### This code is free to use, and I will not take ANY responsibility for any damage that you create yourself.
 
 ## Contributors
 KnownZero

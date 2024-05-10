@@ -28,7 +28,7 @@ class Workspace:
 
     def download(self, path: str or Path, workspace_file: str = None) -> JenkinsActionObject:
         """
-        Download workspace files for the Jenkins job.
+        Download workspace files from the job.
 
         :param path: The directory where the workspace files will be saved.
         :type path: str
