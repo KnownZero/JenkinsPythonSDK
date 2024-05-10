@@ -1,5 +1,4 @@
-from collections.abc import Generator
-from typing import List
+from typing import List, Generator
 
 import orjson
 
@@ -228,7 +227,7 @@ class Nodes:
         obj._raw = resp_obj._raw
         return obj
 
-    def iter(self) -> Generator[Node]:
+    def iter(self) -> Generator[Node, None, None]:
         """
         Iterate over the nodes.
 

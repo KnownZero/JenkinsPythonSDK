@@ -2,7 +2,7 @@
 
 ## Release (Minor/Fixes) 1.3.5 - 10/05/2024
 ### Fixes:
-- Fix import errors
+- Fix import errors in lower py versions
 
 ### New:
 - Ability to create more jobs:

@@ -1,5 +1,4 @@
-from collections.abc import Generator
-from typing import List
+from typing import List, Generator
 
 import orjson
 from pydantic import HttpUrl
@@ -204,7 +203,7 @@ class Views:
         created = self._create_view(name, xml)
         return created
 
-    def iter(self, folder: str = None, _paginate=0) -> Generator[View]:
+    def iter(self, folder: str = None, _paginate=0) -> Generator[View, None, None]:
         """
         Iterate through views.
 
@@ -249,7 +248,7 @@ class Views:
                 elif _paginate == 0:
                     break
 
-    def _fetch_view_iter(self, job_url) -> Generator[View]:
+    def _fetch_view_iter(self, job_url) -> Generator[View, None, None]:
         # Pagination not needed here because function repeats itself if needed
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
@@ -263,7 +262,7 @@ class Views:
         for item in views:
             yield View(jenkins=self._jenkins, name=item['name'], url=item['url'])
 
-    def _fetch_view(self, view_url) -> Generator[View]:
+    def _fetch_view(self, view_url) -> Generator[View, None, None]:
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=view_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         data = orjson.loads(resp_obj.content)

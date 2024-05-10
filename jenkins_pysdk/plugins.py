@@ -1,5 +1,4 @@
-from collections.abc import Generator
-from typing import List, Union, Dict, BinaryIO
+from typing import List, Union, Dict, BinaryIO, Generator
 
 import orjson
 from pydantic import HttpUrl
@@ -129,7 +128,7 @@ class UpdateCenter:
         else:
             raise JenkinsNotFound(f"Site ({name}) was not found.")
 
-    def iter(self) -> Generator[Site]:
+    def iter(self) -> Generator[Site, None, None]:
         """
         Iterate over the sites in the update center.
 
@@ -457,7 +456,7 @@ class PluginGroup:
         else:
             raise JenkinsNotFound(f"Plugin ({id}) was not found in {self.type}.")
 
-    def iter(self, site: str = "default", _paginate: int = 0) -> Generator[Union[Plugin, Installed]]:
+    def iter(self, site: str = "default", _paginate: int = 0) -> Generator[Union[Plugin, Installed], None, None]:
         """
         Iterate over the plugins or installed plugins within the plugin group.
 

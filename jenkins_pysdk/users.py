@@ -1,5 +1,4 @@
-from collections.abc import Generator
-from typing import List
+from typing import List, Generator
 
 import orjson
 from pydantic import HttpUrl
@@ -189,7 +188,7 @@ class Users:
         data = self._jenkins._validate_url_returned_from_instance(data)
         return User(self._jenkins, data.get('absoluteUrl', url))
 
-    def iter(self) -> Generator[User]:
+    def iter(self) -> Generator[User, None, None]:
         """
         Iterate over all users.
 

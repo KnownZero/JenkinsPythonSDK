@@ -1,6 +1,5 @@
 import re
-from collections.abc import Generator
-from typing import List, Optional
+from typing import List, Optional, Generator
 
 import orjson
 from pydantic import HttpUrl
@@ -270,7 +269,7 @@ class Builds:
         data = orjson.loads(resp_obj.content)
         return len(data.get('builds', []))
 
-    def iter(self) -> Generator[Build]:
+    def iter(self) -> Generator[Build, None, None]:
         """
         Iterate over builds in the build history of the job.
 

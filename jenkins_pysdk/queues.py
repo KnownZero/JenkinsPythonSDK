@@ -1,5 +1,4 @@
-from collections.abc import Generator
-from typing import List
+from typing import List, Generator
 
 import orjson
 
@@ -131,7 +130,7 @@ class Queue:
     def __init__(self, jenkins):
         self._jenkins = jenkins
 
-    def iter(self, _paginate=0) -> Generator[QueueItem]:
+    def iter(self, _paginate=0) -> Generator[QueueItem, None, None]:
         """
         Iterates over the items in the Jenkins queue.
 

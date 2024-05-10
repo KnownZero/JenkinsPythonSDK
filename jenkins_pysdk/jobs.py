@@ -1,5 +1,4 @@
-from collections.abc import Generator
-from typing import List
+from typing import List, Generator
 
 import orjson
 from pydantic import HttpUrl
@@ -271,7 +270,7 @@ class Jobs:
         created = self._create_job(job_name, xml, mode, built)
         return created
 
-    def iter(self, folder=None, _paginate=0) -> Generator[Job]:
+    def iter(self, folder=None, _paginate=0) -> Generator[Job, None, None]:
         """
         Iterate through jobs in the Jenkins instance.
 
@@ -320,7 +319,7 @@ class Jobs:
                 elif _paginate == 0:
                     break
 
-    def _fetch_job_iter(self, job_url) -> Generator[Job]:
+    def _fetch_job_iter(self, job_url) -> Generator[Job, None, None]:
         # Pagination not needed here because function repeats itself if needed
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
@@ -336,7 +335,7 @@ class Jobs:
         except Exception as error:
             print(error)
 
-    def _fetch_job(self, job_url) -> Generator[Job]:
+    def _fetch_job(self, job_url) -> Generator[Job, None, None]:
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         data = orjson.loads(resp_obj.content)
@@ -626,7 +625,7 @@ class Folders:
                 raise JenkinsNotFound(f"Failed to create folder because parent path not found: {folder_parent}.")
             raise error
 
-    def iter(self, folder: str = None, _paginate: int = 0) -> Generator[Folder]:
+    def iter(self, folder: str = None, _paginate: int = 0) -> Generator[Folder, None, None]:
         """
         Iterate over folders within the specified folder.
 
@@ -673,7 +672,7 @@ class Folders:
                 elif _paginate == 0:
                     break
 
-    def _fetch_folder_iter(self, folder_url) -> Generator[Folder]:
+    def _fetch_folder_iter(self, folder_url) -> Generator[Folder, None, None]:
         json_url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=folder_url)
         req_obj, resp_obj = self._jenkins._send_http(url=json_url)
         data = orjson.loads(resp_obj.content)
@@ -686,7 +685,7 @@ class Folders:
             if not folders:
                 yield from self._fetch_folder(data['url'])
 
-    def _fetch_folder(self, folder_url) -> Generator[Folder]:
+    def _fetch_folder(self, folder_url) -> Generator[Folder, None, None]:
         json_url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=folder_url)
         req_obj, resp_obj = self._jenkins._send_http(url=json_url)
         data = orjson.loads(resp_obj.content)
