@@ -21,11 +21,7 @@ pip install jenkins-pysdk
 
 ```python
 from jenkins_pysdk.jenkins import Jenkins
-jenkins = Jenkins(
-    host="<host>", 
-    username="<username>", 
-    passw="<passw>"
-)
+jenkins = Jenkins(host="<host>", username="<username>", passw="<passw>")
 ```
 #### OR
 
@@ -34,7 +30,9 @@ from jenkins_pysdk.jenkins import Jenkins
 jenkins = Jenkins(
     host="<host>", 
     username="<username>",
-    token="<token>"
+    token="<token>",
+    proxy={},
+    timeout=60
 )
 ```
 #### Why is the token parameter different?
