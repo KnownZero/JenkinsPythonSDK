@@ -6,7 +6,7 @@ from pydantic import BaseModel, HttpUrl, PrivateAttr
 
 __all__ = ["HTTPRequestObject", "JenkinsConnectObject", "HTTPResponseObject", "JenkinsActionObject", "Parameter",
            "Filter", "Flags", "Setting", "HTTPSessionResponseObject", "HTTPSessionRequestObject", "JenkinsValidateJob",
-           "Views", "Jobs"]
+           "Views", "Jobs", "Folders"]
 
 
 class JenkinsSafe(BaseModel):
