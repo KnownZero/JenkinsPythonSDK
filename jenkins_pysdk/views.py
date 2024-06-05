@@ -5,7 +5,11 @@ from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsValidateJob, JenkinsActionObject
 from jenkins_pysdk.exceptions import JenkinsNotFound, JenkinsGeneralException
-from jenkins_pysdk.consts import Endpoints, XML_HEADER_DEFAULT, XML_POST_HEADER
+from jenkins_pysdk.consts import (
+    Endpoints,
+    XML_HEADER_DEFAULT,
+    XML_POST_HEADER
+)
 from jenkins_pysdk.builders import Builder
 
 __all__ = ["Views", "View"]
@@ -58,15 +62,17 @@ class View:
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.Jobs.Xml, prefix=self._view_url)
-        print(url)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER, data=str(xml))
         msg = f"[{resp_obj.status_code}] Successfully reconfigured view ({self._view_name})."
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error. Check the internal logs.")
         elif resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to reconfigure view ({self._view_name})."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def delete(self) -> JenkinsActionObject:
@@ -79,10 +85,13 @@ class View:
         url = self._jenkins._build_url(Endpoints.Views.Delete, prefix=self._view_url)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
         msg = f"[{resp_obj.status_code}] Successfully deleted view ({self._view_name})."
+
         if resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to delete view ({self._view_name})."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     @property
@@ -97,8 +106,10 @@ class View:
         url = self._jenkins._build_url(Endpoints.Jobs.Xml, prefix=self._view_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url, headers=XML_HEADER_DEFAULT)
         code = resp_obj.status_code
+
         if code != 200:
             raise JenkinsGeneralException(f"[{code}] Failed to download view XML.")
+
         return resp_obj.content
 
 
@@ -124,8 +135,10 @@ class Views:
         """
         # TODO: Get view_name from API as results won't be consistent with User Views
         validated = self._validate_view(view_path)
+
         if not validated.is_valid:
             raise JenkinsNotFound(f"Could not retrieve {view_path} because it doesn't exist.")
+
         return View(jenkins=self._jenkins, name=view_path, url=validated.url)
 
     def is_view(self, path: str) -> bool:
@@ -142,6 +155,7 @@ class Views:
         built = self._jenkins._build_view_http_path(path)
         url = self._jenkins._build_url(built)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code == 404:
@@ -153,33 +167,38 @@ class Views:
         job = self._jenkins._build_view_http_path(view_path)
         url = self._jenkins._build_url(job)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
         if resp_obj.status_code == 200:
             validated = True
         elif resp_obj.status_code in (400, 404):
             validated = False
         else:
             validated = None
+
         if not self.is_view(view_path):
             raise JenkinsGeneralException(f"{view_path} is not a view.")
 
         obj = JenkinsValidateJob(url=url, is_valid=validated)
         obj._raw = resp_obj
+
         return obj
 
     def _create_view(self, view_name: str, xml) -> JenkinsActionObject:
         params = {"name": view_name}
         url = self._jenkins._build_url(Endpoints.Views.Create)
-
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER,
                                                      params=params, data=str(xml))
+
         if resp_obj.status_code == 200:
             msg = f"[{resp_obj.status_code}] Successfully created {view_name}."
         elif resp_obj.status_code == 400:
             msg = f"[{resp_obj.status_code}] Bad request for {view_name}."
         else:
             msg = f"[{resp_obj.status_code}] Failed to create view {view_name}."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def create(self, name: str, xml: str or Builder.View) -> JenkinsActionObject:
@@ -201,6 +220,7 @@ class Views:
             pass
 
         created = self._create_view(name, xml)
+
         return created
 
     def iter(self, folder: str = None, _paginate=0) -> Generator[View, None, None]:

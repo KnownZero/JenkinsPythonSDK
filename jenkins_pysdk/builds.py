@@ -1,5 +1,11 @@
 import re
-from typing import List, Optional, Generator
+import time
+from typing import (
+    List,
+    Optional,
+    Generator,
+    Union
+)
 
 import orjson
 from pydantic import HttpUrl
@@ -29,8 +35,10 @@ class Build:
     def _get_raw(self) -> orjson.loads:
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self._build_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get build information.")
+
         return orjson.loads(resp_obj.content)
 
     @property
@@ -63,24 +71,62 @@ class Build:
         """
         return str(self._raw['description'])
 
-    def console(self, progressive=False, html=False) -> str:
+    def console(self, **kws) -> Union[str, Generator[str, None, None]]:
         """
         Retrieve the console output of the build.
 
-        :param progressive: Whether to retrieve progressive console output.
-        :type progressive: bool, optional
-        :param html: Whether to retrieve HTML-formatted console output.
-        :type html: bool, optional
+        :param kws: Keyword arguments.
+                    - progressive (bool, optional): Whether to retrieve progressive console output.
+                    - html (bool, optional): Whether to retrieve HTML-formatted console output.
+                    - _start (int, optional): Console output bytes offset (Only works with progressive/HTML - use with caution, as you may lose output).
         :return: The console output of the build.
-        :rtype: str
+        :rtype: str or Generator[str, None, None]
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        # TODO: Implement params
+        progressive = kws.get('progressive', False)
+        html = kws.get('html', False)
+        _start = kws.get('_start', 0)
+
+        if progressive and html:
+            raise JenkinsGeneralException("You cannot use progressive and HTML together.")
+
+        if not progressive and not html:
+            return self._get_full_console_output()
+
+        return self._get_progressive_console_output(html, _start)
+
+    def _get_full_console_output(self) -> str:
         url = self._jenkins._build_url(Endpoints.Builds.BuildConsoleText, prefix=self._build_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch build logs.")
+
         return resp_obj.content
+
+    def _get_progressive_console_output(self, html: bool, _start: int) -> Generator[str, None, None]:
+        endpoint = Endpoints.Builds.ProgressiveHtml if html else Endpoints.Builds.ProgressiveConsoleText
+
+        while True:
+            url = self._jenkins._build_url(endpoint, prefix=self._build_url)
+            req_obj, resp_obj = self._jenkins._send_http(url=url, params={"start": _start})
+
+            if resp_obj.status_code != 200:
+                raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch build logs.")
+
+            try:
+                offset = int(resp_obj._raw.headers['X-Text-Size'])
+                if offset > _start:
+                    yield resp_obj.content
+
+                if bool(resp_obj._raw.headers['X-More-Data']):
+                    _start += offset
+                    time.sleep(5)  # Sleep 5 same as UI
+                    continue
+
+                return
+            except KeyError:
+                return
 
     def delete(self) -> JenkinsActionObject:
         """
@@ -92,10 +138,13 @@ class Build:
         url = self._jenkins._build_url(Endpoints.Builds.Delete, prefix=self._build_url)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
         msg = f"[{resp_obj.status_code}] Successfully deleted build ({self.number})."
+
         if resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to delete build ({self.number})."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     @property
@@ -110,8 +159,10 @@ class Build:
         # TODO: Change this junk XML output
         url = self._jenkins._build_url(Endpoints.Builds.Changes, prefix=self._build_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch build changes.")
+
         return resp_obj.content
 
     def rebuild(self) -> JenkinsActionObject:
@@ -130,14 +181,19 @@ class Build:
         except JenkinsNotFound:
             raise JenkinsGeneralException(f"Operation not available. You are missing the rebuild plugin.\n"
                                           f"https://plugins.jenkins.io/rebuild/")
+
         url = self._jenkins._build_url(Endpoints.Builds.RebuildCurrent, prefix=self._build_url, suffix="/")
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT)
-        if resp_obj.status_code in [200, 201]:
-            msg = f"[{resp_obj.status_code}] Successfully triggered a rebuild of this build ({self.number})."
-            obj = JenkinsActionObject(request=req_obj, response=resp_obj, content=msg, status_code=resp_obj.status_code)
-            obj._raw = resp_obj._raw
-            return obj
-        raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to trigger a rebuild of this build ({self.number}).")
+
+        if resp_obj.status_code not in [200, 201]:
+            raise JenkinsGeneralException(
+                f"[{resp_obj.status_code}] Failed to trigger a rebuild of this build ({self.number}).")
+
+        msg = f"[{resp_obj.status_code}] Successfully triggered a rebuild of this build ({self.number})."
+        obj = JenkinsActionObject(request=req_obj, response=resp_obj, content=msg, status_code=resp_obj.status_code)
+        obj._raw = resp_obj._raw
+
+        return obj
 
     # @property
     # def timings(self):
@@ -160,6 +216,7 @@ class Build:
         """
         build_number = re.search(r"(\d+)/$", str(self._build_url)).group(1)
         job_url = re.search(r'^(.*?)(?=/\d+/)', str(self._build_url)).group(1)
+
         return Builds(self._jenkins, job_url).search(int(build_number) + 1)
 
     @property
@@ -172,6 +229,7 @@ class Build:
         """
         build_number = re.search(r"(\d+)/$", str(self._build_url)).group(1)
         job_url = re.search(r'^(.*?)(?=/\d+/)', str(self._build_url)).group(1)
+
         return Builds(self._jenkins, job_url).search(int(build_number) - 1)
 
     @property
@@ -214,6 +272,7 @@ class Build:
         """
         if bool(self._raw['inProgress']):
             return False
+
         return True
 
     @property
@@ -263,10 +322,12 @@ class Builds:
         """
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch job information.")
 
         data = orjson.loads(resp_obj.content)
+
         return len(data.get('builds', []))
 
     def iter(self) -> Generator[Build, None, None]:
@@ -279,11 +340,13 @@ class Builds:
         """
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch job information.")
 
         data = orjson.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
+
         for build in data.get('builds', []):
             yield Build(self._jenkins, build['url'])
 
@@ -300,13 +363,16 @@ class Builds:
     def _fetch_build(self, index: int) -> Build:
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch last job.")
 
         data = orjson.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
+
         if not data.get('builds', []):
             raise JenkinsGeneralException("This job has no builds.")
+
         for build in data.get('builds', []):
             if int(build['number']) == index:
                 return Build(self._jenkins, build['url'])
@@ -360,12 +426,14 @@ class Builds:
         url = self._jenkins._build_url(endpoint, prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT,
                                                      params=params, data=parameters)
-        if resp_obj.status_code in [200, 201]:
-            msg = f"[{resp_obj.status_code}] Successfully triggered a new build."
-            obj = JenkinsActionObject(request=req_obj, response=resp_obj, content=msg, status_code=resp_obj.status_code)
-            obj._raw = resp_obj._raw
-            return obj
-        raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to trigger a new build.")
+        if resp_obj.status_code not in [200, 201]:
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to trigger a new build.")
+
+        msg = f"[{resp_obj.status_code}] Successfully triggered a new build."
+        obj = JenkinsActionObject(request=req_obj, response=resp_obj, content=msg, status_code=resp_obj.status_code)
+        obj._raw = resp_obj._raw
+
+        return obj
 
     def rebuild_last(self) -> JenkinsActionObject:
         """
@@ -383,11 +451,14 @@ class Builds:
         except JenkinsNotFound:
             raise JenkinsGeneralException(f"Operation not available. You are missing the rebuild plugin.\n"
                                           f"https://plugins.jenkins.io/rebuild/")
+
         url = self._jenkins._build_url(Endpoints.Builds.RebuildLast, prefix=self._job_url, suffix="/")
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT)
-        if resp_obj.status_code in [200, 201]:
-            msg = f"[{resp_obj.status_code}] Successfully triggered a rebuild of the last build."
-            obj = JenkinsActionObject(request=req_obj, response=resp_obj, content=msg, status_code=resp_obj.status_code)
-            obj._raw = resp_obj._raw
-            return obj
-        raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to trigger a rebuild of the last build.")
+        if resp_obj.status_code not in [200, 201]:
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to trigger a rebuild of the last build.")
+
+        msg = f"[{resp_obj.status_code}] Successfully triggered a rebuild of the last build."
+        obj = JenkinsActionObject(request=req_obj, response=resp_obj, content=msg, status_code=resp_obj.status_code)
+        obj._raw = resp_obj._raw
+
+        return obj

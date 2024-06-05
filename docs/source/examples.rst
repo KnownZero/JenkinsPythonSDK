@@ -137,7 +137,7 @@ Execute commands in the script console
     jenkins = Jenkins(host="JenkinsDNS",
                       username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     import pathlib
-    file = pathlib.Path("C:\\Users\\alex\\Desktop\\commands.groovy")
+    file = pathlib.Path("C:\\Users\\UnknownUser\\Desktop\\commands.groovy")
     commands = file.read_text()
     print(f"Running commands:\n{commands}")
 
@@ -912,6 +912,50 @@ The above code will output:
     Started by user admin
     Running as SYSTEM
     Building in workspace /var/lib/jenkins/workspace/new_freestyle
+    Finished: SUCCESS
+
+
+Building with html
+.. code-block:: python
+
+    from jenkins_pysdk.jenkins import Jenkins
+    jenkins = Jenkins(host="JenkinsDNS", username="admin",
+                          token="11e8e294cee85ee88b60d99328284d7608")
+    builds = jenkins.jobs.search("folder1").builds
+    builds.build()
+    for chunk in builds.latest.console(html=True):
+        print(chunk)
+
+The above code will output:
+
+::
+
+    Started by user <a href='/user/admin' class='jenkins-table__link model-link model-link--float'>admin</a>
+    Running as SYSTEM
+    Building on the built-in node in workspace /var/lib/jenkins/workspace/folder1
+    The recommended git tool is: NONE
+    No credentials specified
+     &gt; git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/folder1/.git # timeout=10
+    Fetching changes from the remote Git repository
+     &gt; git config remote.origin.url <a href='https://github.com/KnownZero/JenkinsPythonSDK.git'>https://github.com/KnownZero/JenkinsPythonSDK.git</a> # timeout=10
+    Fetching upstream changes from <a href='https://github.com/KnownZero/JenkinsPythonSDK.git'>https://github.com/KnownZero/JenkinsPythonSDK.git</a>
+     &gt; git --version # timeout=10
+     &gt; git --version # 'git version 2.31.1'
+     &gt; git fetch --tags --force --progress -- <a href='https://github.com/KnownZero/JenkinsPythonSDK.git'>https://github.com/KnownZero/JenkinsPythonSDK.git</a> +refs/heads/*:refs/remotes/origin/* # timeout=10
+     &gt; git rev-parse origin/dev^{commit} # timeout=10
+    Checking out Revision d525e7e6633eac266239438520cf27b37e751794 (origin/dev)
+     &gt; git config core.sparsecheckout # timeout=10
+     &gt; git checkout -f d525e7e6633eac266239438520cf27b37e751794 # timeout=10
+    Commit message: "release 1.3.5"
+     &gt; git rev-list --no-walk d525e7e6633eac266239438520cf27b37e751794 # timeout=10
+    [Checks API] No suitable checks publisher found.
+    [folder1] $ /bin/sh -xe /tmp/jenkins5873370620277880285.sh
+    + echo text
+    text
+    + sleep 1
+    + echo 'last line'
+    last line
+    [Checks API] No suitable checks publisher found.
     Finished: SUCCESS
 
 Delete the build

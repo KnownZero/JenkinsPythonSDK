@@ -5,7 +5,7 @@ with open("README.md", "r") as readme:
 
 setup(
     name='jenkins_pysdk',
-    version='1.3.5',  # Don't forget to update version.py & conf.py :)
+    version='1.3.6',  # Don't forget to update version.py & conf.py :)
     packages=find_packages(),
     install_requires=[
         'httpx',
@@ -23,6 +23,8 @@ setup(
     license='MIT',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',

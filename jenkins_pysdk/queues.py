@@ -93,6 +93,7 @@ class QueueItem:
         :rtype: :class:`jenkins_pysdk.jenkins.Build`
         """
         url = self._jenkins._build_url(str(self.number), prefix=self._queue_info['task']['url'])
+
         return Build(self._jenkins, url)
 
     @property
@@ -148,6 +149,7 @@ class Queue:
             params = {"tree": Endpoints.Queue.QueueIter.format(paginate=paginate)}
             url = self._jenkins._build_url(Endpoints.Queue.Queue, suffix=Endpoints.Instance.Standard)
             req_obj, resp_obj = self._jenkins._send_http(url=url, params=params)
+
             if resp_obj.status_code > 200 and start > 0:
                 break  # Pagination finished, Jenkins doesn't return a nice response
             elif resp_obj.status_code != 200:

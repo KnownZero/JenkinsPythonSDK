@@ -1,10 +1,14 @@
 from typing import Any, Optional
-from pydantic import BaseModel, HttpUrl, PrivateAttr
+from pydantic import (
+    BaseModel,
+    HttpUrl,
+    PrivateAttr
+)
 
 
 __all__ = ["HTTPRequestObject", "JenkinsConnectObject", "HTTPResponseObject", "JenkinsActionObject", "Parameter",
            "Filter", "Flags", "Setting", "HTTPSessionResponseObject", "HTTPSessionRequestObject", "JenkinsValidateJob",
-           "Views", "Jobs", "Folders"]
+           "Views", "Jobs", "Folders", "Builder"]
 
 
 class JenkinsSafe(BaseModel):

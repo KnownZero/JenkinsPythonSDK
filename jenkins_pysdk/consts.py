@@ -39,8 +39,8 @@ class Endpoints:
     class Builds:
         BuildNumber = "buildNumber"
         BuildConsoleText = "consoleText"
-        ProgressiveConsoleText = "progressiveText"
-        ProgressiveHtml = "progressiveHtml"
+        ProgressiveConsoleText = "logText/progressiveText"
+        ProgressiveHtml = "logText/progressiveHtml"
         Delete = "doDelete"
         Changes = "changes"
         Build = "build"
