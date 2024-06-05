@@ -1,4 +1,10 @@
-from typing import List, Union, Dict, BinaryIO, Generator
+from typing import (
+    List,
+    Union,
+    Dict,
+    BinaryIO,
+    Generator
+)
 
 import orjson
 from pydantic import HttpUrl
@@ -28,9 +34,12 @@ class Site:
     def _get_raw(self) -> orjson.loads:
         url = self._jenkins._build_url(Endpoints.UpdateCenter.Site.format(site=self.id), suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._jenkins._send_http(url=url, params={"depth": 1})
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"Failed to get site ({self.id}) information.")
+
         data = orjson.loads(resp_obj.content)
+
         return data
 
     @property
@@ -93,14 +102,6 @@ class Site:
        """
         return int(self._raw['dataTimestamp'])
 
-    # @property
-    # def availables(self) -> ...:
-    #     return PluginGroup(self._jenkins, p_type="availables")
-    #
-    # @property
-    # def updates(self) -> ...:
-    #     return PluginGroup(self._jenkins, p_type="updates")
-
 
 class UpdateCenter:
     """
@@ -139,10 +140,12 @@ class UpdateCenter:
         url = self._jenkins._build_url(Endpoints.Plugins.UpdateCenter, suffix=Endpoints.Instance.Standard)
         params = {"tree": Endpoints.UpdateCenter.Iter}
         req_obj, resp_obj = self._jenkins._send_http(url=url, params=params)
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException("Failed to get sites information.")
 
         data = orjson.loads(resp_obj.content)
+
         for site in data.get('sites', []):
             yield Site(self._jenkins, site['id'])
 
@@ -166,11 +169,14 @@ class UpdateCenter:
         url = self._jenkins._build_url(Endpoints.UpdateCenter.Create)
         params = {"site": site_url}
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, params=params)
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to add update center ({site_url}).")
+
         msg = f"[{resp_obj.status_code}] Successfully added update center ({site_url})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
 
@@ -314,12 +320,14 @@ class Installed:
         url = self._jenkins._build_url(Endpoints.Plugins.PluginManager,
                                        suffix=Endpoints.Plugins.Enable.format(plugin=self.name))
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to enable plugin ({self.name}).")
 
         msg = f"[{resp_obj.status_code}] Successfully enabled plugin ({self.name})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def disable(self) -> JenkinsActionObject:
@@ -334,12 +342,14 @@ class Installed:
         url = self._jenkins._build_url(Endpoints.Plugins.PluginManager,
                                        suffix=Endpoints.Plugins.Disable.format(plugin=self.name))
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to disable plugin ({self.name}).")
 
         msg = f"[{resp_obj.status_code}] Successfully disabled plugin ({self.name})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     @property
@@ -361,16 +371,6 @@ class Installed:
         :rtype: HttpUrl
         """
         return HttpUrl(self._plugin_info['url'])
-
-    # @property
-    # def compatible(self) -> bool:
-    #     """
-    #     Indicates whether the installed plugin is compatible with the current Jenkins version.
-    #
-    #     :return: True if the plugin is compatible, False otherwise.
-    #     :rtype: bool
-    #     """
-    #     return bool(self._plugin_info['compatible'])
 
     @property
     def dependencies(self) -> List[Dict]:
@@ -415,11 +415,14 @@ class Installed:
         url = self._jenkins._build_url(Endpoints.Plugins.PluginManager,
                                        suffix=Endpoints.Plugins.Uninstall.format(plugin=self.name))
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to uninstall plugin ({self.name}).")
+
         msg = f"[{resp_obj.status_code}] Successfully uninstalled plugin ({self.name})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
 
@@ -479,6 +482,7 @@ class PluginGroup:
                 if self.type == "plugins" else Endpoints.Plugins.UpdateCenterIter.format(p_type=self.type, paginate=paginate)
             params = {"tree": param}
             req_obj, resp_obj = self._jenkins._send_http(url=url, params=params)
+
             if resp_obj.status_code > 200 and start > 0:
                 break  # Pagination finished, Jenkins doesn't return a nice response
             elif resp_obj.status_code != 200:
@@ -575,16 +579,20 @@ class Plugins:
         # Make it a form submission ^
         if isinstance(file_content, BinaryIO):
             file_content = file_content.read()
+
         url = self._jenkins._build_url(Endpoints.Plugins.Upload)
         file = {"file": (filename, file_content, "application/java-archive"), "submit": ""}
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=dict(), files=file)
         msg = f"[{resp_obj.status_code}] Successfully uploaded plugin ({filename})."
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to upload plugin ({filename})."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def install(self, name: str, version: str or int or float = "latest", restart: bool = False) -> JenkinsActionObject:
@@ -611,6 +619,7 @@ class Plugins:
         url = self._jenkins._build_url(Endpoints.Plugins.PluginManager, suffix=Endpoints.Plugins.Install)
         data = f"<jenkins><install plugin=\"{name}@{version}\"/></jenkins>"
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER, data=data)
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to install plugin ({name}).")
 
@@ -621,12 +630,14 @@ class Plugins:
                                           f"was not found. Consider restarting Jenkins.")
 
         msg = f"[{resp_obj.status_code}] Successfully installed plugin ({name})."
+
         if restart:
             self._jenkins.restart(graceful=True)
             msg = f"[{resp_obj.status_code}] Successfully installed plugin ({name}) and restarted Jenkins."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     @property

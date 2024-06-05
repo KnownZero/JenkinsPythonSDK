@@ -6,7 +6,12 @@ from pydantic import HttpUrl
 from jenkins_pysdk.objects import JenkinsValidateJob, JenkinsActionObject
 from jenkins_pysdk.objects import Jobs as r_jobs, Folders as r_folders
 from jenkins_pysdk.exceptions import JenkinsNotFound, JenkinsGeneralException
-from jenkins_pysdk.consts import Endpoints, Class, XML_HEADER_DEFAULT, XML_POST_HEADER
+from jenkins_pysdk.consts import (
+    Endpoints,
+    Class,
+    XML_HEADER_DEFAULT,
+    XML_POST_HEADER
+)
 from jenkins_pysdk.builders import Builder
 from jenkins_pysdk.builds import Builds
 from jenkins_pysdk.workspace import Workspace
@@ -42,12 +47,15 @@ class Job:
         url = self._jenkins._build_url(Endpoints.Jobs.Disable, prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
         msg = f"[{resp_obj.status_code}] Successfully disabled {self._job_path}."
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to disable {self._job_path}."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     @property
@@ -81,12 +89,15 @@ class Job:
         url = self._jenkins._build_url(Endpoints.Jobs.Enable, prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
         msg = f"[{resp_obj.status_code}] Successfully enabled {self._job_path}."
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to enable {self._job_path}."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def reconfig(self, xml: str or Builder = None) -> JenkinsActionObject:
@@ -103,12 +114,15 @@ class Job:
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER,
                                                      data=str(xml))
         msg = f"[{resp_obj.status_code}] Successfully reconfigured {self._job_path}."
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to reconfigure {self._job_path}."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def delete(self) -> JenkinsActionObject:
@@ -121,9 +135,11 @@ class Job:
         url = self._jenkins._build_url("/", prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(method="DELETE", url=url)
         msg = f"[{resp_obj.status_code}] Successfully deleted job."
+
         if resp_obj.status_code != 204:
             msg = f"[{resp_obj.status_code}] Failed to delete job."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
+
         obj._raw = resp_obj._raw
         return obj
 
@@ -139,8 +155,10 @@ class Job:
         url = self._jenkins._build_url(Endpoints.Jobs.Xml, prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url, headers=XML_HEADER_DEFAULT)
         code = resp_obj.status_code
+
         if code != 200:
             raise JenkinsGeneralException(f"[{code}] Failed to download job XML.")
+
         return resp_obj.content
 
     @property
@@ -156,6 +174,7 @@ class Job:
     @property
     def workspace(self) -> Workspace:
         name = self.path.split("/")[-1]
+
         return Workspace(self._jenkins, name, self._job_url)
 
 
@@ -180,8 +199,10 @@ class Jobs:
         :raises: JenkinsNotFound: If the job wasn't found.
         """
         validated = self._validate_job(job_path)
+
         if not validated.is_valid:
             raise JenkinsNotFound(f"Could not retrieve {job_path} because it doesn't exist.")
+
         return Job(jenkins=self._jenkins, job_path=job_path, job_url=validated.url)
 
     def is_job(self, path: str) -> bool:
@@ -198,6 +219,7 @@ class Jobs:
         built = self._jenkins._build_job_http_path(path)
         url = self._jenkins._build_url(built, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code == 404:
@@ -206,6 +228,7 @@ class Jobs:
             data = orjson.loads(resp_obj.content)
             if data['_class'] not in [Class.Folder, Class.OrganizationFolder]:
                 return True
+
             return False
 
     def _validate_job(self, job_path: str) -> JenkinsValidateJob:
@@ -213,17 +236,20 @@ class Jobs:
         job = self._jenkins._build_job_http_path(job_path)
         url = self._jenkins._build_url(job)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
         if resp_obj.status_code == 200:
             validated = True
         elif resp_obj.status_code in (400, 404):
             validated = False
         else:
             validated = None
+
         if not self.is_job(job_path):
             raise JenkinsGeneralException(f"{job_path} is a folder. Please use folders.")
 
         obj = JenkinsValidateJob(url=url, is_valid=validated)
         obj._raw = resp_obj
+
         return obj
 
     def _create_job(self, job_name: str, xml, mode: str, folder_path: HttpUrl = None) \
@@ -234,14 +260,17 @@ class Jobs:
         params = {"name": job_name, "mode": mode}
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_HEADER_DEFAULT,
                                                      params=params, data=xml)
+
         if resp_obj.status_code == 404:
             raise JenkinsNotFound(f"Parent path {str(folder_path)} not found.")
         elif resp_obj.status_code == 200:
             msg = f"[{resp_obj.status_code}] Successfully created {job_name}."
         else:
             msg = f"[{resp_obj.status_code}] Failed to create job {job_name}."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def create(self, job_path: str, xml: str, job_type: r_jobs) -> JenkinsActionObject:
@@ -268,6 +297,7 @@ class Jobs:
         job_name, job_parent = self._jenkins._get_folder_parent(job_path)
         built = self._jenkins._build_job_http_path(job_parent)
         created = self._create_job(job_name, xml, mode, built)
+
         return created
 
     def iter(self, folder=None, _paginate=0) -> Generator[Job, None, None]:
@@ -296,6 +326,7 @@ class Jobs:
                 url = self._jenkins._build_url(Endpoints.Instance.Standard)
 
                 req_obj, resp_obj = self._jenkins._send_http(url=url, params=params)
+
                 if resp_obj.status_code > 200 and start > 0:
                     break  # Pagination finished, Jenkins doesn't return a nice response
                 elif resp_obj.status_code != 200:
@@ -340,6 +371,7 @@ class Jobs:
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
+
         yield Job(jenkins=self._jenkins, job_path=data['fullName'], job_url=data['url'])
 
     def list(self, folder=None, _paginate=0) -> List[Job]:
@@ -363,7 +395,7 @@ class Jobs:
 
         :return: Tree-like structure of all jobs.
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def api(self):
         """
@@ -371,7 +403,7 @@ class Jobs:
 
         :return: Jobs data objects.
         """
-        raise NotImplemented
+        raise NotImplementedError
 
 
 class Folder:
@@ -399,12 +431,15 @@ class Folder:
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER,
                                                      data=xml)
         msg = f"[{resp_obj.status_code}] Successfully reconfigured {self._folder_path}."
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to reconfigure {self._folder_path}."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     @property
@@ -440,10 +475,12 @@ class Folder:
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         import re
+
         params = {"name": new_job_name, "mode": "copy", "from": copy_job_name}
         url = self._jenkins._build_url(Endpoints.Jobs.Create, prefix=self._folder_url)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, params=params)
         msg = f"[{resp_obj.status_code}] Successfully copied {copy_job_name} to {new_job_name}."
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code == 400:
@@ -452,8 +489,10 @@ class Folder:
             msg = f"[{resp_obj.status_code}] Failed to copy folder."
         elif resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to copy folder."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def delete(self) -> JenkinsActionObject:
@@ -467,12 +506,15 @@ class Folder:
         url = self._jenkins._build_url("/", prefix=self._folder_url)
         req_obj, resp_obj = self._jenkins._send_http(method="DELETE", url=url)
         msg = f"[{resp_obj.status_code}] Successfully deleted folder."
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code != 204:
             msg = f"[{resp_obj.status_code}] Failed to delete folder."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def create(self, folder_name: str, xml: str or Builder.Folder,
@@ -491,6 +533,7 @@ class Folder:
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         mode = folder_type.value if isinstance(folder_type, r_folders) else folder_type
+
         return Folders(self._jenkins)._create_folder(folder_name, xml, self.path, mode)
 
     @property
@@ -505,8 +548,10 @@ class Folder:
         url = self._jenkins._build_url(Endpoints.Jobs.Xml, prefix=self._folder_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url, headers=XML_HEADER_DEFAULT)
         code = resp_obj.status_code
+
         if code != 200:
             raise JenkinsGeneralException(f"[{code}] Failed to download job XML.")
+
         return resp_obj.content
 
 
@@ -533,23 +578,27 @@ class Folders:
         validated = self._validate_job(folder_path)
         if not validated.is_valid:
             raise JenkinsNotFound(f"Could not retrieve {folder_path} because it doesn't exist.")
+
         return Folder(jenkins=self._jenkins, folder_path=folder_path, folder_url=validated.url)
 
     def _validate_job(self, job_path) -> JenkinsValidateJob:
         job = self._jenkins._build_job_http_path(job_path)
         url = self._jenkins._build_url(job)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
         if resp_obj.status_code == 200:
             validated = True
         elif resp_obj.status_code in (400, 404):
             validated = False
         else:
             validated = None
+
         if not self.is_folder(job_path):
             raise JenkinsGeneralException(f"{job_path} is not a folder. Please use jobs.")
 
         obj = JenkinsValidateJob(url=url, is_valid=validated)
         obj._raw = resp_obj
+
         return obj
 
     def is_folder(self, path: str) -> bool:
@@ -566,13 +615,17 @@ class Folders:
         built = self._jenkins._build_job_http_path(path)
         url = self._jenkins._build_url(built, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code != 200:
             raise JenkinsNotFound(f"{path} not found.")
+
         data = orjson.loads(resp_obj.content)
+
         if data['_class'] in [Class.Folder, Class.OrganizationFolder]:
             return True
+
         return False
 
     def _create_folder(self, folder_name: str, xml, mode: str, folder_path: str = None) -> JenkinsActionObject:
@@ -581,14 +634,17 @@ class Folders:
         params = {"name": folder_name, "mode": mode}
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_HEADER_DEFAULT,
                                                      params=params, data=xml)
+
         if resp_obj.status_code == 404:
             raise JenkinsNotFound(f"Parent path {str(folder_path)} not found.")
         elif resp_obj.status_code == 200:
             msg = f"[{resp_obj.status_code}] Successfully created {folder_name}."
         else:
             msg = f"[{resp_obj.status_code}] Failed to create folder {folder_name}."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def create(self, folder_path: str, xml: str or Builder.Folder,
@@ -649,8 +705,8 @@ class Folders:
                 job_param = f"{job_param}{{{start},{limit}}}"
                 params = {"tree": job_param}
                 json_url = self._jenkins._build_url(Endpoints.Instance.Standard)
-
                 req_obj, resp_obj = self._jenkins._send_http(url=json_url, params=params)
+
                 if resp_obj.status_code > 200 and start > 0:
                     break  # Pagination finished, Jenkins doesn't return a nice response
                 elif resp_obj.status_code != 200:
@@ -690,6 +746,7 @@ class Folders:
         req_obj, resp_obj = self._jenkins._send_http(url=json_url)
         data = orjson.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
+
         yield Folder(jenkins=self._jenkins, folder_path=data['fullName'], folder_url=data['url'])
 
     def list(self, folder=None, _paginate=0) -> List[Folder]:
@@ -713,7 +770,7 @@ class Folders:
 
         :return: A tree-like structure representing all folders.
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def api(self):
         """
@@ -721,4 +778,4 @@ class Folders:
 
         :return: Data objects representing folders.
         """
-        raise NotImplemented
+        raise NotImplementedError

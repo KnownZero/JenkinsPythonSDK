@@ -8,7 +8,9 @@ class ExceptionHandler(Exception):
 
 
 class JenkinsBaseException(ExceptionHandler):
-    pass
+    """
+    Catch-all Jenkins related exception
+    """
 
 
 class JenkinsInvalidHost(JenkinsBaseException):
@@ -69,4 +71,3 @@ class JenkinsEmptyQueue(JenkinsBaseException):
     """
     Exception raised when the job queue is empty in Jenkins.
     """
-    pass

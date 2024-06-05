@@ -1,5 +1,15 @@
 # Release log
 
+## Release (Minor/Fixes) 1.3.6 - 05/06/2024
+### Fixes:
+- Code readability
+- Connect method
+
+### New:
+- Adding progressive build console output (params previously did nothing)
+
+###
+
 ## Release (Minor/Fixes) 1.3.5 - 10/05/2024
 ### Fixes:
 - Fix import errors in lower py versions

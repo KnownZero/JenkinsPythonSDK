@@ -1,11 +1,24 @@
-from typing import List, Optional, Generator
+from typing import (
+    List,
+    Optional,
+    Generator
+)
 
 import orjson
 from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsActionObject
-from jenkins_pysdk.exceptions import JenkinsGeneralException, JenkinsNotFound, JenkinsAlreadyExists
-from jenkins_pysdk.consts import Endpoints, XML_HEADER_DEFAULT, XML_POST_HEADER, FORM_HEADER_DEFAULT
+from jenkins_pysdk.exceptions import (
+    JenkinsGeneralException,
+    JenkinsNotFound,
+    JenkinsAlreadyExists
+)
+from jenkins_pysdk.consts import (
+    Endpoints,
+    XML_HEADER_DEFAULT,
+    XML_POST_HEADER,
+    FORM_HEADER_DEFAULT
+)
 from jenkins_pysdk.builders import Builder
 
 
@@ -51,8 +64,10 @@ class Credential:
                                        prefix=self.domain_url, suffix=Endpoints.Jobs.Xml)
         req_obj, resp_obj = self._jenkins._send_http(url=url, headers=XML_HEADER_DEFAULT)
         code = resp_obj.status_code
+
         if code != 200:
             raise JenkinsGeneralException(f"[{code}] Failed to download credential XML.")
+
         return resp_obj.content
 
     def delete(self) -> JenkinsActionObject:
@@ -66,10 +81,13 @@ class Credential:
                                        prefix=self.domain_url, suffix=Endpoints.Jobs.Xml)
         req_obj, resp_obj = self._jenkins._send_http(method="DELETE", url=url)
         msg = f"[{resp_obj.status_code}] Successfully deleted credential."
+
         if resp_obj.status_code != 204:
             msg = f"[{resp_obj.status_code}] Failed to delete credential."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def reconfig(self, xml: str or Builder.Credentials) -> JenkinsActionObject:
@@ -86,12 +104,15 @@ class Credential:
                                        prefix=self.domain_url, suffix=Endpoints.Jobs.Xml)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER, data=str(xml))
         msg = f"[{resp_obj.status_code}] Successfully reconfigured {self._cred_id}."
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to reconfigure {self._cred_id}."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def move(self, dest: str) -> JenkinsActionObject:
@@ -106,12 +127,15 @@ class Credential:
         data = {"destination": dest}
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT, data=data)
         msg = f"[{resp_obj.status_code}] Successfully moved {self._cred_id} to {dest}."
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to move {self._cred_id} to {dest}."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
 
@@ -153,6 +177,7 @@ class Domain:
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self.domain_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         data = orjson.loads(resp_obj.content)
+
         return data
 
     def search(self, cred_id: str) -> Credential:
@@ -212,13 +237,16 @@ class Domain:
         url = self._jenkins._build_url(Endpoints.Credentials.Domain.format(domain=self.name),
                                        suffix=Endpoints.Credential.Create)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_HEADER_DEFAULT, data=str(cred))
+
         if resp_obj.status_code == 409:
             raise JenkinsAlreadyExists(f"[{resp_obj.status_code}] Credential ({name}) already exists.)")
         elif resp_obj.status_code > 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to create credential ({name}).")
+
         msg = f"[{resp_obj.status_code}] Successfully created credential ({name})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
 
@@ -244,10 +272,13 @@ class Credentials:
         """
         if not domain:
             domain = "_"
+
         url = self._jenkins._build_url(Endpoints.Credentials.Domain.format(domain=domain))
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
         if resp_obj.status_code == 404:
             raise JenkinsGeneralException(f"Couldn't find {domain} or you don't have permission to view it.")
+
         return Domain(jenkins=self._jenkins, url=url)
 
     def iter_domains(self) -> Generator[Domain, None, None]:
@@ -294,11 +325,14 @@ class Credentials:
         """
         url = self._jenkins._build_url(Endpoints.Credentials.CreateDomain)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_HEADER_DEFAULT, data=str(cred))
+
         if resp_obj.status_code == 409:
             raise JenkinsAlreadyExists(f"[{resp_obj.status_code}] Domain ({name}) already exists.)")
         elif resp_obj.status_code > 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to create domain ({name}).")
+
         msg = f"[{resp_obj.status_code}] Successfully created domain ({name})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj

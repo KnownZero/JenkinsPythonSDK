@@ -5,8 +5,12 @@ from httpx import Client, Request, ConnectError, BasicAuth
 from pydantic import HttpUrl
 
 from jenkins_pysdk.consts import HTTP_RETRY_COUNT, HOST_MATCH_REGEX_PATTERN
-from jenkins_pysdk.objects import HTTPRequestObject, HTTPResponseObject, HTTPSessionRequestObject, \
+from jenkins_pysdk.objects import (
+    HTTPRequestObject,
+    HTTPResponseObject,
+    HTTPSessionRequestObject,
     HTTPSessionResponseObject
+)
 from jenkins_pysdk.exceptions import JenkinsInvalidHost
 
 
@@ -20,6 +24,7 @@ def validate_connect_host(host: str) -> bool:
     :return:
     """
     pattern = re.compile(HOST_MATCH_REGEX_PATTERN)
+
     return bool(pattern.match(host))
 
 
@@ -50,6 +55,7 @@ def interact_http(request: HTTPRequestObject) -> HTTPResponseObject:
     )
     # logger.debugu(req.url)
     exception: Exception = Exception()
+
     for retry in range(HTTP_RETRY_COUNT):
         try:
             # TODO: SSL/certs
@@ -74,7 +80,6 @@ def interact_http(request: HTTPRequestObject) -> HTTPResponseObject:
         msg = "Request failed due to an exception. See _raw field."
         return_object = HTTPResponseObject(request=req, content=msg, status_code=-1)
         return_object._raw = exception
-        # logger.debuge(exception)
         return return_object
 
 
@@ -89,8 +94,8 @@ def interact_http_session(request: HTTPSessionRequestObject) -> HTTPSessionRespo
         params=request.params,
         files=request.files
     )
-    # logger.debugu(req.url)
     exception: Exception = Exception()
+
     for retry in range(HTTP_RETRY_COUNT):
         # TODO: SSL/certs
         # TODO: Dynamically add these parameters from the request object

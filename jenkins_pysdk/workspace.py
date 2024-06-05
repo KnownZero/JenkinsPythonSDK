@@ -42,6 +42,7 @@ class Workspace:
         url = self._jenkins._build_url(endpoint, prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         msg = f"[{resp_obj.status_code}] Successfully downloaded workspace files for {self._job_name}."
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code != 200:
@@ -50,16 +51,23 @@ class Workspace:
         path = Path(path)
         if path.is_dir():
             path = path / f"{self._job_name}.zip"
+
         self._write_to_file(path, resp_obj._raw.content)
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     @staticmethod
     def _write_to_file(path: Path, content: bytes):
-        with open(path, "wb") as file:
-            file.write(content)
+        for _ in range(2):
+            try:
+                with open(path, "wb") as file:
+                    file.write(content)
+                break
+            except EnvironmentError:
+                continue
 
     def wipe(self) -> JenkinsActionObject:
         """
@@ -71,6 +79,7 @@ class Workspace:
         url = self._jenkins._build_url(Endpoints.Workspace.Wipe, prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         msg = f"[{resp_obj.status_code}] Successfully wiped workspace for {self._job_name}."
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code != 200:
@@ -78,4 +87,5 @@ class Workspace:
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj

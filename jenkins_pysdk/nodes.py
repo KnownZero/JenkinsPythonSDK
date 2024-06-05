@@ -2,7 +2,11 @@ from typing import List, Generator
 
 import orjson
 
-from jenkins_pysdk.consts import Endpoints, XML_HEADER_DEFAULT, XML_POST_HEADER
+from jenkins_pysdk.consts import (
+    Endpoints,
+    XML_HEADER_DEFAULT,
+    XML_POST_HEADER
+)
 from jenkins_pysdk.objects import JenkinsActionObject
 from jenkins_pysdk.exceptions import JenkinsGeneralException, JenkinsNotFound
 from jenkins_pysdk.builders import Builder
@@ -32,10 +36,12 @@ class Node:
     def _get_raw(self) -> orjson.loads:
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self._node_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get node ({self.name}) information.")
 
         data = orjson.loads(resp_obj.content)
+
         return data
 
     @property
@@ -78,10 +84,13 @@ class Node:
         url = self._jenkins._build_url(Endpoints.Nodes.Delete, prefix=self._node_url)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
         msg = f"[{resp_obj.status_code}] Successfully deleted node ({self.name})."
+
         if resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to delete node ({self.name})."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     @property
@@ -96,8 +105,10 @@ class Node:
         url = self._jenkins._build_url(Endpoints.Jobs.Xml, prefix=self._node_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url, headers=XML_HEADER_DEFAULT)
         code = resp_obj.status_code
+
         if code != 200:
             raise JenkinsGeneralException(f"[{code}] Failed to download node XML.")
+
         return resp_obj.content
 
     def reconfig(self, xml: str) -> JenkinsActionObject:
@@ -112,12 +123,15 @@ class Node:
         url = self._jenkins._build_url(Endpoints.Jobs.Xml, prefix=self._node_url)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=XML_POST_HEADER, data=str(xml))
         msg = f"[{resp_obj.status_code}] Successfully reconfigured {self.name}."
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to reconfigure {self.name}."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def disable(self, message: str) -> JenkinsActionObject:
@@ -134,12 +148,15 @@ class Node:
         msg = {"offlineMessage": message}
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, params=msg)
         msg = f"[{resp_obj.status_code}] Successfully marked node ({self.name}) as offline."
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to mark ({self.name}) as offline."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def enable(self) -> JenkinsActionObject:
@@ -151,17 +168,22 @@ class Node:
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         _raw = self._get_raw()
+
         if bool(_raw['temporarilyOffline']) is False:
             raise JenkinsGeneralException(f"Node ({self.name}) is not marked as offline.")
+
         url = self._jenkins._build_url(Endpoints.Nodes.Disable, prefix=self._node_url)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url)
         msg = f"[{resp_obj.status_code}] Successfully marked node ({self.name}) as online."
+
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to mark ({self.name}) as online."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
 
@@ -219,12 +241,15 @@ class Nodes:
         }
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, params=data)
         msg = f"[{resp_obj.status_code}] Successfully created node ({name})."
+
         if resp_obj.status_code == 400:
             msg = f"[{resp_obj.status_code}] Bad request for node ({name})."
         elif resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to create node ({name})."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def iter(self) -> Generator[Node, None, None]:
@@ -238,10 +263,12 @@ class Nodes:
         """
         url = self._jenkins._build_url(Endpoints.Nodes.Computer, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._jenkins._send_http(url=url, params={"tree": "computer[assignedLabels[*]]"})
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get nodes information.")
 
         data = orjson.loads(resp_obj.content)
+
         for node in data.get('computer', []):
             name = node['assignedLabels'][-1]['name']  # Assuming last name is consistently correct
             url_name = name
@@ -269,8 +296,10 @@ class Nodes:
         """
         url = self._jenkins._build_url(Endpoints.Nodes.Computer, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get nodes information.")
 
         data = orjson.loads(resp_obj.content)
+
         return len(data['computer'])

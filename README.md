@@ -21,14 +21,14 @@ pip install jenkins-pysdk
 
 ```python
 from jenkins_pysdk.jenkins import Jenkins
-jenkins = Jenkins(host="<host>", username="<username>", passw="<passw>")
+jenkins = Jenkins(host="DNS", username="<username>", passw="<passw>")
 ```
 #### OR
 
 ```python
 from jenkins_pysdk.jenkins import Jenkins
 jenkins = Jenkins(
-    host="<host>", 
+    host="http://localhost:8080", 
     username="<username>",
     token="<token>",
     proxy={},

@@ -10,9 +10,18 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 
 from jenkins_pysdk.core import Core
-from jenkins_pysdk.consts import Endpoints, FORM_HEADER_DEFAULT, Class
-from jenkins_pysdk.exceptions import JenkinsConnectionException, JenkinsUnauthorisedException, \
-    JenkinsRestartFailed, JenkinsActionFailed, JenkinsGeneralException
+from jenkins_pysdk.consts import (
+    Endpoints,
+    FORM_HEADER_DEFAULT,
+    Class
+)
+from jenkins_pysdk.exceptions import (
+    JenkinsConnectionException,
+    JenkinsUnauthorisedException,
+    JenkinsRestartFailed,
+    JenkinsActionFailed,
+    JenkinsGeneralException
+)
 from jenkins_pysdk.objects import JenkinsConnectObject, JenkinsActionObject
 from jenkins_pysdk.objects import Views as r_views, Jobs as r_jobs, Folders as r_folders
 from jenkins_pysdk.jobs import Jobs, Folders
@@ -211,65 +220,59 @@ class Jenkins(Core):
         """
         return r_folders(value=Class.OrganizationFolder)
 
-    # @property
-    # def enable_logging(self):
-    #     """
-    #     Get the logging level.
-    #     """
-    #     return self.Enable_Logging
-    #
-    # @enable_logging.setter
-    # def enable_logging(self, value: int):
-    #     """
-    #     Enable a logging level.
-    #     """
-    #     # TODO: Add logging and enhance with logger per component/more levels etc etc
-    #     self.Enable_Logging = value
-
     def connect(self) -> JenkinsConnectObject:
         """
         Test the connection to the Jenkins instance.
 
         :return: Object containing connection information.
         :rtype: :class:`jenkins_pysdk.objects.JenkinsConnectObject`
-        :raises JenkinsConnectionException: If a connection exception if it fails to connect.
+        :raises JenkinsConnectionException: If a connection exception occurs.
         :raises JenkinsUnauthorisedException: If the credentials aren't valid.
         """
-        # TODO: Fix PORTING MAYBE?
         url = self._build_url(Endpoints.Instance.Connect)
         req_obj, response_obj = self._send_http(url=url)
         code = int(response_obj.status_code)
+
         if code == 200:
-            msg = f"[{response_obj.status_code}] Successfully connected to {self.host}."
-            return_object = JenkinsConnectObject(request=req_obj, response=response_obj, content=msg,
-                                                 status_code=response_obj.status_code)
-            return_object._raw = response_obj._raw
-            return return_object
-        elif code == 400:
-            msg = JenkinsConnectionException(f"[{response_obj.status_code}] Failed to connect to host.")
-            return_object = JenkinsConnectObject(request=req_obj, response=response_obj, content=msg,
-                                                 status_code=response_obj.status_code)
-            return_object._raw = response_obj._raw
-            return return_object
-        elif code == 401:
-            if self.username and self.passw:
-                raise JenkinsUnauthorisedException(f"[{response_obj.status_code}] Wrong credentials supplied.")
-            elif not self.username:
-                raise JenkinsUnauthorisedException(f"[{response_obj.status_code}] Unauthorised. No username supplied.")
-            elif not self.passw and not self.token:
-                raise JenkinsUnauthorisedException(f"[{response_obj.status_code}] Unauthorised. No password supplied.")
-            else:
-                raise JenkinsUnauthorisedException(f"[{response_obj.status_code}] Unauthorised. No credentials supplied.")
-        elif code >= 500:
-            # TODO: FIX THIS DUPLICATE CODE MESS
-            msg = JenkinsConnectionException(f"[{response_obj.status_code}] Server error.")
-            return_object = JenkinsConnectObject(request=req_obj, response=response_obj, content=msg,
-                                                 status_code=response_obj.status_code)
-            return_object._raw = response_obj._raw
-            return return_object
-        msg = "Unhandled response. See _raw field if request failed."
-        if response_obj.status_code not in [200, 201]:
-            raise JenkinsConnectionException(msg)
+            return self._create_return_object(req_obj, response_obj, f"[{code}] Successfully connected to {self.host}.")
+
+        if code == 400:
+            return self._handle_failed_connection(req_obj, response_obj, f"[{code}] Failed to connect to host.")
+
+        if code == 401:
+            self._handle_unauthorised_exception(code)
+
+        if code >= 500:
+            return self._handle_failed_connection(req_obj, response_obj, f"[{code}] Server error.")
+
+        raise JenkinsConnectionException(response_obj._raw.text)
+
+    @staticmethod
+    def _create_return_object(req_obj, response_obj, msg):
+        return_object = JenkinsConnectObject(
+            request=req_obj,
+            response=response_obj,
+            content=str(msg),
+            status_code=response_obj.status_code
+        )
+        return_object._raw = response_obj._raw
+        return return_object
+
+    def _handle_failed_connection(self, req_obj, response_obj, msg):
+        return self._create_return_object(req_obj, response_obj, JenkinsConnectionException(msg))
+
+    def _handle_unauthorised_exception(self, code):
+        msg = f"[{code}] Unauthorised. "
+        if self.username and self.passw:
+            msg += "Wrong credentials supplied."
+        elif not self.username:
+            msg += "No username supplied."
+        elif not self.passw and not self.token:
+            msg += "No password supplied."
+        else:
+            msg += "No credentials supplied."
+
+        raise JenkinsUnauthorisedException(msg)
 
     @property
     def tree(self):
@@ -342,6 +345,7 @@ class Jenkins(Core):
         # TODO: Finish me
         url = self._build_url(Endpoints.Instance.Crumb)
         req_obj, resp_obj = self._send_http(url=url)
+
         return str(resp_obj._raw.headers['x-jenkins'])
 
     @property
@@ -354,13 +358,14 @@ class Jenkins(Core):
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         # TODO: FIX CODE COPY & PASTE BELOW... maybe singledispatch
-        _fields = ['_class', 'availableExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['availableExecutors']
+
         if not content:
             raise JenkinsGeneralException("No executors are available.")
+
         return content
 
     @property
@@ -372,13 +377,14 @@ class Jenkins(Core):
         :rtype: str
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        _fields = ['_class', 'busyExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['busyExecutors']
+
         if not content:
             raise JenkinsGeneralException("No executors are in-use.")
+
         return content
 
     @property
@@ -390,13 +396,14 @@ class Jenkins(Core):
         :rtype: int
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        _fields = ['_class', 'connectingExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['connectingExecutors']
+
         if not content:
             raise JenkinsGeneralException("No executors are connecting.")
+
         return content
 
     @property
@@ -408,13 +415,14 @@ class Jenkins(Core):
         :rtype: str
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        _fields = ['_class', 'definedExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['definedExecutors']
+
         if not content:
             raise JenkinsGeneralException("No executors are defined.")
+
         return content
 
     @property
@@ -426,13 +434,14 @@ class Jenkins(Core):
         :rtype: int
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        _fields = ['_class', 'idleExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['idleExecutors']
+
         if not content:
             raise JenkinsGeneralException("No executors are idle.")
+
         return content
 
     @property
@@ -444,13 +453,14 @@ class Jenkins(Core):
         :rtype: int
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        _fields = ['_class', 'onlineExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['onlineExecutors']
+
         if not content:
             raise JenkinsGeneralException("No executors are online.")
+
         return content
 
     @property
@@ -462,13 +472,14 @@ class Jenkins(Core):
         :rtype: int
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        _fields = ['_class', 'queueLength']
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['queueLength']
+
         if not content:
             raise JenkinsGeneralException("No work in the queue.")
+
         return content
 
     @property
@@ -480,13 +491,14 @@ class Jenkins(Core):
         :rtype: int
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        _fields = ['_class', 'totalExecutors']
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['totalExecutors']
+
         if not content:
             raise JenkinsGeneralException("No executors are setup.")
+
         return content
 
     @property
@@ -499,13 +511,14 @@ class Jenkins(Core):
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         # TODO: Fix endpoitn remove api json
-        _fields = ['_class', 'totalQueueLength']
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         content = data['totalQueueLength']
+
         if not content:
             raise JenkinsGeneralException("No executors are setup.")
+
         return content
 
     def restart(self, graceful: bool = False) -> JenkinsActionObject:
@@ -520,6 +533,7 @@ class Jenkins(Core):
         # TODO: Unit Test
         # TODO: Add restart message
         url = self._build_url(Endpoints.Maintenance.Restart)
+
         if graceful:
             url = self._build_url(Endpoints.Maintenance.SafeRestart)
 
@@ -537,8 +551,10 @@ class Jenkins(Core):
             msg = JenkinsRestartFailed(f"[{code}] Failed to restart Jenkins.")
         else:
             msg = f"[{code}] Restarting the Jenkins instance... please wait..."
+
         restart_obj = JenkinsActionObject(request=req_obj, content=msg, status_code=code)
         restart_obj._raw = resp_obj._raw
+
         return restart_obj
 
     def _enable_quiet_mode(self) -> JenkinsActionObject:
@@ -551,12 +567,15 @@ class Jenkins(Core):
         url = self._build_url(Endpoints.Maintenance.QuietDown)
         req_obj, resp_obj = self._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT)
         code = resp_obj.status_code
+
         if code != 200:
             msg = JenkinsActionFailed(f"[{code}] Failed to enable Quiet Mode.")
         else:
             msg = f"[{code}] Successfully enabled Quiet Mode."
+
         quiet_obj = JenkinsActionObject(request=req_obj, content=msg, status_code=code)
         quiet_obj._raw = resp_obj._raw
+
         return quiet_obj
 
     def _disable_quiet_mode(self, wait_time: int = 0) -> JenkinsActionObject:
@@ -572,6 +591,7 @@ class Jenkins(Core):
         url = self._build_url(Endpoints.Maintenance.NoQuietDown)
         req_obj, resp_obj = self._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT)
         code = resp_obj.status_code
+
         if code != 200:
             msg = JenkinsActionFailed(f"[{code}] Failed to disable Quiet Mode.")
         else:
@@ -579,6 +599,7 @@ class Jenkins(Core):
 
         quiet_obj = JenkinsActionObject(request=req_obj, content=msg, status_code=code)
         quiet_obj._raw = resp_obj._raw
+
         return quiet_obj
 
     def quiet_mode(self, duration: int = None, disable: bool = False) -> JenkinsActionObject:
@@ -615,6 +636,7 @@ class Jenkins(Core):
             except:
                 quiet_obj = self._disable_quiet_mode()
                 # TODO: Add log message or something....
+
         return quiet_obj
 
     def shutdown(self, graceful: bool = False) -> JenkinsActionObject:
@@ -627,16 +649,20 @@ class Jenkins(Core):
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         url = self._build_url(Endpoints.Maintenance.Shutdown)
+
         if graceful:
             url = self._build_url(Endpoints.Maintenance.SafeShutdown)
 
         req_obj, resp_obj = self._send_http(method="POST", url=url)
+
         if resp_obj.status_code == 200:
             msg = f"[{resp_obj.status_code}] Shutting down..."
         else:
             msg = f"[{resp_obj.status_code}] Failed to shutdown application."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def logout(self, boot: bool = False) -> JenkinsActionObject:
@@ -649,15 +675,20 @@ class Jenkins(Core):
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         url = self._build_url(Endpoints.User.Logout)
+
         if boot:
             url = self._build_url(Endpoints.User.Boot.format(user=self.username))
+
         req_obj, resp_obj = self._send_http(method="POST", url=url)
+
         if resp_obj.status_code == 200:
             msg = f"[{resp_obj.status_code}] Successfully logged out."
         else:
             msg = f"[{resp_obj.status_code}] Failed to logout."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def reload(self) -> JenkinsActionObject:
@@ -670,15 +701,28 @@ class Jenkins(Core):
         url = self._build_url(Endpoints.Manage.Reload)
         req_obj, resp_obj = self._send_http(method="POST", url=url)
         msg = f"[{resp_obj.status_code}] Successfully reloaded configuration."
+
         if resp_obj.status_code != 200:
             msg = f"[{resp_obj.status_code}] Failed to reload configuration from disk."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
         obj._raw = resp_obj._raw
+
         return obj
 
     def script_console(self, commands: str) -> str:
         url = self._build_url(Endpoints.Instance.Console)
         req_obj, resp_obj = self._send_http(method="POST", url=url, data={"script": commands}, headers=dict())
+
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to send commands to the script console.")
+
         return resp_obj.content
+
+
+if __name__ == "__main__":
+    j = Jenkins(host="https://2014-51-194-38-21.ngrok-free.app", port=80,
+                username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    builds = j.jobs.search("folder1").builds
+    builds.build()
+    print(builds.latest.console())
