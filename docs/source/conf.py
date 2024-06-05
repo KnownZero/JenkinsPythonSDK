@@ -13,7 +13,7 @@ sys.path.insert(1, os.path.abspath('../..'))
 project = 'Python Jenkins SDK'
 copyright = '2024, KnownZero'
 author = 'KnownZero'
-release = '1.3.6'
+release = '1.3.8'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

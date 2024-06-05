@@ -226,53 +226,53 @@ class Jenkins(Core):
 
         :return: Object containing connection information.
         :rtype: :class:`jenkins_pysdk.objects.JenkinsConnectObject`
-        :raises JenkinsConnectionException: If a connection exception if it fails to connect.
+        :raises JenkinsConnectionException: If a connection exception occurs.
         :raises JenkinsUnauthorisedException: If the credentials aren't valid.
         """
-        # TODO: Fix PORTING MAYBE?
         url = self._build_url(Endpoints.Instance.Connect)
         req_obj, response_obj = self._send_http(url=url)
         code = int(response_obj.status_code)
 
         if code == 200:
-            msg = f"[{response_obj.status_code}] Successfully connected to {self.host}."
-            return_object = JenkinsConnectObject(request=req_obj, response=response_obj, content=msg,
-                                                 status_code=response_obj.status_code)
-            return_object._raw = response_obj._raw
+            return self._create_return_object(req_obj, response_obj, f"[{code}] Successfully connected to {self.host}.")
 
-            return return_object
+        if code == 400:
+            return self._handle_failed_connection(req_obj, response_obj, f"[{code}] Failed to connect to host.")
 
-        elif code == 400:
-            msg = JenkinsConnectionException(f"[{response_obj.status_code}] Failed to connect to host.")
-            return_object = JenkinsConnectObject(request=req_obj, response=response_obj, content=msg,
-                                                 status_code=response_obj.status_code)
-            return_object._raw = response_obj._raw
+        if code == 401:
+            self._handle_unauthorised_exception(code)
 
-            return return_object
+        if code >= 500:
+            return self._handle_failed_connection(req_obj, response_obj, f"[{code}] Server error.")
 
-        elif code == 401:
-            if self.username and self.passw:
-                raise JenkinsUnauthorisedException(f"[{response_obj.status_code}] Wrong credentials supplied.")
-            elif not self.username:
-                raise JenkinsUnauthorisedException(f"[{response_obj.status_code}] Unauthorised. No username supplied.")
-            elif not self.passw and not self.token:
-                raise JenkinsUnauthorisedException(f"[{response_obj.status_code}] Unauthorised. No password supplied.")
-            else:
-                raise JenkinsUnauthorisedException(f"[{response_obj.status_code}] Unauthorised. No credentials supplied.")
+        raise JenkinsConnectionException(response_obj._raw.text)
 
-        elif code >= 500:
-            # TODO: FIX THIS DUPLICATE CODE MESS
-            msg = JenkinsConnectionException(f"[{response_obj.status_code}] Server error.")
-            return_object = JenkinsConnectObject(request=req_obj, response=response_obj, content=msg,
-                                                 status_code=response_obj.status_code)
-            return_object._raw = response_obj._raw
+    @staticmethod
+    def _create_return_object(req_obj, response_obj, msg):
+        return_object = JenkinsConnectObject(
+            request=req_obj,
+            response=response_obj,
+            content=str(msg),
+            status_code=response_obj.status_code
+        )
+        return_object._raw = response_obj._raw
+        return return_object
 
-            return return_object
+    def _handle_failed_connection(self, req_obj, response_obj, msg):
+        return self._create_return_object(req_obj, response_obj, JenkinsConnectionException(msg))
 
-        msg = "Unhandled response. See _raw field if request failed."
+    def _handle_unauthorised_exception(self, code):
+        msg = f"[{code}] Unauthorised. "
+        if self.username and self.passw:
+            msg += "Wrong credentials supplied."
+        elif not self.username:
+            msg += "No username supplied."
+        elif not self.passw and not self.token:
+            msg += "No password supplied."
+        else:
+            msg += "No credentials supplied."
 
-        if response_obj.status_code not in [200, 201]:
-            raise JenkinsConnectionException(msg)
+        raise JenkinsUnauthorisedException(msg)
 
     @property
     def tree(self):
@@ -718,3 +718,11 @@ class Jenkins(Core):
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to send commands to the script console.")
 
         return resp_obj.content
+
+
+if __name__ == "__main__":
+    j = Jenkins(host="https://2014-51-194-38-21.ngrok-free.app", port=80,
+                username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    builds = j.jobs.search("folder1").builds
+    builds.build()
+    print(builds.latest.console())
