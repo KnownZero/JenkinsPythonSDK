@@ -300,16 +300,60 @@ class Builds:
         self._jenkins = jenkins
         self._job_url = job_url
 
-    def search(self, build_number: int) -> Build:
+    def search(self, build_number: int = False, **kws) -> Build:
         """
         Fetches a specific build from the build history of the job.
 
         :param build_number: The number of the build to fetch.
         :type build_number: int
+        :param kws: Additional keyword arguments to specify which build to fetch.
+        :type kws: dict
+        :keyword lastStableBuild: Fetch the last stable build.
+        :type lastStableBuild: bool, optional
+        :keyword lastSuccessfulBuild: Fetch the last successful build.
+        :type lastSuccessfulBuild: bool, optional
+        :keyword lastFailedBuild: Fetch the last failed build.
+        :type lastFailedBuild: bool, optional
+        :keyword lastUnsuccessfulBuild: Fetch the last unsuccessful build.
+        :type lastUnsuccessfulBuild: bool, optional
+        :keyword lastCompletedBuild: Fetch the last completed build.
+        :type lastCompletedBuild: bool, optional
         :return: The Build object representing the requested build.
         :rtype: :class:`jenkins_pysdk.builds.Build`
         """
+        if kws:
+            return self._fetch_specific(**kws)
+
         return self._fetch_build(build_number)
+
+    def _fetch_specific(self, **kws) -> Build:
+        if kws.get("lastStableBuild"):
+            url = self._jenkins._build_url(Endpoints.Builds.lastStableBuild,
+                                           prefix=self._job_url, suffix=Endpoints.Instance.Standard)
+        elif kws.get("lastSuccessfulBuild"):
+            url = self._jenkins._build_url(Endpoints.Builds.lastSuccessfulBuild,
+                                           prefix=self._job_url, suffix=Endpoints.Instance.Standard)
+        elif kws.get("lastFailedBuild"):
+            url = self._jenkins._build_url(Endpoints.Builds.lastFailedBuild,
+                                           prefix=self._job_url, suffix=Endpoints.Instance.Standard)
+        elif kws.get("lastUnsuccessfulBuild"):
+            url = self._jenkins._build_url(Endpoints.Builds.lastUnsuccessfulBuild,
+                                           prefix=self._job_url, suffix=Endpoints.Instance.Standard)
+        elif kws.get("lastCompletedBuild"):
+            url = self._jenkins._build_url(Endpoints.Builds.lastCompletedBuild,
+                                           prefix=self._job_url, suffix=Endpoints.Instance.Standard)
+        else:
+            raise JenkinsGeneralException(f"Unknown values - {kws}")
+
+        req_obj, resp_obj = self._jenkins._send_http(url=url)
+
+        if resp_obj.status_code != 200:
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch job.")
+
+        data = orjson.loads(resp_obj.content)
+        data = self._jenkins._validate_url_returned_from_instance(data)
+
+        return Build(self._jenkins, data['url'])
 
     @property
     def total(self) -> int:
@@ -377,7 +421,7 @@ class Builds:
             if int(build['number']) == index:
                 return Build(self._jenkins, build['url'])
         else:
-            raise JenkinsGeneralException(f"Build ({index}) was not found.")
+            raise JenkinsNotFound(f"Build ({index}) was not found.")
 
     @property
     def latest(self) -> Build:
@@ -389,10 +433,17 @@ class Builds:
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         # TODO: Add filtering for success=False, failed=False
-        try:
-            return self.list()[0]
-        except IndexError:
-            raise JenkinsGeneralException("No builds")
+        url = self._jenkins._build_url(Endpoints.Builds.lastBuild, prefix=self._job_url)
+        req_obj, resp_obj = self._jenkins._send_http(url=url)
+
+        if resp_obj.status_code >= 500:
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch latest build.")
+        elif resp_obj.status_code != 200:
+            raise JenkinsNotFound(f"[{resp_obj.status_code}] Latest build not found.")
+
+        data = orjson.loads(resp_obj.content)
+
+        return Build(self._jenkins, data['url'])
 
     @property
     def oldest(self) -> Build:
@@ -454,6 +505,7 @@ class Builds:
 
         url = self._jenkins._build_url(Endpoints.Builds.RebuildLast, prefix=self._job_url, suffix="/")
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT)
+
         if resp_obj.status_code not in [200, 201]:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to trigger a rebuild of the last build.")
 

@@ -182,6 +182,23 @@ class Users:
         """
         self._jenkins = jenkins
 
+        self._check_version()
+
+    def _check_version(self):
+        # Handling v2.452 change
+        # https://issues.jenkins.io/browse/JENKINS-18884
+        version = self._jenkins.version
+        if float(version) >= 2.452:
+            try:
+                found = self._jenkins.plugins.installed.search("people-view")
+                if not found.active:
+                    print(Warning(f"Your people-view plugin is not enabled."))
+            except JenkinsNotFound:
+                print(Warning(
+                    f"Your Jenkins version ({version}) requires the people-view plugin but you haven't installed it."))
+            except Exception as e:
+                print(e)
+
     def search(self, username: str) -> User:
         """
         Search for a user by username.
@@ -212,6 +229,10 @@ class Users:
         """
         url = self._jenkins._build_url(Endpoints.Users.List, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
+
+        if resp_obj.status_code != 200:
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to retrieve users.")
+
         data = orjson.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
 

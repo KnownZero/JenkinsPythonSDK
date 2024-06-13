@@ -47,6 +47,12 @@ class Endpoints:
         buildWithParameters = "buildWithParameters"
         RebuildLast = "lastCompletedBuild/rebuild"
         RebuildCurrent = "rebuild"
+        lastBuild = "lastBuild"
+        lastStableBuild = "lastStableBuild"
+        lastSuccessfulBuild = "lastSuccessfulBuild"
+        lastFailedBuild = "lastFailedBuild"
+        lastUnsuccessfulBuild = "lastUnsuccessfulBuild"
+        lastCompletedBuild = "lastCompletedBuild"
 
     class Queue:
         Queue = "queue"
