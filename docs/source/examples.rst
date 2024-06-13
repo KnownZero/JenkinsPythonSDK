@@ -3152,7 +3152,7 @@ The above code will output:
 
 ::
 
-    request=<HTTPRequestObject object at 2289828053616> content='[200] Successfully marked node (sdk_test) as offline.' status_code=200
+    request=<HTTPRequestObject object at 2289828053616> content='[200] Successfully marked node (sdk_test) as online.' status_code=200
 
 Delete the node
 
