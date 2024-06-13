@@ -81,12 +81,10 @@ class Jenkins(Core):
         self._folders = Folders(self)
         self._views = Views(self)
         self._credentials = Credentials(self)
-        self._users = Users(self)
         self._plugins = Plugins(self)
         self._nodes = Nodes(self)
         self._queue = Queue(self)
-
-        self._logging_level = 0
+        self._users = Users(self)  # Define Users last as it requires Plugins
 
         # Test connection
         self.connect()
@@ -718,11 +716,3 @@ class Jenkins(Core):
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to send commands to the script console.")
 
         return resp_obj.content
-
-
-if __name__ == "__main__":
-    j = Jenkins(host="https://2014-51-194-38-21.ngrok-free.app", port=80,
-                username="admin", token="11e8e294cee85ee88b60d99328284d7608")
-    builds = j.jobs.search("folder1").builds
-    builds.build()
-    print(builds.latest.console())

@@ -653,14 +653,23 @@ Search for a build
 
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
-    my_job = jenkins.jobs.search("new_freestyle")
-    print(my_job.builds.search(10))
+    print(j.jobs.search("folder1").builds.search(1).number)
+    print(j.jobs.search("folder1").builds.search(lastStableBuild=True).number)
+    print(j.jobs.search("folder1").builds.search(lastSuccessfulBuild=True).number)
+    print(j.jobs.search("folder1").builds.search(lastFailedBuild=True).number)
+    print(j.jobs.search("folder1").builds.search(lastUnsuccessfulBuild=True).number)
+    print(j.jobs.search("folder1").builds.search(lastCompletedBuild=True).number)
 
 The above code will output:
 
 ::
 
-    <jenkins_pysdk.builds.Build object at 0x0000025270CDFD00>
+    1
+    55
+    57
+    56
+    57
+    57
 
 Get the total build history of a job
 

@@ -1,6 +1,21 @@
 # Release log
 
-## Release (Minor/Fixes) 1.3.6 - 05/06/2024
+
+## Release (Minor/Fixes) 1.3.9 - 13/06/2024
+### Fixes:
+- Checking people-view plugin is installed for Jenkins v2.452+
+
+### New:
+- Adding build search options
+  - lastStableBuild
+  - lastSuccessfulBuild
+  - lastFailedBuild
+  - lastUnsuccessfulBuild
+  - lastCompletedBuild
+
+###
+
+## Release (Minor/Fixes) 1.3.8 - 05/06/2024
 ### Fixes:
 - Code readability
 - Connect method

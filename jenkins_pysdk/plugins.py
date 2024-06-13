@@ -126,8 +126,8 @@ class UpdateCenter:
         for site in self.iter():
             if name == site.id:
                 return site
-        else:
-            raise JenkinsNotFound(f"Site ({name}) was not found.")
+
+        raise JenkinsNotFound(f"Site ({name}) was not found.")
 
     def iter(self) -> Generator[Site, None, None]:
         """
@@ -456,8 +456,8 @@ class PluginGroup:
         for plugin in self.iter(site=site, _paginate=_paginate):
             if plugin.name == id:
                 return plugin
-        else:
-            raise JenkinsNotFound(f"Plugin ({id}) was not found in {self.type}.")
+
+        raise JenkinsNotFound(f"Plugin ({id}) was not found in {self.type}.")
 
     def iter(self, site: str = "default", _paginate: int = 0) -> Generator[Union[Plugin, Installed], None, None]:
         """
