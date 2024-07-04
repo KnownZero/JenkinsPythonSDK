@@ -1,12 +1,26 @@
 # Release log
 
+## Release (Minor/Fixes) 1.4.0 - --------------------
+### Fixes:
+- Jenkins version endpoint which didn't work with old versions
+- Folder type in folder create methods
+- Refactor http methods to fix 403 errors
+- Removed HttpUrl, which was causing issues
+- Code cleanup
+
+### New:
+- New testing setup script
+- Testing of many LTS versions
+- Removed many mini sessions in favour of one single session
+
+###
 
 ## Release (Minor/Fixes) 1.3.9 - 13/06/2024
 ### Fixes:
 - Checking people-view plugin is installed for Jenkins v2.452+
 
 ### New:
-- Adding build search options
+- Adding build filter options
   - lastStableBuild
   - lastSuccessfulBuild
   - lastFailedBuild

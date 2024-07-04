@@ -1,7 +1,6 @@
 from typing import List, Generator
 
 import orjson
-from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsValidateJob, JenkinsActionObject
 from jenkins_pysdk.objects import Jobs as r_jobs, Folders as r_folders
@@ -54,19 +53,18 @@ class Job:
             msg = f"[{resp_obj.status_code}] Failed to disable {self._job_path}."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
     @property
-    def url(self) -> HttpUrl:
+    def url(self) -> str:
         """
         Get the URL of the job.
 
         :return: The URL of the job.
-        :rtype: :class:`HttpUrl`
+        :rtype: str
         """
-        return HttpUrl(self._job_url)
+        return str(self._job_url)
 
     @property
     def path(self) -> str:
@@ -96,7 +94,6 @@ class Job:
             msg = f"[{resp_obj.status_code}] Failed to enable {self._job_path}."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -121,7 +118,6 @@ class Job:
             msg = f"[{resp_obj.status_code}] Failed to reconfigure {self._job_path}."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -138,9 +134,9 @@ class Job:
 
         if resp_obj.status_code != 204:
             msg = f"[{resp_obj.status_code}] Failed to delete job."
+
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
 
-        obj._raw = resp_obj._raw
         return obj
 
     @property
@@ -159,7 +155,7 @@ class Job:
         if code != 200:
             raise JenkinsGeneralException(f"[{code}] Failed to download job XML.")
 
-        return resp_obj.content
+        return resp_obj.text
 
     @property
     def builds(self) -> Builds:
@@ -224,12 +220,12 @@ class Jobs:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code == 404:
             raise JenkinsNotFound(f"[{resp_obj.status_code}] {path} not found.")
-        else:
-            data = orjson.loads(resp_obj.content)
-            if data['_class'] not in [Class.Folder, Class.OrganizationFolder]:
-                return True
 
-            return False
+        data = orjson.loads(resp_obj.content)
+        if data['_class'] not in [Class.Folder, Class.OrganizationFolder]:
+            return True
+
+        return False
 
     def _validate_job(self, job_path: str) -> JenkinsValidateJob:
         # TODO: Review mess
@@ -247,12 +243,12 @@ class Jobs:
         if not self.is_job(job_path):
             raise JenkinsGeneralException(f"{job_path} is a folder. Please use folders.")
 
-        obj = JenkinsValidateJob(url=url, is_valid=validated)
+        obj = JenkinsValidateJob(url=str(url), is_valid=validated)
         obj._raw = resp_obj
 
         return obj
 
-    def _create_job(self, job_name: str, xml, mode: str, folder_path: HttpUrl = None) \
+    def _create_job(self, job_name: str, xml, mode: str, folder_path: str = None) \
             -> JenkinsActionObject or JenkinsNotFound:
         create_endpoint = Endpoints.Jobs.Create
         endpoint = f"{folder_path}/{create_endpoint}" if folder_path else create_endpoint
@@ -269,7 +265,6 @@ class Jobs:
             msg = f"[{resp_obj.status_code}] Failed to create job {job_name}."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -438,19 +433,18 @@ class Folder:
             msg = f"[{resp_obj.status_code}] Failed to reconfigure {self._folder_path}."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
     @property
-    def url(self) -> HttpUrl:
+    def url(self) -> str:
         """
         Get the URL of the folder.
 
         :return: The URL of the folder.
-        :rtype: HttpUrl
+        :rtype: str
         """
-        return HttpUrl(self._folder_url)
+        return str(self._folder_url)
 
     @property
     def path(self) -> str:
@@ -491,7 +485,6 @@ class Folder:
             msg = f"[{resp_obj.status_code}] Failed to copy folder."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -513,12 +506,11 @@ class Folder:
             msg = f"[{resp_obj.status_code}] Failed to delete folder."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
     def create(self, folder_name: str, xml: str or Builder.Folder,
-               folder_type: r_folders = Class.Folder) -> JenkinsActionObject:
+               folder_type=r_folders(value=Class.Folder)) -> JenkinsActionObject:
         """
         Creates sub-folders in the current path.
 
@@ -643,12 +635,11 @@ class Folders:
             msg = f"[{resp_obj.status_code}] Failed to create folder {folder_name}."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
     def create(self, folder_path: str, xml: str or Builder.Folder,
-               folder_type: r_folders = Class.Folder) -> JenkinsActionObject:
+               folder_type=r_folders(value=Class.Folder)) -> JenkinsActionObject:
         """
         Creates a folder at the specified path with the given XML configuration.
 

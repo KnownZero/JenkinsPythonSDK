@@ -1,7 +1,6 @@
 from typing import List, Generator
 
 import orjson
-from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsActionObject
 from jenkins_pysdk.exceptions import JenkinsGeneralException, JenkinsNotFound
@@ -15,26 +14,26 @@ __all__ = ["Users", "User"]
 
 
 class User:
-    def __init__(self, jenkins, user_url: HttpUrl):
+    def __init__(self, jenkins, user_url: str):
         """
         Interact with a user on the Jenkins instance.
 
         :param jenkins: Connection to the Jenkins instance.
         :type jenkins: jenkins_pysdk.jenkins.Jenkins
         :param user_url: URL of the user.
-        :type user_url: :class:`HttpUrl`
+        :type user_url: str
         """
         self._jenkins = jenkins
         self._user_url = user_url
         self._raw = self._get_raw()
 
     @property
-    def url(self) -> HttpUrl:
+    def url(self) -> str:
         """
         Get the URL of the user.
 
         :return: The URL of the user.
-        :rtype: HttpUrl
+        :rtype: str
         """
         return self._user_url
 
@@ -147,7 +146,6 @@ class User:
             msg = f"[400] Failed to delete user ({self.name})."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -167,7 +165,6 @@ class User:
             msg = f"[{resp_obj.status_code}] Failed to logout."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -188,7 +185,9 @@ class Users:
         # Handling v2.452 change
         # https://issues.jenkins.io/browse/JENKINS-18884
         version = self._jenkins.version
-        if float(version) >= 2.452:
+        version = tuple(map(int, version.split(".")))
+        new_version = tuple(map(int, "2.452".split(".")))
+        if version >= new_version:
             try:
                 found = self._jenkins.plugins.installed.search("people-view")
                 if not found.active:
@@ -196,8 +195,6 @@ class Users:
             except JenkinsNotFound:
                 print(Warning(
                     f"Your Jenkins version ({version}) requires the people-view plugin but you haven't installed it."))
-            except Exception as e:
-                print(e)
 
     def search(self, username: str) -> User:
         """
@@ -277,6 +274,5 @@ class Users:
 
         msg = f"[{resp_obj.status_code}] Successfully created user ({username})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
