@@ -42,7 +42,7 @@ jobs:
 
       - name: Run specific test file
         run: |
-          python -m pytest tests/jenkins.py
+          python -m pytest tests/jenkins_test.py
       
   test-python36:
       name: Test on Ubuntu 20.04 with Python 3.6
@@ -70,7 +70,7 @@ jobs:
   
         - name: Run specific test file
           run: |
-            python -m pytest tests/jenkins.py
+            python -m pytest tests/jenkins_test.py
 
   flake8:
     name: Python ${{ matrix.python-version }} - Flake8
