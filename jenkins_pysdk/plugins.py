@@ -7,7 +7,6 @@ from typing import (
 )
 
 import orjson
-from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsActionObject
 from jenkins_pysdk.exceptions import JenkinsGeneralException, JenkinsNotFound
@@ -53,14 +52,14 @@ class Site:
         return str(self._id)
 
     @property
-    def url(self) -> HttpUrl:
+    def url(self) -> str:
         """
        The URL of the site.
 
        :return: The URL of the site.
-       :rtype: HttpUrl
+       :rtype: str
        """
-        return HttpUrl(self._raw['url'])
+        return str(self._raw['url'])
 
     @property
     def has_updates(self) -> bool:
@@ -73,24 +72,24 @@ class Site:
         return bool(self._raw['hasUpdates'])
 
     @property
-    def suggested_plugins_url(self) -> HttpUrl:
+    def suggested_plugins_url(self) -> str:
         """
         The URL for suggested plugins for the site.
 
         :return: The URL for suggested plugins.
-        :rtype: HttpUrl
+        :rtype: str
         """
-        return HttpUrl(self._raw['suggestedPluginsUrl'])
+        return str(self._raw['suggestedPluginsUrl'])
 
     @property
-    def connection_check_url(self) -> HttpUrl:
+    def connection_check_url(self) -> str:
         """
         The URL for checking the connection of the site.
 
         :return: The URL for connection check.
-        :rtype: HttpUrl
+        :rtype: str
         """
-        return HttpUrl(self._raw['connectionCheckUrl'])
+        return str(self._raw['connectionCheckUrl'])
 
     @property
     def timestamp(self) -> int:
@@ -158,7 +157,7 @@ class UpdateCenter:
         """
         return [site for site in self.iter()]
 
-    def create(self, site_url: str or HttpUrl) -> JenkinsActionObject:
+    def create(self, site_url: str or str) -> JenkinsActionObject:
         """
         Create a new site in the update center.
 
@@ -175,7 +174,6 @@ class UpdateCenter:
 
         msg = f"[{resp_obj.status_code}] Successfully added update center ({site_url})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -214,14 +212,14 @@ class Plugin:
         return str(self._plugin_info['version'])
 
     @property
-    def url(self) -> HttpUrl:
+    def url(self) -> str:
         """
         The URL of the plugin.
 
         :return: The URL of the plugin.
-        :rtype: HttpUrl
+        :rtype: str
         """
-        return HttpUrl(self._plugin_info['url'])
+        return str(self._plugin_info['url'])
 
     @property
     def compatible(self) -> bool:
@@ -256,14 +254,14 @@ class Plugin:
         return str(self._plugin_info['requiredCore'])
 
     @property
-    def docs(self) -> HttpUrl:
+    def docs(self) -> str:
         """
         The documentation URL for the plugin.
 
         :return: The documentation URL for the plugin.
-        :rtype: HttpUrl
+        :rtype: str
         """
-        return HttpUrl(self._plugin_info['wiki'])
+        return str(self._plugin_info['wiki'])
 
     @property
     def site(self) -> Site:
@@ -326,7 +324,6 @@ class Installed:
 
         msg = f"[{resp_obj.status_code}] Successfully enabled plugin ({self.name})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -348,7 +345,6 @@ class Installed:
 
         msg = f"[{resp_obj.status_code}] Successfully disabled plugin ({self.name})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -363,14 +359,14 @@ class Installed:
         return str(self._plugin_info['version'])
 
     @property
-    def url(self) -> HttpUrl:
+    def url(self) -> str:
         """
         The URL of the installed plugin.
 
         :return: The URL of the installed plugin.
-        :rtype: HttpUrl
+        :rtype: str
         """
-        return HttpUrl(self._plugin_info['url'])
+        return str(self._plugin_info['url'])
 
     @property
     def dependencies(self) -> List[Dict]:
@@ -421,7 +417,6 @@ class Installed:
 
         msg = f"[{resp_obj.status_code}] Successfully uninstalled plugin ({self.name})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -499,8 +494,8 @@ class PluginGroup:
                         if plugin['sourceId'] != site:
                             break
                         elif plugin['sourceId'] == site:
-                            for plugin in site_name.get(self.type, []):
-                                yield Plugin(self._jenkins, plugin)
+                            for p in site_name.get(self.type, []):
+                                yield Plugin(self._jenkins, p)
                             break
                     break
                 else:
@@ -591,7 +586,6 @@ class Plugins:
             msg = f"[{resp_obj.status_code}] Failed to upload plugin ({filename})."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -636,7 +630,6 @@ class Plugins:
             msg = f"[{resp_obj.status_code}] Successfully installed plugin ({name}) and restarted Jenkins."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 

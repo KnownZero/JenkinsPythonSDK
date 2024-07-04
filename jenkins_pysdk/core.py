@@ -1,19 +1,13 @@
 from typing import Tuple, Any
 
 import orjson
-from pydantic import HttpUrl
 
 from jenkins_pysdk.consts import Endpoints
-from jenkins_pysdk.utils import interact_http, interact_http_session
 from jenkins_pysdk.consts import HTTP_HEADER_DEFAULT
-from jenkins_pysdk.objects import (
-    HTTPSessionRequestObject,
-    HTTPSessionResponseObject,
-    HTTPRequestObject,
-    HTTPResponseObject
-)
 from jenkins_pysdk.exceptions import JenkinsConnectionException
 from jenkins_pysdk.version import version, python_name
+
+from httpx import Client, Request, Response, HTTPError, TimeoutException
 
 __all__ = ["Core"]
 
@@ -23,7 +17,7 @@ class Core:  # TODO: Revise these messy methods
     def _set_schema(self, url):
         raise NotImplemented
 
-    def _build_url(self, endpoint: str, prefix: str = None, suffix: str = None) -> HttpUrl:
+    def _build_url(self, endpoint: str, prefix: str = None, suffix: str = None) -> str:
         endpoint = str(endpoint)
         if not self.host.startswith("http://") and not self.host.startswith("https://"):
             host = f"http://{self.host}"
@@ -41,7 +35,7 @@ class Core:  # TODO: Revise these messy methods
         if suffix:
             endpoint = f"{endpoint.rstrip('/')}/{suffix.replace('//', '/')}"
 
-        return HttpUrl(endpoint)
+        return endpoint
 
     def _validate_url_returned_from_instance(self, data: orjson):
         """
@@ -113,7 +107,7 @@ class Core:  # TODO: Revise these messy methods
         return len(levels)
 
     def _send_http(self, *,
-                   url: HttpUrl,
+                   url: str,
                    method: str = "GET",
                    headers: dict = HTTP_HEADER_DEFAULT,
                    params: dict = None,
@@ -122,9 +116,8 @@ class Core:  # TODO: Revise these messy methods
                    username: str = None,
                    passw_or_token: str = None,
                    timeout: int = None,
-                   _session: HTTPSessionResponseObject = None,
-                   ) -> (Tuple[HTTPRequestObject, HTTPResponseObject] or
-                         Tuple[HTTPSessionRequestObject, HTTPSessionResponseObject]):
+                   _session: ... = None,
+                   ) -> Tuple[Request, Response]:
         """
         Some HTTP interaction function...
         :param url: The url to hit
@@ -142,46 +135,41 @@ class Core:  # TODO: Revise these messy methods
             headers = dict()
 
         headers.update({"User-Agent": f"{python_name}/{version}"})
-        # TODO: Unit Test
-        if self.token:
-            request_obj = HTTPRequestObject(method=method, url=url, headers=headers, params=params,
-                                            data=data, files=files,
-                                            username=username if username else self.username,
-                                            passw_or_token=self.token if self.token else self.passw,
-                                            verify=self.verify,
-                                            proxy=self.proxy,
-                                            timeout=timeout if timeout else self.timeout)
-            req, resp = request_obj, interact_http(request_obj)
 
-            if isinstance(resp._raw, Exception):
-                raise JenkinsConnectionException(resp._raw)
+        with Client(verify=self.verify,
+                    proxies=self.proxies,
+                    timeout=timeout if timeout else self.timeout,
+                    follow_redirects=True,
+                    auth=(username if username else self.username,
+                          passw_or_token if passw_or_token else self.token if self.token else self.passw),
+                    ) as session:
 
-            return req, resp
-        else:
-            crumbed_session_req = HTTPSessionRequestObject(
-                method="GET", url=self._build_url(Endpoints.Instance.Crumb, suffix=Endpoints.Instance.Standard),
-                headers=headers,
-                username=username if username else self.username,
-                passw_or_token=passw_or_token if passw_or_token else self.passw,
-                verify=self.verify,
-                proxy=self.proxy,
-                timeout=timeout if timeout else self.timeout,
-                keep_session=True
-            )
-            crumbed_session = interact_http_session(crumbed_session_req)
+            if not self.token:
 
-            if isinstance(crumbed_session._raw, Exception):
-                raise JenkinsConnectionException(crumbed_session._raw)
+                try:
+                    crumbed_session_req = Request(
+                        method="GET",
+                        url=self._build_url(Endpoints.Instance.Crumb, suffix=Endpoints.Instance.Standard),
+                        headers=HTTP_HEADER_DEFAULT,
+                    )
+                    crumbed_session = session.send(crumbed_session_req)
+                except (EnvironmentError, HTTPError, TimeoutException) as e:
+                    raise JenkinsConnectionException(e)
 
-            crumbed_data = orjson.loads(crumbed_session.content)
-            headers.update({crumbed_data['crumbRequestField']: crumbed_data['crumb']})
-            request_obj = HTTPSessionRequestObject(method=method, url=url, headers=headers, params=params,
-                                                   data=data, files=files,
-                                                   username=username if username else self.username,
-                                                   passw_or_token=passw_or_token if passw_or_token else self.passw,
-                                                   verify=self.verify,
-                                                   proxy=self.proxy,
-                                                   timeout=timeout if timeout else self.timeout,
-                                                   session=crumbed_session.session)
+                crumbed_data = orjson.loads(crumbed_session.content)
+                headers.update({crumbed_data['crumbRequestField']: crumbed_data['crumb']})
+                headers.update({"x-jenkins-session": crumbed_session.headers['x-jenkins-session']})
 
-            return request_obj, interact_http_session(request_obj)
+            try:
+                request_obj = Request(method=method,
+                                      url=url,
+                                      headers=headers,
+                                      params=params,
+                                      data=data,
+                                      files=files,
+                                      cookies=crumbed_session.cookies)
+                resp = session.send(request_obj)
+            except (EnvironmentError, HTTPError, TimeoutException) as e:
+                raise JenkinsConnectionException(e)
+
+            return request_obj, resp

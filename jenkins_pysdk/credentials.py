@@ -5,7 +5,6 @@ from typing import (
 )
 
 import orjson
-from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsActionObject
 from jenkins_pysdk.exceptions import (
@@ -26,7 +25,7 @@ __all__ = ["Credentials", "Credential", "Domain"]
 
 
 class Credential:
-    def __init__(self, *, jenkins, cred_id: str, domain_url: HttpUrl):
+    def __init__(self, *, jenkins, cred_id: str, domain_url: str):
         """
         Initialize a Credential object representing a Jenkins credential.
 
@@ -35,7 +34,7 @@ class Credential:
         :param cred_id: The ID of the credential.
         :type cred_id: str
         :param domain_url: The URL of the domain associated with the credential.
-        :type domain_url: HttpUrl
+        :type domain_url: str
         """
         self._jenkins = jenkins
         self._cred_id = cred_id
@@ -52,7 +51,7 @@ class Credential:
         return str(self._cred_id)
 
     @property
-    def config(self) -> JenkinsActionObject:
+    def config(self) -> str:
         """
         Get the configuration of the credential.
 
@@ -63,12 +62,11 @@ class Credential:
         url = self._jenkins._build_url(Endpoints.Credential.Get.format(cred_id=self._cred_id),
                                        prefix=self.domain_url, suffix=Endpoints.Jobs.Xml)
         req_obj, resp_obj = self._jenkins._send_http(url=url, headers=XML_HEADER_DEFAULT)
-        code = resp_obj.status_code
 
-        if code != 200:
-            raise JenkinsGeneralException(f"[{code}] Failed to download credential XML.")
+        if resp_obj.status_code != 200:
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to download credential XML.")
 
-        return resp_obj.content
+        return resp_obj.text
 
     def delete(self) -> JenkinsActionObject:
         """
@@ -86,7 +84,6 @@ class Credential:
             msg = f"[{resp_obj.status_code}] Failed to delete credential."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -111,7 +108,6 @@ class Credential:
             msg = f"[{resp_obj.status_code}] Failed to reconfigure {self._cred_id}."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -134,20 +130,19 @@ class Credential:
             msg = f"[{resp_obj.status_code}] Failed to move {self._cred_id} to {dest}."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
 
 class Domain:
-    def __init__(self, *, jenkins, url: HttpUrl):
+    def __init__(self, *, jenkins, url: str):
         """
         Initialize a Domain object.
 
         :param jenkins: The Jenkins instance.
         :type jenkins: Jenkins
         :param url: The URL of the domain.
-        :type url: HttpUrl
+        :type url: str
         """
         self._jenkins = jenkins
         self.domain_url = url
@@ -164,12 +159,12 @@ class Domain:
         return str(self._raw['urlName'])
 
     @property
-    def url(self) -> HttpUrl:
+    def url(self) -> str:
         """
         The domain URL.
 
-        :return: The domain URL in HttpUrl format.
-        :rtype: HttpUrl
+        :return: The domain URL in str format.
+        :rtype: str
         """
         return self.domain_url
 
@@ -210,6 +205,7 @@ class Domain:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch credentials in domain ({self.name}).")
 
         data = orjson.loads(resp_obj.content)
+
         for cred in data.get('credentials', []):
             domain_url = str(self.domain_url).strip(Endpoints.Instance.Standard)
             yield Credential(jenkins=self._jenkins, cred_id=cred['id'], domain_url=domain_url)
@@ -245,7 +241,6 @@ class Domain:
 
         msg = f"[{resp_obj.status_code}] Successfully created credential ({name})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -297,6 +292,7 @@ class Credentials:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch credential domains.")
 
         data = orjson.loads(resp_obj.content)
+
         for domain in data.get('domains'):
             url = self._jenkins._build_url(Endpoints.Credentials.Domain.format(domain=domain))
             yield Domain(jenkins=self._jenkins, url=url)
@@ -333,6 +329,5 @@ class Credentials:
 
         msg = f"[{resp_obj.status_code}] Successfully created domain ({name})."
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj

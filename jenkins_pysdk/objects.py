@@ -1,13 +1,12 @@
-from typing import Any, Optional
+from typing import Any
 from pydantic import (
     BaseModel,
-    HttpUrl,
-    PrivateAttr
+    PrivateAttr,
 )
 
 
-__all__ = ["HTTPRequestObject", "JenkinsConnectObject", "HTTPResponseObject", "JenkinsActionObject", "Parameter",
-           "Filter", "Flags", "Setting", "HTTPSessionResponseObject", "HTTPSessionRequestObject", "JenkinsValidateJob",
+__all__ = ["JenkinsConnectObject", "JenkinsActionObject", "Parameter",
+           "Filter", "Flags", "Setting", "JenkinsValidateJob",
            "Views", "Jobs", "Folders", "Builder"]
 
 
@@ -19,43 +18,9 @@ class JenkinsSafe(BaseModel):
         return self.model_dump_json()
 
 
-###########################################
-#   HTTP
-###########################################
-
-class HTTPRequestObject(JenkinsSafe):
-    url: HttpUrl
-    method: str = "GET"
-    headers: Optional[dict] = None
-    params: Optional[dict] = None
-    data: Optional[Any] = None
-    files: Optional[Any] = None
-    username: str
-    passw_or_token: str  # TODO: MASK
-    verify: bool
-    proxy: Optional[dict] = None
-    timeout: int = 30
-
-
-class HTTPResponseObject(JenkinsSafe):
-    request: Any
-    content: Any
-    status_code: int
-    _raw: Any = PrivateAttr()
-
-
-class HTTPSessionRequestObject(HTTPRequestObject):
-    session: Any = None
-    keep_session: bool = False
-
-
-class HTTPSessionResponseObject(HTTPResponseObject):
-    session: Any
-
-
 class JenkinsValidateJob(JenkinsSafe):
     is_valid: bool
-    url: HttpUrl
+    url: str
     _raw: PrivateAttr
 
 
@@ -64,8 +29,8 @@ class JenkinsValidateJob(JenkinsSafe):
 ###########################################
 
 class JenkinsConnectObject(JenkinsSafe):
-    request: HTTPRequestObject
-    response: HTTPResponseObject
+    request: Any
+    response: Any
     content: str
     status_code: int
     _raw: Any = PrivateAttr()
@@ -75,7 +40,6 @@ class JenkinsActionObject(JenkinsSafe):
     request: Any
     content: Any
     status_code: int
-    _raw: Any = PrivateAttr()
 
 
 ###########################################
@@ -95,6 +59,7 @@ class Views(Flags):
 
 class Jobs(Flags):
     value: str
+
 
 class Folders(Flags):
     value: str

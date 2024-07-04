@@ -31,7 +31,10 @@ jenkins = Jenkins(
     host="http://localhost:8080", 
     username="<username>",
     token="<token>",
-    proxy={},
+    proxies={
+        "http": "http://",
+        "https": "https://"
+    },
     timeout=60
 )
 ```

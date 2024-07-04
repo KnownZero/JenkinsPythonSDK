@@ -8,7 +8,6 @@ from typing import (
 )
 
 import orjson
-from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsActionObject
 from jenkins_pysdk.exceptions import JenkinsGeneralException, JenkinsNotFound
@@ -19,14 +18,14 @@ __all__ = ["Builds", "Build"]
 
 
 class Build:
-    def __init__(self, jenkins, build_url: HttpUrl):
+    def __init__(self, jenkins, build_url: str):
         """
         Initialize a Build object.
 
         :param jenkins: The Jenkins instance associated with the build.
         :type jenkins: jenkins_pysdk.jenkins.Jenkins
         :param build_url: The URL of the build.
-        :type build_url: HttpUrl
+        :type build_url: str
         """
         self._jenkins = jenkins
         self._build_url = build_url
@@ -102,7 +101,7 @@ class Build:
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch build logs.")
 
-        return resp_obj.content
+        return resp_obj.text
 
     def _get_progressive_console_output(self, html: bool, _start: int) -> Generator[str, None, None]:
         endpoint = Endpoints.Builds.ProgressiveHtml if html else Endpoints.Builds.ProgressiveConsoleText
@@ -115,11 +114,11 @@ class Build:
                 raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch build logs.")
 
             try:
-                offset = int(resp_obj._raw.headers['X-Text-Size'])
+                offset = int(resp_obj.headers['X-Text-Size'])
                 if offset > _start:
                     yield resp_obj.content
 
-                if bool(resp_obj._raw.headers['X-More-Data']):
+                if bool(resp_obj.headers['X-More-Data']):
                     _start += offset
                     time.sleep(5)  # Sleep 5 same as UI
                     continue
@@ -143,7 +142,6 @@ class Build:
             msg = f"[{resp_obj.status_code}] Failed to delete build ({self.number})."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -163,7 +161,7 @@ class Build:
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch build changes.")
 
-        return resp_obj.content
+        return resp_obj.text
 
     def rebuild(self) -> JenkinsActionObject:
         """
@@ -191,7 +189,6 @@ class Build:
 
         msg = f"[{resp_obj.status_code}] Successfully triggered a rebuild of this build ({self.number})."
         obj = JenkinsActionObject(request=req_obj, response=resp_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -288,14 +285,14 @@ class Build:
 
 
 class Builds:
-    def __init__(self, jenkins, job_url: HttpUrl):
+    def __init__(self, jenkins, job_url: str):
         """
         Initializes a Builds object.
 
         :param jenkins: The Jenkins instance.
         :type jenkins: jenkins_pysdk.jenkins.Jenkins
         :param job_url: The URL of the job.
-        :type job_url: HttpUrl
+        :type job_url: str
         """
         self._jenkins = jenkins
         self._job_url = job_url
@@ -454,7 +451,6 @@ class Builds:
         :rtype: :class:`jenkins_pysdk.builds.Build`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
-        # TODO: Add filtering for success=False, failed=False
         try:
             return self.list()[-1]
         except IndexError:
@@ -477,12 +473,12 @@ class Builds:
         url = self._jenkins._build_url(endpoint, prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, headers=FORM_HEADER_DEFAULT,
                                                      params=params, data=parameters)
+
         if resp_obj.status_code not in [200, 201]:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to trigger a new build.")
 
         msg = f"[{resp_obj.status_code}] Successfully triggered a new build."
         obj = JenkinsActionObject(request=req_obj, response=resp_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -511,6 +507,5 @@ class Builds:
 
         msg = f"[{resp_obj.status_code}] Successfully triggered a rebuild of the last build."
         obj = JenkinsActionObject(request=req_obj, response=resp_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj

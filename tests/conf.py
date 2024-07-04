@@ -1,3 +1,10 @@
-# TESTING
-ApiToken = {"host": "https://localhost", "port": 443, "username": "admin", "token": "11e8e294cee85ee88b60d99328284d7608"}
-Basic = {"host": "https://localhost", "port": 443, "username": "admin", "passw": "changeme"}
+credentials: dict = {
+    "username": "admin",
+    "password": "jenkins"
+}
+
+servers: dict = {
+    "port_lower": 8095,
+    "port_higher": 8104,
+    "host": "http://localhost"
+}

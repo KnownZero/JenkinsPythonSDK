@@ -15,6 +15,7 @@ from jenkins_pysdk.consts import (
     FORM_HEADER_DEFAULT,
     Class
 )
+
 from jenkins_pysdk.exceptions import (
     JenkinsConnectionException,
     JenkinsUnauthorisedException,
@@ -22,6 +23,7 @@ from jenkins_pysdk.exceptions import (
     JenkinsActionFailed,
     JenkinsGeneralException
 )
+
 from jenkins_pysdk.objects import JenkinsConnectObject, JenkinsActionObject
 from jenkins_pysdk.objects import Views as r_views, Jobs as r_jobs, Folders as r_folders
 from jenkins_pysdk.jobs import Jobs, Folders
@@ -50,8 +52,8 @@ class Jenkins(Core):
     :type token: str, optional
     :param verify: Enable or disable SSL verification. Defaults to True.
     :type verify: bool, optional
-    :param proxy: Specify a proxy for routing requests. Supports both HTTP and HTTPS. Defaults to None.
-    :type proxy: dict, optional
+    :param proxies: Specify a proxy for routing requests. Supports both HTTP and HTTPS. Defaults to None.
+    :type proxies: dict, optional
     :param port: The port number for connecting to the Jenkins instance. Defaults to 443.
     :type port: int, optional
     :param timeout: Specify the connection timeout in seconds. Defaults to 30.
@@ -64,7 +66,7 @@ class Jenkins(Core):
                  passw: Optional[str] = None,
                  token: Optional[str] = None,
                  verify: Optional[bool] = True,
-                 proxy: dict = None,
+                 proxies: dict = None,
                  port: int = 443,
                  timeout: int = 30):
         self.host = host
@@ -72,9 +74,12 @@ class Jenkins(Core):
         self.passw = passw
         self.token = token
         self.verify = verify
-        self.proxy = proxy
+        self.proxies = proxies
         self.port = port
         self.timeout = timeout
+
+        if port and str(port) not in self.host:
+            self.host = f"{self.host}:{self.port}"
 
         # Extend functionality
         self._jobs = Jobs(self)
@@ -243,7 +248,7 @@ class Jenkins(Core):
         if code >= 500:
             return self._handle_failed_connection(req_obj, response_obj, f"[{code}] Server error.")
 
-        raise JenkinsConnectionException(response_obj._raw.text)
+        raise JenkinsConnectionException(response_obj.text)
 
     @staticmethod
     def _create_return_object(req_obj, response_obj, msg):
@@ -253,7 +258,8 @@ class Jenkins(Core):
             content=str(msg),
             status_code=response_obj.status_code
         )
-        return_object._raw = response_obj._raw
+        return_object._raw = response_obj.content
+
         return return_object
 
     def _handle_failed_connection(self, req_obj, response_obj, msg):
@@ -341,10 +347,10 @@ class Jenkins(Core):
         :rtype: str
         """
         # TODO: Finish me
-        url = self._build_url(Endpoints.Instance.Crumb)
+        url = self._build_url(Endpoints.Instance.Connect)
         req_obj, resp_obj = self._send_http(url=url)
 
-        return str(resp_obj._raw.headers['x-jenkins'])
+        return resp_obj.headers['x-jenkins']
 
     @property
     def available_executors(self) -> int:
@@ -551,7 +557,6 @@ class Jenkins(Core):
             msg = f"[{code}] Restarting the Jenkins instance... please wait..."
 
         restart_obj = JenkinsActionObject(request=req_obj, content=msg, status_code=code)
-        restart_obj._raw = resp_obj._raw
 
         return restart_obj
 
@@ -572,7 +577,6 @@ class Jenkins(Core):
             msg = f"[{code}] Successfully enabled Quiet Mode."
 
         quiet_obj = JenkinsActionObject(request=req_obj, content=msg, status_code=code)
-        quiet_obj._raw = resp_obj._raw
 
         return quiet_obj
 
@@ -596,7 +600,6 @@ class Jenkins(Core):
             msg = f"[{code}] Successfully disabled Quiet Mode."
 
         quiet_obj = JenkinsActionObject(request=req_obj, content=msg, status_code=code)
-        quiet_obj._raw = resp_obj._raw
 
         return quiet_obj
 
@@ -622,6 +625,7 @@ class Jenkins(Core):
             return self._disable_quiet_mode()
 
         quiet_obj = self._enable_quiet_mode()
+
         if not quiet_obj.status_code == 200:
             return quiet_obj
 
@@ -659,7 +663,6 @@ class Jenkins(Core):
             msg = f"[{resp_obj.status_code}] Failed to shutdown application."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -685,7 +688,6 @@ class Jenkins(Core):
             msg = f"[{resp_obj.status_code}] Failed to logout."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -704,7 +706,6 @@ class Jenkins(Core):
             msg = f"[{resp_obj.status_code}] Failed to reload configuration from disk."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -715,4 +716,4 @@ class Jenkins(Core):
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to send commands to the script console.")
 
-        return resp_obj.content
+        return resp_obj.text

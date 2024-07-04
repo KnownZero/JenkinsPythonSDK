@@ -1,7 +1,6 @@
 from typing import List, Generator
 
 import orjson
-from pydantic import HttpUrl
 
 from jenkins_pysdk.objects import JenkinsValidateJob, JenkinsActionObject
 from jenkins_pysdk.exceptions import JenkinsNotFound, JenkinsGeneralException
@@ -25,21 +24,21 @@ class View:
         :param name: The name of the view.
         :type name: str
         :param url: The URL of the view.
-        :type url: HttpUrl
+        :type url: str
         """
         self._jenkins = jenkins
         self._view_name = name
         self._view_url = url
 
     @property
-    def url(self) -> HttpUrl:
+    def url(self) -> str:
         """
         Get the URL of the view.
 
         :return: The URL of the view.
-        :rtype: HttpUrl
+        :rtype: str
         """
-        return HttpUrl(self._view_url)
+        return str(self._view_url)
 
     @property
     def name(self) -> str:
@@ -71,7 +70,6 @@ class View:
             msg = f"[{resp_obj.status_code}] Failed to reconfigure view ({self._view_name})."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -90,7 +88,6 @@ class View:
             msg = f"[{resp_obj.status_code}] Failed to delete view ({self._view_name})."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -110,7 +107,7 @@ class View:
         if code != 200:
             raise JenkinsGeneralException(f"[{code}] Failed to download view XML.")
 
-        return resp_obj.content
+        return resp_obj.text
 
 
 class Views:
@@ -197,7 +194,6 @@ class Views:
             msg = f"[{resp_obj.status_code}] Failed to create view {view_name}."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -276,6 +272,7 @@ class Views:
         data = self._jenkins._validate_url_returned_from_instance(data)
 
         views = data.get('views', [])
+
         if not views:
             return
 
@@ -287,6 +284,7 @@ class Views:
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         data = orjson.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
+
         yield View(jenkins=self._jenkins, name=data['name'], url=data['url'])
 
     def list(self, folder: str = None, _paginate=0) -> List[View]:

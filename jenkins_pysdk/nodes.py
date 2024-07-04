@@ -11,8 +11,6 @@ from jenkins_pysdk.objects import JenkinsActionObject
 from jenkins_pysdk.exceptions import JenkinsGeneralException, JenkinsNotFound
 from jenkins_pysdk.builders import Builder
 
-from pydantic import HttpUrl
-
 __all__ = ["Nodes", "Node"]
 
 
@@ -25,9 +23,9 @@ class Node:
     :param name: The name of the node.
     :type name: str
     :param node_url: The URL of the node.
-    :type node_url: HttpUrl
+    :type node_url: str
     """
-    def __init__(self, jenkins, name: str, node_url: HttpUrl):
+    def __init__(self, jenkins, name: str, node_url: str):
         self._jenkins = jenkins
         self._name = name
         self._node_url = node_url
@@ -55,14 +53,14 @@ class Node:
         return str(self._name)
 
     @property
-    def url(self) -> HttpUrl:
+    def url(self) -> str:
         """
         The URL of the node.
 
         :return: The URL of the node.
-        :rtype: HttpUrl
+        :rtype: str
         """
-        return HttpUrl(self._node_url)
+        return str(self._node_url)
 
     @property
     def idle(self) -> int:
@@ -89,7 +87,6 @@ class Node:
             msg = f"[{resp_obj.status_code}] Failed to delete node ({self.name})."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -109,7 +106,7 @@ class Node:
         if code != 200:
             raise JenkinsGeneralException(f"[{code}] Failed to download node XML.")
 
-        return resp_obj.content
+        return resp_obj.text
 
     def reconfig(self, xml: str) -> JenkinsActionObject:
         """
@@ -130,7 +127,6 @@ class Node:
             msg = f"[{resp_obj.status_code}] Failed to reconfigure {self.name}."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -155,7 +151,6 @@ class Node:
             msg = f"[{resp_obj.status_code}] Failed to mark ({self.name}) as offline."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -182,7 +177,6 @@ class Node:
             msg = f"[{resp_obj.status_code}] Failed to mark ({self.name}) as online."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 
@@ -248,7 +242,6 @@ class Nodes:
             msg = f"[{resp_obj.status_code}] Failed to create node ({name})."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
 
         return obj
 

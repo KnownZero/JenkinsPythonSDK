@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from pydantic import HttpUrl
-
 from jenkins_pysdk.objects import JenkinsActionObject
 from jenkins_pysdk.exceptions import JenkinsGeneralException
 from jenkins_pysdk.consts import Endpoints
@@ -19,9 +17,9 @@ class Workspace:
     :param job_name: Name of the Jenkins job.
     :type job_name: str
     :param job_url: URL of the Jenkins job.
-    :type job_url: :class:`HttpUrl`
+    :type job_url: str
     """
-    def __init__(self, jenkins, job_name: str, job_url: HttpUrl):
+    def __init__(self, jenkins, job_name: str, job_url: str):
         self._jenkins = jenkins
         self._job_name = job_name
         self._job_url = job_url
@@ -38,7 +36,7 @@ class Workspace:
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         """
         endpoint = Endpoints.Workspace.DownloadFile.format(path=workspace_file) if workspace_file \
-        else Endpoints.Workspace.Download.format(name=self._job_name)
+            else Endpoints.Workspace.Download.format(name=self._job_name)
         url = self._jenkins._build_url(endpoint, prefix=self._job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
         msg = f"[{resp_obj.status_code}] Successfully downloaded workspace files for {self._job_name}."
@@ -50,12 +48,12 @@ class Workspace:
 
         path = Path(path)
         if path.is_dir():
-            path = path / f"{self._job_name}.zip"
+            path /= f"{self._job_name}.zip"
 
-        self._write_to_file(path, resp_obj._raw.content)
+        self._write_to_file(path, resp_obj.content)
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
+        obj._raw = resp_obj
 
         return obj
 
@@ -86,6 +84,6 @@ class Workspace:
             msg = f"[{resp_obj.status_code}] Failed to wipe workspace for {self._job_name}."
 
         obj = JenkinsActionObject(request=req_obj, content=msg, status_code=resp_obj.status_code)
-        obj._raw = resp_obj._raw
+        obj._raw = resp_obj
 
         return obj

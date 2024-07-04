@@ -652,7 +652,7 @@ Search for a build
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
-    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
+    j = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     print(j.jobs.search("folder1").builds.search(1).number)
     print(j.jobs.search("folder1").builds.search(lastStableBuild=True).number)
     print(j.jobs.search("folder1").builds.search(lastSuccessfulBuild=True).number)
@@ -1060,7 +1060,7 @@ Download the workspace files
 
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
-    print(jenkins.jobs.search("new_freestyle").workspace.download(f"C:/Users/UnknownUser/Desktop/workspace.zip"))
+    print(jenkins.jobs.search("new_freestyle").workspace.download("C:/Users/UnknownUser/Desktop/workspace.zip"))
 
 The above code will output:
 
@@ -1075,7 +1075,7 @@ Download a workspace file
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     ws = jenkins.jobs.search("new_freestyle").workspace
-    print(ws.download(f"C:/Users/UnknownUser/Desktop/useSocket.ts", workspace_file="apps/native/hooks/useSocket.ts"))
+    print(ws.download("C:/Users/UnknownUser/Desktop/useSocket.ts", workspace_file="apps/native/hooks/useSocket.ts"))
 
 The above code will output:
 
