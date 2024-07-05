@@ -5,7 +5,7 @@
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/jenkins-pysdk?style=flat&logo=pypi&logoColor=white&label=Downloads&color=blue)
 
 
-### Supported for python 3.6+
+### Supported for python 3.7+
 
 
 ## Installation

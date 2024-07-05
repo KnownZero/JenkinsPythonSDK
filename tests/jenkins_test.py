@@ -9,7 +9,7 @@ sys.path.append("jenkins_pysdk")
 from jenkins_pysdk.jenkins import Jenkins
 from jenkins_pysdk.exceptions import JenkinsConnectionException
 from jenkins_pysdk.builders import Builder
-from conf import servers, credentials
+from .conf import servers, credentials
 
 
 class TestJenkins(unittest.TestCase):
