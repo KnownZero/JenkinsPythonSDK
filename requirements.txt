@@ -1,5 +1,3 @@
-sphinx
-sphinx-rtd-theme
 httpx==0.24.1
 orjson==3.6.9  # 3.7.0+ has recursion issues
 pydantic==2.5.3
