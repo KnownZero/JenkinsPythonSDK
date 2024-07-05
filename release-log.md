@@ -1,6 +1,16 @@
 # Release log
 
-## Release (Minor/Fixes) 1.4.0 - --------------------
+## Release (Minor/Fixes) 1.4.0 - 05/07/2024
+### Fixes:
+- Import error in \_\_init\_\_.py
+
+### New:
+- Specifying package versions
+- Only support 3.7+ now
+
+###
+
+## Release (Minor/Fixes) 1.4.0 - 04/07/2024
 ### Fixes:
 - Jenkins version endpoint which didn't work with old versions
 - Folder type in folder create methods
