@@ -7,10 +7,6 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/jenkins-pysdk)
 
 
-
-
-
-
 ## Installation
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/installation/) and 
@@ -59,8 +55,9 @@ to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
-> NOTE: I actively support this SDK, but I don't proactively check Jenkins release notes -
-if the SDK is missing something after an upgrade, please raise it in the discussions section.
+> [!NOTE]
+> I actively support this SDK, but I don't proactively check Jenkins release notes -
+> if the SDK is missing something after an upgrade, please raise it in the discussions section.
 
 ## License
 

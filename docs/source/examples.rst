@@ -928,8 +928,7 @@ Building with html
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
-    jenkins = Jenkins(host="JenkinsDNS", username="admin",
-                          token="11e8e294cee85ee88b60d99328284d7608")
+    jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     builds = jenkins.jobs.search("folder1").builds
     builds.build()
     for chunk in builds.latest.console(html=True):
