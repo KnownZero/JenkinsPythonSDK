@@ -8,7 +8,7 @@ setup(
     version='1.4.1',  # Don't forget to update version.py & conf.py :)
     packages=find_packages(),
     install_requires=[
-        'httpx1',
+        'httpx',
         'orjson',
         'pydantic',
         'urllib3',
