@@ -4,8 +4,10 @@
 ![CodeQL](https://github.com/KnownZero/JenkinsPythonSDK/actions/workflows/github-code-scanning/codeql/badge.svg)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/jenkins-pysdk?style=flat&logo=pypi&logoColor=white&label=Downloads&color=blue)
 
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/jenkins-pysdk)
 
-### Supported for python 3.7+
+
+
 
 
 ## Installation
