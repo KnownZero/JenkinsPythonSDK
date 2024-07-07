@@ -9,9 +9,9 @@ setup(
     packages=find_packages(),
     install_requires=[
         "httpx==0.24.1",
-        "orjson==3.9.15",
+        "orjson==3.10.6",
         "pydantic==2.5.3",
-        "urllib3==2.0.2"
+        "urllib3==2.2.2"
     ],
     author='KnownZero',
     author_email="gihjeefs@protonmail.com",
