@@ -27,7 +27,7 @@ class Core:  # TODO: Revise these messy methods
         host = host.replace("http://", "https://") if self.verify else host
 
         if prefix:
-            prefix = str(prefix).replace("http://", "https://") if self.verify else str(prefix)
+            prefix = prefix.replace("http://", "https://") if self.verify else prefix
             endpoint = f"{prefix.rstrip('/')}/{endpoint.replace('//', '/')}"
         else:
             endpoint = f"{host.rstrip('/')}/{endpoint.replace('//', '/')}"
@@ -145,7 +145,6 @@ class Core:  # TODO: Revise these messy methods
                     ) as session:
 
             if not self.token:
-
                 try:
                     crumbed_session_req = Request(
                         method="GET",

@@ -267,8 +267,12 @@ class Build:
         :return: True if the build has completed, False otherwise.
         :rtype: bool
         """
-        if bool(self._raw['inProgress']):
-            return False
+        try:
+            if bool(self._raw['inProgress']):
+                return False
+        except KeyError:
+            if bool(self._raw['building']):
+                return False
 
         return True
 
@@ -430,14 +434,14 @@ class Builds:
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         # TODO: Add filtering for success=False, failed=False
-        url = self._jenkins._build_url(Endpoints.Builds.lastBuild, prefix=self._job_url)
+        url = self._jenkins._build_url(Endpoints.Builds.lastBuild, prefix=self._job_url,
+                                       suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
 
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch latest build.")
         elif resp_obj.status_code != 200:
             raise JenkinsNotFound(f"[{resp_obj.status_code}] Latest build not found.")
-
         data = orjson.loads(resp_obj.content)
 
         return Build(self._jenkins, data['url'])
@@ -449,12 +453,12 @@ class Builds:
 
         :return: The Build object representing the oldest saved build.
         :rtype: :class:`jenkins_pysdk.builds.Build`
-        :raises JenkinsGeneralException: If a general exception occurs.
+        :raises JenkinsNotFound: If the job has no builds.
         """
         try:
             return self.list()[-1]
         except IndexError:
-            raise JenkinsGeneralException("No builds.")
+            raise JenkinsNotFound("No builds.")
 
     def build(self, parameters: Optional[dict] = None, delay: int = 0) -> JenkinsActionObject:
         """

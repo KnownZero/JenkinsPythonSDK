@@ -78,8 +78,9 @@ class Jenkins(Core):
         self.port = port
         self.timeout = timeout
 
-        if port and str(port) not in self.host:
-            self.host = f"{self.host}:{self.port}"
+        self.host = re.sub(":\d+", f":{port}", host)
+        if not self.host.endswith(f":{port}"):
+            self.host += f":{port}"
 
         # Extend functionality
         self._jobs = Jobs(self)
@@ -633,7 +634,6 @@ class Jenkins(Core):
             try:
                 t_thread = threading.Thread(target=self._disable_quiet_mode, args=(duration,))
                 t_thread.start()
-                t_thread.join()
                 quiet_obj.content = f"[{quiet_obj.status_code}] Successfully enabled Quiet Mode for {duration} seconds."
             except:
                 quiet_obj = self._disable_quiet_mode()

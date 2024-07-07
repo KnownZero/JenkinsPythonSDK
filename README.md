@@ -27,7 +27,8 @@ jenkins = Jenkins(host="DNS", username="<username>", passw="<passw>")
 ```python
 from jenkins_pysdk.jenkins import Jenkins
 jenkins = Jenkins(
-    host="http://localhost:8080", 
+    host="http://localhost",
+    port=8080,
     username="<username>",
     token="<token>",
     proxies={
@@ -59,34 +60,30 @@ Please make sure to update tests as appropriate.
 > I actively support this SDK, but I don't proactively check Jenkins release notes -
 > if the SDK is missing something after an upgrade, please raise it in the discussions section.
 
-## License
 
-MIT License
+> [!IMPORTANT]
+> Code is tested on:
+> - "2.121.3"  # LTS (2018)
+> - "2.138.4"  # LTS (2019)
+> - "2.150.3"  # LTS (2019)
+> - "2.164.3"  # LTS (2019)
+> - "2.176.4"  # LTS (2019)
+> - "2.190.3"  # LTS (2020)
+> - "2.204.6"  # LTS (2020)
+> - "2.222.4"  # LTS (2020)
+> - "2.235.5"  # LTS (2021)
+> - "2.249.3"  # LTS (2021)
+> - "2.263.4"  # LTS (2021)
+> - "2.277.4"  # LTS (2021)
+> - "2.289.3"  # LTS (2021)
+> - "2.303.3"  # LTS (2021)
+> - "2.319.1"  # LTS (2022)
+> - "2.332.3"  # LTS (2022)
+> - "2.346.3"  # LTS (2022)
+> - "2.361.4"  # LTS (2023)
+> - "2.375.3"  # LTS (2023)
+> - "2.387.1"  # LTS (2024)
 
-Copyright (c) 2024 KnownZero
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-[MIT](https://choosealicense.com/licenses/mit/)
-
-### This code is free to use, and I will not take ANY responsibility for any damage that you create yourself.
-
-## Contributors
+## Author
 KnownZero
-

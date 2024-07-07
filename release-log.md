@@ -1,6 +1,19 @@
 # Release log
 
-## Release (Minor/Fixes) 1.4.0 - 05/07/2024
+## Release (Minor/Fixes) 1.4.2 - 07/07/2024
+### Fixes:
+- Fix console logs broken json
+- Fix Build 'Done' status for older Jenkins versions
+- Removed blocking thread from Quiet Mode
+
+### New:
+- Remove redundant folder copy parameter
+- Major unit testing added
+- Queue newest/oldest now returns an object
+
+###
+
+## Release (Minor/Fixes) 1.4.1 - 05/07/2024
 ### Fixes:
 - Import error in \_\_init\_\_.py
 

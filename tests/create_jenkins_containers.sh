@@ -4,7 +4,6 @@
 #  Recommended 200GB+ RAM to run this script
 ###########################
 
-
 is_port_available() {
   local port=$1
   (echo >/dev/tcp/localhost/$port) &>/dev/null
@@ -51,25 +50,33 @@ http_port=8081
 jnlp_port=50000
 
 for version in "${versions[@]}"; do
-  echo "Pulling Jenkins version: $version"
-  docker pull jenkins/jenkins:$version
+#  echo "Pulling Jenkins version: $version"
+#  docker pull jenkins/jenkins:$version
+#
+#  # Find available ports
+#  while ! is_port_available $http_port; do
+#    http_port=$((http_port + 1))
+#  done
+#
+#  while ! is_port_available $jnlp_port; do
+#    jnlp_port=$((jnlp_port + 1))
+#  done
+#
+#  echo "Running Jenkins version: $version on HTTP port $http_port and JNLP port $jnlp_port"
 
-  # Find available ports
-  while ! is_port_available $http_port; do
-    http_port=$((http_port + 1))
-  done
-
-  while ! is_port_available $jnlp_port; do
-    jnlp_port=$((jnlp_port + 1))
-  done
-
-  echo "Running Jenkins version: $version on HTTP port $http_port and JNLP port $jnlp_port"
-  container_id=$(docker run -d --name jenkins_$version -p $http_port:8080 -p $jnlp_port:50000 jenkins/jenkins:$version)
+  # Run Jenkins with a mounted volume and proper permissions
+  container_id=$(docker run -d --name jenkins_$version \
+    -p $http_port:8080 -p $jnlp_port:50000 \
+    -v jenkins_home_$version:/var/jenkins_home \
+    jenkins/jenkins:$version)
 
   if [ $? -ne 0 ]; then
     echo "Error running Jenkins version: $version"
     continue
   fi
+
+  # Set proper permissions
+  docker exec $container_id chown -R 1000:1000 /var/jenkins_home
 
   echo "Jenkins $version is running at http://localhost:$http_port"
 

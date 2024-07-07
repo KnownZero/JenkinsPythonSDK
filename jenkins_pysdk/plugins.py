@@ -79,7 +79,10 @@ class Site:
         :return: The URL for suggested plugins.
         :rtype: str
         """
-        return str(self._raw['suggestedPluginsUrl'])
+        try:
+            return str(self._raw['suggestedPluginsUrl'])
+        except KeyError:
+            return ""
 
     @property
     def connection_check_url(self) -> str:
