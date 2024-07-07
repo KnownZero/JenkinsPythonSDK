@@ -1,3 +1,4 @@
+import sys
 from typing import List, Generator
 
 import orjson
@@ -19,7 +20,7 @@ class QueueItem:
    :param queue_info: Information about the queue item.
    :type queue_info: dict
     """
-    def __init__(self, jenkins, queue_info: orjson.loads):
+    def __init__(self, jenkins, queue_info: dict):
         self._jenkins = jenkins
         self._queue_info = queue_info
 
@@ -178,7 +179,7 @@ class Queue:
         return [item for item in self.iter(_paginate=_paginate)]
 
     @property
-    def newest(self):
+    def newest(self) -> QueueItem:
         """
         Returns the newest item in the Jenkins queue.
 
@@ -192,7 +193,7 @@ class Queue:
             raise JenkinsEmptyQueue("Queue is empty.")
 
     @property
-    def oldest(self):
+    def oldest(self) -> QueueItem:
         """
         Returns the oldest item in the Jenkins queue.
 
