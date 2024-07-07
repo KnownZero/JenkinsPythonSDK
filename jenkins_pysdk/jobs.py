@@ -456,29 +456,28 @@ class Folder:
         """
         return self._folder_path
 
-    def copy(self, new_job_name: str, copy_job_name: str) -> JenkinsActionObject:
+    def copy(self, new_job_name: str) -> JenkinsActionObject:
         """
         Copy an item into the existing path.
 
         :param new_job_name: The name of the new job.
         :type new_job_name: str
-        :param copy_job_name: The name of the job to copy.
-        :type copy_job_name: str
         :return: Result of the copy operation.
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         import re
 
-        params = {"name": new_job_name, "mode": "copy", "from": copy_job_name}
+        params = {"name": new_job_name, "mode": "copy", "from": self.path}
         url = self._jenkins._build_url(Endpoints.Jobs.Create, prefix=self._folder_url)
         req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, params=params)
-        msg = f"[{resp_obj.status_code}] Successfully copied {copy_job_name} to {new_job_name}."
+        msg = f"[{resp_obj.status_code}] Successfully copied {self.path} to {new_job_name}."
 
         if resp_obj.status_code >= 500:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Server error.")
         elif resp_obj.status_code == 400:
-            if re.search(r"A job already exists with the name", str(resp_obj.content)):  # TODO: This method doesn't seem reliable
+            # TODO: This method doesn't seem reliable
+            if re.search(r"A job already exists with the name", str(resp_obj.content)):
                 raise JenkinsGeneralException(f"{new_job_name} already exists.")
             msg = f"[{resp_obj.status_code}] Failed to copy folder."
         elif resp_obj.status_code != 200:

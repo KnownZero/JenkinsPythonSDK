@@ -101,10 +101,9 @@ class Node:
         """
         url = self._jenkins._build_url(Endpoints.Jobs.Xml, prefix=self._node_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url, headers=XML_HEADER_DEFAULT)
-        code = resp_obj.status_code
 
-        if code != 200:
-            raise JenkinsGeneralException(f"[{code}] Failed to download node XML.")
+        if resp_obj.status_code != 200:
+            raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to download node XML.")
 
         return resp_obj.text
 
@@ -141,8 +140,8 @@ class Node:
         :raises JenkinsGeneralException: If a general exception occurs.
         """
         url = self._jenkins._build_url(Endpoints.Nodes.Disable, prefix=self._node_url)
-        msg = {"offlineMessage": message}
-        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, params=msg)
+        params = {"offlineMessage": message}
+        req_obj, resp_obj = self._jenkins._send_http(method="POST", url=url, params=params)
         msg = f"[{resp_obj.status_code}] Successfully marked node ({self.name}) as offline."
 
         if resp_obj.status_code >= 500:
