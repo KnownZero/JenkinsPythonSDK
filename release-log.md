@@ -1,6 +1,6 @@
 # Release log
 
-## Release (Minor/Fixes) 1.4.2 - ==================================
+## Release (Minor/Fixes) 1.4.2 - 07/07/2024
 ### Fixes:
 - Fix console logs broken json
 - Fix Build 'Done' status for older Jenkins versions
