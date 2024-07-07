@@ -275,7 +275,6 @@ The above code will output:
 
     request=<Response object at 2282610093216> content='[200] Successfully reconfigured my_new_folder_name.' status_code=200
 
-
 Get the first folder URL
 
 .. autofunction:: jobs.Folder.url()
@@ -391,9 +390,9 @@ The above code will output:
     </com.cloudbees.hudson.plugins.folder.Folder>
 
 
-
 Jobs
 -----------
+.. _jobs:
 
 Interact with a job
 
@@ -488,6 +487,7 @@ The above code will output:
 
 Job
 -----------
+.. _job:
 
 Disable a job
 
@@ -645,6 +645,7 @@ The above code will output:
 
 Builds
 -----------
+.. _builds:
 
 Search for a build
 
@@ -792,6 +793,7 @@ The above code will output:
 
 Build
 -----------
+.. _build:
 
 Get the build number
 
@@ -1051,6 +1053,7 @@ The above code will output:
 
 Workspace
 -----------
+.. _workspace:
 
 Download the workspace files
 
@@ -1100,6 +1103,8 @@ The above code will output:
 
 Queue
 -----------
+.. _queue:
+
 Iterate all queue items
 
 .. autofunction:: queues.Queue.iter()
@@ -1182,6 +1187,7 @@ The above code will output:
 
 QueueItem
 -----------
+.. _queueitem:
 
 Get the item queue ID
 
@@ -1321,6 +1327,7 @@ The above code will output:
 
 Credentials
 -----------
+.. _credentials:
 
 Search for a system domain
 
@@ -1375,8 +1382,7 @@ Create a domain
 .. autofunction:: credentials.Credentials.create_domain()
 .. code-block:: python
 
-    jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
-                      passw="11e8e294cee85ee88b60d99328284d7608")
+    jenkins = Jenkins(host="https://JenkinsDNS", username="admin", passw="11e8e294cee85ee88b60d99328284d7608")
     from jenkins_pysdk.builders import Builder
     new_user = Builder.Credentials.Domain(name="global2", description="new global domain")
     print(jenkins.credentials.create_domain("global2", new_user))
@@ -1390,6 +1396,7 @@ The above code will output:
 
 Domain
 -----------
+.. _domain:
 
 Get the domain name
 
@@ -1478,8 +1485,7 @@ Create a credential in the domain
 .. autofunction:: credentials.Domain.create()
 .. code-block:: python
 
-    jenkins = Jenkins(host="https://JenkinsDNS", username="admin",
-                      passw="11e8e294cee85ee88b60d99328284d7608")
+    jenkins = Jenkins(host="https://JenkinsDNS", username="admin", passw="11e8e294cee85ee88b60d99328284d7608")
     from jenkins_pysdk.builders import Builder
 
     new_cred = Builder.Credentials.UsernamePassword(cred_id="gitlab_login", username="new_username", password="new_pasw")
@@ -1501,6 +1507,7 @@ The above code will output:
 
 Credential
 -----------
+.. _credential:
 
 Get the credential ID
 
@@ -1595,8 +1602,10 @@ The above code will output:
 
     request=<Response object at 2398624629840> content='[200] Failed to delete credential.' status_code=200
 
+
 Users
 -----------
+.. _users:
 
 Search for a user
 
@@ -1681,6 +1690,7 @@ The above code will output:
 
 User
 -----------
+.. _user:
 
 Get the user name
 
@@ -1813,6 +1823,7 @@ The above code will output:
 
 Me
 -----------
+.. _me:
 
 Get my username
 
@@ -1923,6 +1934,7 @@ The above code will output:
 
 Views
 -----------
+.. _views:
 
 Search for a view
 
@@ -2008,6 +2020,7 @@ The above code will output:
 
 View
 -----------
+.. _view:
 
 Get the view name
 
@@ -2098,6 +2111,7 @@ The above code will output:
 
 Plugins
 -----------
+.. _plugins:
 
 Install a plugin
 
@@ -2388,6 +2402,7 @@ The above code will output:
 
 Plugin
 -----------
+.. _plugin:
 
 Available
 ~~~~~~~~~~~~
@@ -2919,6 +2934,7 @@ The above code will output:
 
 Nodes
 -----------
+.. _nodes:
 
 Search for a node
 
@@ -3006,6 +3022,7 @@ The above code will output:
 
 Node
 -----------
+.. _node:
 
 Get the node name
 
