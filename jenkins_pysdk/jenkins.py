@@ -717,3 +717,4 @@ class Jenkins(Core):
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to send commands to the script console.")
 
         return resp_obj.text
+

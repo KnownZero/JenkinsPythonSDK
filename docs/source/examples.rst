@@ -21,7 +21,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 1718212996176> response=<HTTPResponseObject object at 1718223889776> content='[200] Successfully connected to JenkinsDNS.' status_code=200
+    request=<Request object at 1718212996176> content='[200] Successfully connected to JenkinsDNS.' status_code=200
 
 Get the Jenkins version
 
@@ -51,7 +51,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2603665289872> content='[200] Restarting the Jenkins instance... please wait...' status_code=200
+    request=<Request object at 2603665289872> content='[200] Restarting the Jenkins instance... please wait...' status_code=200
 
 Enable Quiet Mode
 
@@ -66,7 +66,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 1938732315280> content='[200] Successfully enabled Quiet Mode for 30 seconds.' status_code=200
+    request=<Request object at 1938732315280> content='[200] Successfully enabled Quiet Mode for 30 seconds.' status_code=200
 
 Shutdown the application
 
@@ -81,7 +81,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2613641997152> content='[200] Shutting down...' status_code=200
+    request=<Request object at 2613641997152> content='[200] Shutting down...' status_code=200
 
 Logout
 
@@ -96,7 +96,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2453417290592> content='[200] Successfully logged out.' status_code=200
+    request=<Request object at 2453417290592> content='[200] Successfully logged out.' status_code=200
 
 Reload config from disk
 
@@ -111,7 +111,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2741687462992> content='[200] Successfully reloaded configuration.' status_code=200
+    request=<Request object at 2741687462992> content='[200] Successfully reloaded configuration.' status_code=200
 
 Get the available executors
 
@@ -235,7 +235,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 1935978150336> content='[200] Successfully created my_new_folder_name.' status_code=200
+    request=<Request object at 1935978150336> content='[200] Successfully created my_new_folder_name.' status_code=200
 
 
 Check if the path is a folder
@@ -273,7 +273,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2282610093216> content='[200] Successfully reconfigured my_new_folder_name.' status_code=200
+    request=<Request object at 2282610093216> content='[200] Successfully reconfigured my_new_folder_name.' status_code=200
 
 Get the first folder URL
 
@@ -321,7 +321,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 1480728865872> content='[200] Successfully copied sub_folder to another_sub_folder.' status_code=200
+    request=<Request object at 1480728865872> content='[200] Successfully copied sub_folder to another_sub_folder.' status_code=200
 
 Delete the current folder
 
@@ -336,7 +336,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2309917207952> content='[204] Successfully deleted folder.' status_code=204
+    request=<Request object at 2309917207952> content='[204] Successfully deleted folder.' status_code=204
 
 Create a folder
 (You are interacting with a specific folder location, so you can only create sub-folders)
@@ -354,7 +354,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 1660448175456> content='[200] Successfully created another_sub_folder.' status_code=200
+    request=<Request object at 1660448175456> content='[200] Successfully created another_sub_folder.' status_code=200
 
 Get the folder config
 
@@ -467,7 +467,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2205281481040> content='[200] Successfully created freestyle_created.' status_code=200
+    request=<Request object at 2205281481040> content='[200] Successfully created freestyle_created.' status_code=200
 
 Check if the path is a job
 
@@ -502,7 +502,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2523890810240> content='[200] Successfully disabled folder3/freestyle_4.' status_code=200
+    request=<Request object at 2523890810240> content='[200] Successfully disabled folder3/freestyle_4.' status_code=200
 
 Get a job URL
 
@@ -548,7 +548,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 1986068844192> content='[200] Successfully enabled folder3/freestyle_4.' status_code=200
+    request=<Request object at 1986068844192> content='[200] Successfully enabled folder3/freestyle_4.' status_code=200
 
 Reconfigure a job
 
@@ -565,7 +565,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 1772165197280> content='[200] Successfully reconfigured freestyle_created.' status_code=200
+    request=<Request object at 1772165197280> content='[200] Successfully reconfigured freestyle_created.' status_code=200
 
 Delete a job
 
@@ -580,7 +580,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 1721615969440> content='[204] Successfully deleted job.' status_code=204
+    request=<Request object at 1721615969440> content='[204] Successfully deleted job.' status_code=204
 
 Get job config
 
@@ -772,7 +772,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 1874065655344> content='[201] Successfully triggered a new build.' status_code=201
+    request=<Request object at 1874065655344> content='[201] Successfully triggered a new build.' status_code=201
 
 
 Rebuild the last build
@@ -788,7 +788,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2881680762624> content='[200] Successfully triggered a rebuild of the last build.' status_code=200
+    request=<Request object at 2881680762624> content='[200] Successfully triggered a rebuild of the last build.' status_code=200
 
 
 Build
@@ -927,6 +927,7 @@ The above code will output:
 
 
 Building with html
+.. autofunction:: builds.Build.console()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -982,7 +983,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2286772207216> content='[200] Successfully deleted build (10).' status_code=200
+    request=<Request object at 2286772207216> content='[200] Successfully deleted build (10).' status_code=200
 
 Get the build changes
 
@@ -1048,7 +1049,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 1582937378384> content='[200] Successfully triggered a rebuild of this build (9).' status_code=200
+    request=<Request object at 1582937378384> content='[200] Successfully triggered a rebuild of this build (9).' status_code=200
 
 
 Workspace
@@ -1068,7 +1069,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2314487495104> content='[200] Successfully Downloaded workspace files for new_freestyle.' status_code=200
+    request=<Request object at 2314487495104> content='[200] Successfully Downloaded workspace files for new_freestyle.' status_code=200
 
 Download a workspace file
 
@@ -1083,7 +1084,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2207675860768> content='[200] Successfully downloaded workspace files for new_freestyle.' status_code=200
+    request=<Request object at 2207675860768> content='[200] Successfully downloaded workspace files for new_freestyle.' status_code=200
 
 Wipe the workspace
 
@@ -1098,7 +1099,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2300540877328> content='[200] Successfully wiped workspace for new_freestyle.' status_code=200
+    request=<Request object at 2300540877328> content='[200] Successfully wiped workspace for new_freestyle.' status_code=200
 
 
 Queue
@@ -1322,7 +1323,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2191625717376> content='[204] Successfully deleted job.' status_code=204
+    request=<Request object at 2191625717376> content='[204] Successfully deleted job.' status_code=204
 
 
 Credentials
@@ -1569,7 +1570,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2336431155744> content='[200] Successfully reconfigured Github_PAT.' status_code=200
+    request=<Request object at 2336431155744> content='[200] Successfully reconfigured Github_PAT.' status_code=200
 
 Move a credential to another domain
 (You can't move from System to User/Local)
@@ -1600,7 +1601,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2398624629840> content='[200] Failed to delete credential.' status_code=200
+    request=<Request object at 2398624629840> content='[200] Failed to delete credential.' status_code=200
 
 
 Users
@@ -1802,7 +1803,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2813768495920> content='[400] Failed to delete user (test).' status_code=200
+    request=<Request object at 2813768495920> content='[400] Failed to delete user (test).' status_code=200
 
 Terminate a users' sessions
 
@@ -1818,7 +1819,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2073057402192> content='[200] Successfully logged out.' status_code=200
+    request=<Request object at 2073057402192> content='[200] Successfully logged out.' status_code=200
 
 
 Me
@@ -1913,7 +1914,7 @@ The above code will output:
 
 ::
 
-    No REST endpoint available... returning HTML response for the moment...
+    No REST endpoint available... returning HTML Request for the moment...
     <HTML Output>
 
 Terminate my session
@@ -1929,7 +1930,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2012346268496> content='[200] Successfully logged out.' status_code=200
+    request=<Request object at 2012346268496> content='[200] Successfully logged out.' status_code=200
 
 
 Views
@@ -2015,7 +2016,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2275566295520> content='[200] Successfully created my_view.' status_code=200
+    request=<Request object at 2275566295520> content='[200] Successfully created my_view.' status_code=200
 
 
 View
@@ -2091,7 +2092,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2153302882832> content='[200] Successfully reconfigured view (my_view).' status_code=200
+    request=<Request object at 2153302882832> content='[200] Successfully reconfigured view (my_view).' status_code=200
 
 Delete the view
 
@@ -2106,7 +2107,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2246812676752> content='[200] Successfully deleted view (YourViewName).' status_code=200
+    request=<Request object at 2246812676752> content='[200] Successfully deleted view (YourViewName).' status_code=200
 
 
 Plugins
@@ -2129,7 +2130,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2898119135520> content='[200] Successfully installed plugin (pipeline-stage-view).' status_code=200
+    request=<Request object at 2898119135520> content='[200] Successfully installed plugin (pipeline-stage-view).' status_code=200
 
 Upload a plugin
 
@@ -2149,7 +2150,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2188075571200> content='[200] Successfully uploaded plugin (chucknorris.hpi).' status_code=200
+    request=<Request object at 2188075571200> content='[200] Successfully uploaded plugin (chucknorris.hpi).' status_code=200
 
 
 Available
@@ -2397,7 +2398,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 1985835210512> content='[200] Successfully added update center (https://www.google.com/update-center.json).' status_code=200
+    request=<Request object at 1985835210512> content='[200] Successfully added update center (https://www.google.com/update-center.json).' status_code=200
 
 
 Plugin
@@ -2585,7 +2586,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 1991094649216> content='[200] Successfully enabled plugin (maven-plugin).' status_code=200
+    request=<Request object at 1991094649216> content='[200] Successfully enabled plugin (maven-plugin).' status_code=200
 
 Disable the installed plugin
 
@@ -2601,7 +2602,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2529251115152> content='[200] Successfully disabled plugin (maven-plugin).' status_code=200
+    request=<Request object at 2529251115152> content='[200] Successfully disabled plugin (maven-plugin).' status_code=200
 
 Get the installed plugin version
 
@@ -2698,7 +2699,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2148244816416> content='[200] Successfully uninstalled plugin (maven-plugin).' status_code=200
+    request=<Request object at 2148244816416> content='[200] Successfully uninstalled plugin (maven-plugin).' status_code=200
 
 
 Updates
@@ -2967,7 +2968,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 1660092329280> content='[200] Successfully created node (docs_node).' status_code=200
+    request=<Request object at 1660092329280> content='[200] Successfully created node (docs_node).' status_code=200
 
 Iterate all nodes
 
@@ -3138,7 +3139,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 1423581162816> content='[200] Successfully reconfigured sdk_test.' status_code=200
+    request=<Request object at 1423581162816> content='[200] Successfully reconfigured sdk_test.' status_code=200
 
 Disable the node
 
@@ -3153,7 +3154,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2424196147344> content='[200] Successfully marked node (sdk_test) as offline.' status_code=200
+    request=<Request object at 2424196147344> content='[200] Successfully marked node (sdk_test) as offline.' status_code=200
 
 Enable the node
 
@@ -3168,7 +3169,7 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2289828053616> content='[200] Successfully marked node (sdk_test) as online.' status_code=200
+    request=<Request object at 2289828053616> content='[200] Successfully marked node (sdk_test) as online.' status_code=200
 
 Delete the node
 
@@ -3183,4 +3184,4 @@ The above code will output:
 
 ::
 
-    request=<Response object at 2401019053696> content='[200] Successfully deleted node (sdk_test).' status_code=200
+    request=<Request object at 2401019053696> content='[200] Successfully deleted node (sdk_test).' status_code=200
