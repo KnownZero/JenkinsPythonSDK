@@ -20,7 +20,7 @@ pip install jenkins-pysdk
 
 ```python
 from jenkins_pysdk.jenkins import Jenkins
-jenkins = Jenkins(host="DNS", username="<username>", passw="<passw>")
+jenkins = Jenkins(host="Jenkins.DNS.com", username="<username>", passw="<passw>")
 ```
 #### OR
 
@@ -35,7 +35,8 @@ jenkins = Jenkins(
         "http": "http://",
         "https": "https://"
     },
-    timeout=60
+    timeout=60,
+    verify=False
 )
 ```
 #### Why is the token parameter different?
