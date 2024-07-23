@@ -4,6 +4,7 @@ Examples
 
 System
 -----------
+
 .. _system:
 
 Connect to the application
@@ -390,6 +391,7 @@ The above code will output:
 
 Jobs
 -----------
+
 .. _jobs:
 
 Interact with a job
@@ -485,6 +487,7 @@ The above code will output:
 
 Job
 -----------
+
 .. _job:
 
 Disable a job
@@ -643,6 +646,7 @@ The above code will output:
 
 Builds
 -----------
+
 .. _builds:
 
 Search for a build
@@ -791,6 +795,7 @@ The above code will output:
 
 Build
 -----------
+
 .. _build:
 
 Get the build number
@@ -1053,6 +1058,7 @@ The above code will output:
 
 Workspace
 -----------
+
 .. _workspace:
 
 Download the workspace files
@@ -1103,6 +1109,7 @@ The above code will output:
 
 Queue
 -----------
+
 .. _queue:
 
 Iterate all queue items
@@ -1187,6 +1194,7 @@ The above code will output:
 
 QueueItem
 -----------
+
 .. _queueitem:
 
 Get the item queue ID
@@ -1327,6 +1335,7 @@ The above code will output:
 
 Credentials
 -----------
+
 .. _credentials:
 
 Search for a system domain
@@ -1396,6 +1405,7 @@ The above code will output:
 
 Domain
 -----------
+
 .. _domain:
 
 Get the domain name
@@ -1507,6 +1517,7 @@ The above code will output:
 
 Credential
 -----------
+
 .. _credential:
 
 Get the credential ID
@@ -1605,6 +1616,7 @@ The above code will output:
 
 Users
 -----------
+
 .. _users:
 
 Search for a user
@@ -1690,6 +1702,7 @@ The above code will output:
 
 User
 -----------
+
 .. _user:
 
 Get the user name
@@ -1823,6 +1836,7 @@ The above code will output:
 
 Me
 -----------
+
 .. _me:
 
 Get my username
@@ -1941,6 +1955,7 @@ The above code will output:
 
 Views
 -----------
+
 .. _views:
 
 Search for a view
@@ -2027,6 +2042,7 @@ The above code will output:
 
 View
 -----------
+
 .. _view:
 
 Get the view name
@@ -2118,6 +2134,7 @@ The above code will output:
 
 Plugins
 -----------
+
 .. _plugins:
 
 Install a plugin
@@ -2232,6 +2249,7 @@ In the below link you will see ID: ssh-credentials
 https://plugins.jenkins.io/ssh-credentials/
 
 .. autofunction:: plugins.PluginGroup.search()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2414,6 +2432,7 @@ The above code will output:
 
 Plugin
 -----------
+
 .. _plugin:
 
 Available
@@ -2954,6 +2973,7 @@ The above code will output:
 
 Nodes
 -----------
+
 .. _nodes:
 
 Search for a node
@@ -3042,6 +3062,7 @@ The above code will output:
 
 Node
 -----------
+
 .. _node:
 
 Get the node name
