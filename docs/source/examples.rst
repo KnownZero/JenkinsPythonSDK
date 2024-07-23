@@ -4,11 +4,9 @@ Examples
 
 System
 -----------
-
 .. _system:
 
 Connect to the application
-
 
 .. autofunction:: jenkins.Jenkins.connect()
 .. code-block:: python
@@ -928,7 +926,6 @@ The above code will output:
 
 Building with html
 
-.. autofunction:: builds.Build.console()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1006,7 +1003,7 @@ The above code will output:
 Get the next build
 (Beta - if you delete some builds then ordering will be broken)
 
-.. autofunction:: builds.Build.changes()
+.. autofunction:: builds.Build.next()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1023,7 +1020,7 @@ The above code will output:
 Get the previous build
 (Beta - if you delete some builds then ordering will be broken)
 
-.. autofunction:: builds.Build.changes()
+.. autofunction:: builds.Build.previous()
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1831,6 +1828,7 @@ Me
 Get my username
 
 .. autofunction:: users.User.name()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1846,6 +1844,7 @@ The above code will output:
 Get my user URL
 
 .. autofunction:: users.User.url()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1861,6 +1860,7 @@ The above code will output:
 Get my user description
 
 .. autofunction:: users.User.description()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1876,6 +1876,7 @@ The above code will output:
 Get my user credentials
 
 .. autofunction:: users.User.credentials()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1891,6 +1892,7 @@ The above code will output:
 Get my user views
 
 .. autofunction:: users.User.views()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1906,6 +1908,7 @@ The above code will output:
 Get my user builds
 
 .. autofunction:: users.User.builds()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -1922,6 +1925,7 @@ The above code will output:
 Terminate my session
 
 .. autofunction:: users.User.logout()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2243,6 +2247,7 @@ The above code will output:
 Iterate all plugins needing an updates
 
 .. autofunction:: plugins.PluginGroup.iter()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2264,6 +2269,7 @@ The above code will output:
 List all plugins needing an updates
 
 .. autofunction:: plugins.PluginGroup.list()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2287,6 +2293,7 @@ In the below link you will see ID: ssh-credentials
 https://plugins.jenkins.io/ssh-credentials/
 
 .. autofunction:: plugins.PluginGroup.search()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2302,6 +2309,7 @@ The above code will output:
 Iterate all installed plugins
 
 .. autofunction:: plugins.PluginGroup.iter()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2323,6 +2331,7 @@ The above code will output:
 List all installed plugins
 
 .. autofunction:: plugins.PluginGroup.list()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2710,6 +2719,7 @@ Updates
 Get the update plugin name
 
 .. autofunction:: plugins.Plugin.name()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2726,6 +2736,7 @@ The above code will output:
 Get the update plugin version
 
 .. autofunction:: plugins.Plugin.version()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2742,6 +2753,7 @@ The above code will output:
 Get the update plugin URL
 
 .. autofunction:: plugins.Plugin.url()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2758,6 +2770,7 @@ The above code will output:
 Get the update plugin compatible status
 
 .. autofunction:: plugins.Plugin.compatible()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2774,6 +2787,7 @@ The above code will output:
 Get the update plugin dependencies
 
 .. autofunction:: plugins.Plugin.dependencies()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2790,6 +2804,7 @@ The above code will output:
 Get the update plugin required core version
 
 .. autofunction:: plugins.Plugin.requires()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2806,6 +2821,7 @@ The above code will output:
 Get the update plugin docs page
 
 .. autofunction:: plugins.Plugin.docs()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
@@ -2822,6 +2838,7 @@ The above code will output:
 Get the update plugin update centre site
 
 .. autofunction:: plugins.Plugin.site()
+   :noindex:
 .. code-block:: python
 
     from jenkins_pysdk.jenkins import Jenkins
