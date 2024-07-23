@@ -220,7 +220,6 @@ The above code will output:
     new_folder/new_job23 https://JenkinsDNS/job/new_folder/job/new_job23/
     new_folder/test_folder https://JenkinsDNS/job/new_folder/job/test_folder/
 
-.. autofunction:: builders.Builder.Folder()
 .. autofunction:: jobs.Folders.create()
 .. code-block:: python
 
