@@ -7,12 +7,28 @@ Welcome to Python Jenkins SDK documentation!
 ==============================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    modules
    usage
-   examples
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Code Examples:
+
+   system
+   folders
+   jobs
+   builds
+   workspace
+   queues
+   credentials
+   users
+   views
+   plugins
+   nodes
+
 
 Indices and tables
 ==================
@@ -20,4 +36,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

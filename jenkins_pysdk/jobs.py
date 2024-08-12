@@ -1,6 +1,5 @@
+import json
 from typing import List, Generator
-
-import orjson
 
 from jenkins_pysdk.objects import JenkinsValidateJob, JenkinsActionObject
 from jenkins_pysdk.objects import Jobs as r_jobs, Folders as r_folders
@@ -221,7 +220,7 @@ class Jobs:
         elif resp_obj.status_code == 404:
             raise JenkinsNotFound(f"[{resp_obj.status_code}] {path} not found.")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         if data['_class'] not in [Class.Folder, Class.OrganizationFolder]:
             return True
 
@@ -327,7 +326,7 @@ class Jobs:
                 elif resp_obj.status_code != 200:
                     raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get job information.")
 
-                data = orjson.loads(resp_obj.content)
+                data = json.loads(resp_obj.content)
                 data = self._jenkins._validate_url_returned_from_instance(data)
 
                 jobs = data.get('jobs', [])
@@ -349,7 +348,7 @@ class Jobs:
         # Pagination not needed here because function repeats itself if needed
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
 
         try:
@@ -364,7 +363,7 @@ class Jobs:
     def _fetch_job(self, job_url) -> Generator[Job, None, None]:
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
 
         yield Job(jenkins=self._jenkins, job_path=data['fullName'], job_url=data['url'])
@@ -612,7 +611,7 @@ class Folders:
         elif resp_obj.status_code != 200:
             raise JenkinsNotFound(f"{path} not found.")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
 
         if data['_class'] in [Class.Folder, Class.OrganizationFolder]:
             return True
@@ -702,7 +701,7 @@ class Folders:
                 elif resp_obj.status_code != 200:
                     raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get folder information.")
 
-                data = orjson.loads(resp_obj.content)
+                data = json.loads(resp_obj.content)
                 data = self._jenkins._validate_url_returned_from_instance(data)
 
                 folders = data.get('jobs', [])
@@ -721,7 +720,7 @@ class Folders:
     def _fetch_folder_iter(self, folder_url) -> Generator[Folder, None, None]:
         json_url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=folder_url)
         req_obj, resp_obj = self._jenkins._send_http(url=json_url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
 
         if data['_class'] == Class.Folder:
@@ -734,7 +733,7 @@ class Folders:
     def _fetch_folder(self, folder_url) -> Generator[Folder, None, None]:
         json_url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=folder_url)
         req_obj, resp_obj = self._jenkins._send_http(url=json_url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
 
         yield Folder(jenkins=self._jenkins, folder_path=data['fullName'], folder_url=data['url'])

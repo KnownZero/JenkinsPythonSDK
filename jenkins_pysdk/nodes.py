@@ -1,6 +1,5 @@
+import json
 from typing import List, Generator
-
-import orjson
 
 from jenkins_pysdk.consts import (
     Endpoints,
@@ -31,14 +30,14 @@ class Node:
         self._node_url = node_url
         self._raw = self._get_raw()
 
-    def _get_raw(self) -> orjson.loads:
+    def _get_raw(self) -> json.loads:
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self._node_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
 
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get node ({self.name}) information.")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
 
         return data
 
@@ -207,15 +206,15 @@ class Nodes:
         else:
             raise JenkinsNotFound(f"Node ({name}) was not found.")
 
-    def create(self, name: str, json: dict or orjson or Builder.Node) -> JenkinsActionObject:
+    def create(self, name: str, json: dict or json or Builder.Node) -> JenkinsActionObject:
         """
         Create a new node with the given name and configuration.
 
         :param name: The name of the node to create.
         :type name: str
         :param json: The JSON configuration of the node, either as a dictionary,
-                     an orjson object, or a Builder.Node object.
-        :type json: dict or orjson or Builder.Node
+                     an json object, or a Builder.Node object.
+        :type json: dict or json or Builder.Node
         :return: JenkinsActionObject representing the create action.
         :rtype: :class:`jenkins_pysdk.objects.JenkinsActionObject`
         :raises JenkinsGeneralException: If a general exception occurs.
@@ -259,7 +258,7 @@ class Nodes:
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get nodes information.")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
 
         for node in data.get('computer', []):
             name = node['assignedLabels'][-1]['name']  # Assuming last name is consistently correct
@@ -292,6 +291,6 @@ class Nodes:
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get nodes information.")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
 
         return len(data['computer'])

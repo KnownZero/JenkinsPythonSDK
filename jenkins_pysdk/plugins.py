@@ -1,3 +1,4 @@
+import json
 from typing import (
     List,
     Union,
@@ -5,8 +6,6 @@ from typing import (
     BinaryIO,
     Generator
 )
-
-import orjson
 
 from jenkins_pysdk.objects import JenkinsActionObject
 from jenkins_pysdk.exceptions import JenkinsGeneralException, JenkinsNotFound
@@ -30,14 +29,14 @@ class Site:
         self._id = site_id
         self._raw = self._get_raw()
 
-    def _get_raw(self) -> orjson.loads:
+    def _get_raw(self) -> json.loads:
         url = self._jenkins._build_url(Endpoints.UpdateCenter.Site.format(site=self.id), suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._jenkins._send_http(url=url, params={"depth": 1})
 
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"Failed to get site ({self.id}) information.")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
 
         return data
 
@@ -146,7 +145,7 @@ class UpdateCenter:
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException("Failed to get sites information.")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
 
         for site in data.get('sites', []):
             yield Site(self._jenkins, site['id'])
@@ -486,7 +485,7 @@ class PluginGroup:
             elif resp_obj.status_code != 200:
                 raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get plugin information.")
 
-            data = orjson.loads(resp_obj.content)
+            data = json.loads(resp_obj.content)
             # This will make type hints annoying
             if self.type == "plugins":
                 for plugin in data.get(self.type, []):

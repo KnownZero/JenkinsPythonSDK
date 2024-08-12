@@ -1,9 +1,8 @@
 import re
 import time
+import json
 import threading
 from typing import Optional
-
-import orjson
 
 import os, sys
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -15,7 +14,6 @@ from jenkins_pysdk.consts import (
     FORM_HEADER_DEFAULT,
     Class
 )
-
 from jenkins_pysdk.exceptions import (
     JenkinsConnectionException,
     JenkinsUnauthorisedException,
@@ -23,7 +21,6 @@ from jenkins_pysdk.exceptions import (
     JenkinsActionFailed,
     JenkinsGeneralException
 )
-
 from jenkins_pysdk.objects import JenkinsConnectObject, JenkinsActionObject
 from jenkins_pysdk.objects import Views as r_views, Jobs as r_jobs, Folders as r_folders
 from jenkins_pysdk.jobs import Jobs, Folders
@@ -33,7 +30,6 @@ from jenkins_pysdk.credentials import Credentials
 from jenkins_pysdk.plugins import Plugins
 from jenkins_pysdk.nodes import Nodes
 from jenkins_pysdk.queues import Queue
-
 
 __all__ = ["Jenkins"]
 
@@ -365,7 +361,7 @@ class Jenkins(Core):
         # TODO: FIX CODE COPY & PASTE BELOW... maybe singledispatch
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         content = data['availableExecutors']
 
         if not content:
@@ -384,7 +380,7 @@ class Jenkins(Core):
         """
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         content = data['busyExecutors']
 
         if not content:
@@ -403,7 +399,7 @@ class Jenkins(Core):
         """
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         content = data['connectingExecutors']
 
         if not content:
@@ -422,7 +418,7 @@ class Jenkins(Core):
         """
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         content = data['definedExecutors']
 
         if not content:
@@ -441,7 +437,7 @@ class Jenkins(Core):
         """
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         content = data['idleExecutors']
 
         if not content:
@@ -460,7 +456,7 @@ class Jenkins(Core):
         """
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         content = data['onlineExecutors']
 
         if not content:
@@ -479,7 +475,7 @@ class Jenkins(Core):
         """
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         content = data['queueLength']
 
         if not content:
@@ -498,7 +494,7 @@ class Jenkins(Core):
         """
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         content = data['totalExecutors']
 
         if not content:
@@ -518,7 +514,7 @@ class Jenkins(Core):
         # TODO: Fix endpoitn remove api json
         url = self._build_url(Endpoints.Instance.OverallLoad, suffix=Endpoints.Instance.Standard)
         req_obj, resp_obj = self._send_http(url=url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         content = data['totalQueueLength']
 
         if not content:

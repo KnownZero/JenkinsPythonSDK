@@ -1,7 +1,5 @@
-import sys
+import json
 from typing import List, Generator
-
-import orjson
 
 from jenkins_pysdk.exceptions import JenkinsGeneralException, JenkinsEmptyQueue
 from jenkins_pysdk.consts import Endpoints
@@ -156,7 +154,7 @@ class Queue:
             elif resp_obj.status_code != 200:
                 raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get queue information.")
 
-            data = orjson.loads(resp_obj.content)
+            data = json.loads(resp_obj.content)
             data = self._jenkins._validate_url_returned_from_instance(data)
 
             for item in data.get('items', []):

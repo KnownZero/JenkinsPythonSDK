@@ -1,6 +1,5 @@
+import json
 from typing import List, Generator
-
-import orjson
 
 from jenkins_pysdk.objects import JenkinsActionObject
 from jenkins_pysdk.exceptions import JenkinsGeneralException, JenkinsNotFound
@@ -37,14 +36,14 @@ class User:
         """
         return self._user_url
 
-    def _get_raw(self) -> orjson.loads:
+    def _get_raw(self) -> json.loads:
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self._user_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
 
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get user information.")
 
-        return orjson.loads(resp_obj.content)
+        return json.loads(resp_obj.content)
 
     @property
     def description(self) -> str:
@@ -100,7 +99,7 @@ class User:
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get users' views.")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
 
         return [v_view(jenkins=self._jenkins,
@@ -212,7 +211,7 @@ class Users:
         if resp_obj.status_code == 404:
             raise JenkinsGeneralException(f"User {username} was not found.")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
 
         return User(self._jenkins, data.get('absoluteUrl', url))
@@ -230,7 +229,7 @@ class Users:
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to retrieve users.")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
 
         for user in data['users']:

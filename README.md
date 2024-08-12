@@ -2,7 +2,7 @@
 
 [![Documentation Status](https://readthedocs.org/projects/jenkinspythonsdk/badge/?version=latest)](https://jenkinspythonsdk.readthedocs.io/en/latest/?badge=latest) 
 ![CodeQL](https://github.com/KnownZero/JenkinsPythonSDK/actions/workflows/github-code-scanning/codeql/badge.svg)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/jenkins-pysdk?style=flat&logo=pypi&logoColor=white&label=Downloads&color=blue)
+![PyPI - Downloads](https://img.shields.io/pypi/dd/jenkins_pysdk?color=blue&cacheSeconds=3600)
 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/jenkins-pysdk)
 
@@ -39,11 +39,11 @@ jenkins = Jenkins(
     verify=False
 )
 ```
-#### Why is the token parameter different?
+#### Why use token= parameter?
 ```
-Using an API token removes the need for Crumbs in your requests. 
+Using an API token removes the need for csrf crumbs in your requests. 
 
-Of course, the SDK handles crumbs for you, but it will reduce the number of requests. 
+The SDK handles crumbs for you, but using token= will reduce the number of API calls. 
 ```
 
 ### See [[JenkinsPythonSDK Docs](https://jenkinspythonsdk.readthedocs.io/en/latest/index.html)] for full documentation.
@@ -63,27 +63,27 @@ Please make sure to update tests as appropriate.
 
 
 > [!IMPORTANT]
-> Code is tested on:
-> - "2.121.3"  # LTS (2018)
-> - "2.138.4"  # LTS (2019)
-> - "2.150.3"  # LTS (2019)
-> - "2.164.3"  # LTS (2019)
-> - "2.176.4"  # LTS (2019)
-> - "2.190.3"  # LTS (2020)
-> - "2.204.6"  # LTS (2020)
-> - "2.222.4"  # LTS (2020)
-> - "2.235.5"  # LTS (2021)
-> - "2.249.3"  # LTS (2021)
-> - "2.263.4"  # LTS (2021)
-> - "2.277.4"  # LTS (2021)
-> - "2.289.3"  # LTS (2021)
-> - "2.303.3"  # LTS (2021)
-> - "2.319.1"  # LTS (2022)
-> - "2.332.3"  # LTS (2022)
-> - "2.346.3"  # LTS (2022)
-> - "2.361.4"  # LTS (2023)
-> - "2.375.3"  # LTS (2023)
-> - "2.387.1"  # LTS (2024)
+> Code is tested on LTS versions:
+> - "2.121.3"  # (2018)
+> - "2.138.4"  # (2019)
+> - "2.150.3"  # (2019)
+> - "2.164.3"  # (2019)
+> - "2.176.4"  # (2019)
+> - "2.190.3"  # (2020)
+> - "2.204.6"  # (2020)
+> - "2.222.4"  # (2020)
+> - "2.235.5"  # (2021)
+> - "2.249.3"  # (2021)
+> - "2.263.4"  # (2021)
+> - "2.277.4"  # (2021)
+> - "2.289.3"  # (2021)
+> - "2.303.3"  # (2021)
+> - "2.319.1"  # (2022)
+> - "2.332.3"  # (2022)
+> - "2.346.3"  # (2022)
+> - "2.361.4"  # (2023)
+> - "2.375.3"  # (2023)
+> - "2.387.1"  # (2024)
 
 
 ## Author
