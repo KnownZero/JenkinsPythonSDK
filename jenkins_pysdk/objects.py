@@ -1,27 +1,30 @@
 from typing import Any
-from pydantic import (
-    BaseModel,
-    PrivateAttr,
-)
-
+from dataclasses import dataclass, asdict
 
 __all__ = ["JenkinsConnectObject", "JenkinsActionObject", "Parameter",
            "Filter", "Flags", "Setting", "JenkinsValidateJob",
            "Views", "Jobs", "Folders", "Builder"]
 
 
-class JenkinsSafe(BaseModel):
-    def __repr__(self):
-        return f"<{self.__class__.__name__} object at {id(self)}>"
+@dataclass
+class Base:
+    def __init__(self, **kws):
+        for arg, val in kws.items():
+            setattr(self, arg, val)
 
     def _as_dict(self):
-        return self.model_dump_json()
+        return asdict(self)
+
+
+class JenkinsSafe(Base):
+    def __repr__(self):
+        return f"<{self.__class__.__name__} object at {id(self)}>"
 
 
 class JenkinsValidateJob(JenkinsSafe):
     is_valid: bool
     url: str
-    _raw: PrivateAttr
+    _raw: Any
 
 
 ###########################################
@@ -33,7 +36,7 @@ class JenkinsConnectObject(JenkinsSafe):
     response: Any
     content: str
     status_code: int
-    _raw: Any = PrivateAttr()
+    _raw: Any
 
 
 class JenkinsActionObject(JenkinsSafe):
@@ -46,11 +49,11 @@ class JenkinsActionObject(JenkinsSafe):
 #   FLAGS
 ###########################################
 
-class Flags(BaseModel):
+class Flags(Base):
     value: Any
 
     def _as_dict(self):
-        yield self.model_dump_json()
+        yield super()._as_dict()
 
 
 class Views(Flags):

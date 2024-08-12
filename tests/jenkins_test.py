@@ -223,7 +223,7 @@ class TestJenkins(unittest.TestCase):
             self.fail(f"Failed to connect to Jenkins to {host}:{port}: {e}")
 
     def _test_connection_two(self, host, port):
-        host = host.removeprefix("http://")
+        host = host.lstrip("http://")
         try:
             Jenkins(host=host, port=port, username=self.username, passw=self.password, verify=False)
             print(f"Connected to port {port}: SUCCESS")
@@ -1376,7 +1376,11 @@ class TestJenkins(unittest.TestCase):
             try:
                 print(j.plugins.installed.search("ant").delete())
             except:
+                raise
+            try:
                 print(j.plugins.installed.search("jakarta-activation-api").delete())
+            except:
+                raise
             print(f"Successfully deleted installed plugin 'ant' on port {port}: SUCCESS")
         except AssertionError as e:
             raise e

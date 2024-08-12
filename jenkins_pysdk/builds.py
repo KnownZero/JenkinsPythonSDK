@@ -1,13 +1,12 @@
 import re
 import time
+import json
 from typing import (
     List,
     Optional,
     Generator,
     Union
 )
-
-import orjson
 
 from jenkins_pysdk.objects import JenkinsActionObject
 from jenkins_pysdk.exceptions import JenkinsGeneralException, JenkinsNotFound
@@ -31,14 +30,14 @@ class Build:
         self._build_url = build_url
         self._raw = self._get_raw()
 
-    def _get_raw(self) -> orjson.loads:
+    def _get_raw(self) -> json.loads:
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self._build_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
 
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to get build information.")
 
-        return orjson.loads(resp_obj.content)
+        return json.loads(resp_obj.content)
 
     @property
     def number(self) -> int:
@@ -351,7 +350,7 @@ class Builds:
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch job.")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
 
         return Build(self._jenkins, data['url'])
@@ -371,7 +370,7 @@ class Builds:
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch job information.")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
 
         return len(data.get('builds', []))
 
@@ -389,7 +388,7 @@ class Builds:
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch job information.")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
 
         for build in data.get('builds', []):
@@ -412,7 +411,7 @@ class Builds:
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch last job.")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
 
         if not data.get('builds', []):
@@ -442,7 +441,7 @@ class Builds:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch latest build.")
         elif resp_obj.status_code != 200:
             raise JenkinsNotFound(f"[{resp_obj.status_code}] Latest build not found.")
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
 
         return Build(self._jenkins, data['url'])
 

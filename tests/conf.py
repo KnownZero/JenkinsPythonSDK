@@ -4,7 +4,7 @@ credentials: dict = {
 }
 
 servers: dict = {
-    "port_lower": 8085,
-    "port_higher": 8092,
+    "port_lower": 8099,
+    "port_higher": 8103,
     "host": "http://localhost"
 }

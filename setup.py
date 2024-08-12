@@ -5,13 +5,11 @@ with open("README.md", "r") as readme:
 
 setup(
     name='jenkins_pysdk',
-    version='1.4.2',  # Don't forget to update version.py & conf.py :)
+    version='1.4.3',  # Don't forget to update version.py & conf.py :)
     packages=find_packages(),
     install_requires=[
-        "httpx==0.24.1",
-        "orjson==3.9.15",
-        "pydantic==2.5.3",
-        "urllib3==2.0.2"
+        "httpx",
+        "urllib3"
     ],
     author='KnownZero',
     author_email="gihjeefs@protonmail.com",

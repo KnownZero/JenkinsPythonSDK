@@ -1,6 +1,5 @@
+import json
 from typing import List, Generator
-
-import orjson
 
 from jenkins_pysdk.objects import JenkinsValidateJob, JenkinsActionObject
 from jenkins_pysdk.exceptions import JenkinsNotFound, JenkinsGeneralException
@@ -248,7 +247,7 @@ class Views:
                 if resp_obj.status_code > 200 and start > 0:
                     break  # Pagination finished, Jenkins doesn't return a nice response
 
-                data = orjson.loads(resp_obj.content)
+                data = json.loads(resp_obj.content)
                 data = self._jenkins._validate_url_returned_from_instance(data)
 
                 views = data.get('views', [])
@@ -268,7 +267,7 @@ class Views:
         # Pagination not needed here because function repeats itself if needed
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=job_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
 
         views = data.get('views', [])
@@ -282,7 +281,7 @@ class Views:
     def _fetch_view(self, view_url) -> Generator[View, None, None]:
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=view_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
         data = self._jenkins._validate_url_returned_from_instance(data)
 
         yield View(jenkins=self._jenkins, name=data['name'], url=data['url'])

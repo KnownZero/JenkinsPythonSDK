@@ -1,11 +1,8 @@
-
 Quick Start
-========
-
-.. _installation:
+============
 
 Installation
-------------
+-------------
 
 To use this Python Jenkins SDK, first install it using pip:
 
@@ -14,8 +11,6 @@ To use this Python Jenkins SDK, first install it using pip:
    (venv) $ pip install jenkins-pysdk
 
 Next, test the connection to your application:
-
-.. _test_connection:
 
 To test the connection to the instance,
 you can explicitly run ``jenkins.connect()`` function:

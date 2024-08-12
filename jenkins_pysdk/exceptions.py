@@ -1,3 +1,4 @@
+
 __all__ = ["JenkinsInvalidHost", "JenkinsConnectionException", "JenkinsUnauthorisedException", "JenkinsRestartFailed",
            "JenkinsActionFailed", "JenkinsGeneralException", "JenkinsWrongAuthenticationMethod",
            "JenkinsAlreadyExists", "JenkinsNotFound", "JenkinsBaseException", "JenkinsEmptyQueue"]

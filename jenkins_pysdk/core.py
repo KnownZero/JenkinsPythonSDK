@@ -1,13 +1,20 @@
+import os
+import json
+import warnings
 from typing import Tuple, Any
 
-import orjson
+from httpx import (
+    Client,
+    Request,
+    Response,
+    HTTPError,
+    TimeoutException
+)
 
 from jenkins_pysdk.consts import Endpoints
 from jenkins_pysdk.consts import HTTP_HEADER_DEFAULT
 from jenkins_pysdk.exceptions import JenkinsConnectionException
 from jenkins_pysdk.version import version, python_name
-
-from httpx import Client, Request, Response, HTTPError, TimeoutException
 
 __all__ = ["Core"]
 
@@ -37,7 +44,7 @@ class Core:  # TODO: Revise these messy methods
 
         return endpoint
 
-    def _validate_url_returned_from_instance(self, data: orjson):
+    def _validate_url_returned_from_instance(self, data: json):
         """
         Handle returned endpoints when the Jenkins instance is not configured properly.
         :param data:
@@ -115,8 +122,7 @@ class Core:  # TODO: Revise these messy methods
                    files: dict = None,
                    username: str = None,
                    passw_or_token: str = None,
-                   timeout: int = None,
-                   _session: ... = None,
+                   timeout: int = None
                    ) -> Tuple[Request, Response]:
         """
         Some HTTP interaction function...
@@ -155,19 +161,21 @@ class Core:  # TODO: Revise these messy methods
                 except (EnvironmentError, HTTPError, TimeoutException) as e:
                     raise JenkinsConnectionException(e)
 
-                crumbed_data = orjson.loads(crumbed_session.content)
+                crumbed_data = json.loads(crumbed_session.content)
                 headers.update({crumbed_data['crumbRequestField']: crumbed_data['crumb']})
                 headers.update({"x-jenkins-session": crumbed_session.headers['x-jenkins-session']})
 
             try:
-                request_obj = Request(method=method,
-                                      url=url,
-                                      headers=headers,
-                                      params=params,
-                                      data=data,
-                                      files=files,
-                                      cookies=crumbed_session.cookies)
-                resp = session.send(request_obj)
+                with warnings.catch_warnings():
+                    warnings.filterwarnings("ignore", category=DeprecationWarning)
+                    request_obj = Request(method=method,
+                                          url=url,
+                                          headers=headers,
+                                          params=params,
+                                          data=data,
+                                          files=files,
+                                          cookies=crumbed_session.cookies)
+                    resp = session.send(request_obj)
             except (EnvironmentError, HTTPError, TimeoutException) as e:
                 raise JenkinsConnectionException(e)
 

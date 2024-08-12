@@ -1,10 +1,9 @@
+import json
 from typing import (
     List,
     Optional,
     Generator
 )
-
-import orjson
 
 from jenkins_pysdk.objects import JenkinsActionObject
 from jenkins_pysdk.exceptions import (
@@ -168,10 +167,10 @@ class Domain:
         """
         return self.domain_url
 
-    def _get_raw(self) -> orjson.loads:
+    def _get_raw(self) -> json.loads:
         url = self._jenkins._build_url(Endpoints.Instance.Standard, prefix=self.domain_url)
         req_obj, resp_obj = self._jenkins._send_http(url=url)
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
 
         return data
 
@@ -204,7 +203,7 @@ class Domain:
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch credentials in domain ({self.name}).")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
 
         for cred in data.get('credentials', []):
             domain_url = str(self.domain_url).strip(Endpoints.Instance.Standard)
@@ -291,7 +290,7 @@ class Credentials:
         if resp_obj.status_code != 200:
             raise JenkinsGeneralException(f"[{resp_obj.status_code}] Failed to fetch credential domains.")
 
-        data = orjson.loads(resp_obj.content)
+        data = json.loads(resp_obj.content)
 
         for domain in data.get('domains'):
             url = self._jenkins._build_url(Endpoints.Credentials.Domain.format(domain=domain))
