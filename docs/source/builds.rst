@@ -388,7 +388,7 @@ Get the previous build
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
     my_job_build_2 = jenkins.jobs.search("new_freestyle").builds.search(2)
-    print(jenkins.jobs.search("new_freestyle").builds.oldest.next)
+    print(jenkins.jobs.search("new_freestyle").builds.oldest.previous)
 
 The above code will output:
 

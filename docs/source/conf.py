@@ -10,10 +10,10 @@ sys.path.insert(1, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'Python Jenkins SDK'
-copyright = '2024, KnownZero'
-author = 'KnownZero'
-release = '1.4.3'
+project = "Python Jenkins SDK"
+copyright = "2024, KnownZero"
+author = "KnownZero"
+release = "1.4.3"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -24,8 +24,8 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
-    'sphinx.ext.viewcode',
-    'sphinx.ext.todo'
+    "sphinx.ext.viewcode",
+    "sphinx.ext.todo"
 ]
 
 intersphinx_mapping = {
@@ -41,5 +41,5 @@ exclude_patterns = ['_logger', 'core', 'utils', 'consts']
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 html_static_path = ['_static']

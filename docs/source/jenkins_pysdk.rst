@@ -29,7 +29,7 @@ jenkins\_pysdk.builds module
    :show-inheritance:
 
 jenkins\_pysdk.workspace module
-----------------------------
+-------------------------------
 
 .. automodule:: jenkins_pysdk.workspace
    :members:

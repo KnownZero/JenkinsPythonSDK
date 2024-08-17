@@ -1,9 +1,8 @@
 Folders
 ========
 
-
 Folders
------------
+---------
 
 .. _folders:
 

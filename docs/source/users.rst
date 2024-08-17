@@ -43,8 +43,8 @@ Iterate all users
 
     from jenkins_pysdk.jenkins import Jenkins
     jenkins = Jenkins(host="JenkinsDNS", username="admin", token="11e8e294cee85ee88b60d99328284d7608")
-        for user in jenkins.users.iter():
-           print(user.name)
+    for user in jenkins.users.iter():
+        print(user.name)
 
 The above code will output:
 
@@ -318,7 +318,6 @@ The above code will output:
 
 ::
 
-    No REST endpoint available... returning HTML Request for the moment...
     <HTML Output>
 
 Terminate my session

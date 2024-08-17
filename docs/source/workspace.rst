@@ -16,7 +16,7 @@ The above code will output:
 
 ::
 
-    request=<Request object at 2314487495104> content='[200] Successfully Downloaded workspace files for new_freestyle.' status_code=200
+    request=<Request object at 2314487495104> content='[200] Successfully downloaded workspace files for new_freestyle.' status_code=200
 
 Download a workspace file
 
