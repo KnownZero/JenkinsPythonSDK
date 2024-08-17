@@ -192,6 +192,7 @@ class Users:
                 if not found.active:
                     print(Warning(f"Your people-view plugin is not enabled."))
             except JenkinsNotFound:
+                # TODO: Fix this print
                 print(Warning(
                     f"Your Jenkins version ({version}) requires the people-view plugin but you haven't installed it."))
 

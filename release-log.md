@@ -1,6 +1,6 @@
 # Release log
 
-## Release (Minor) 1.4.3 - 12/08/2024
+## Release (Minor/Fixes) 1.4.3 - 12/08/2024
 ### Fixes:
 - Suppress httpx warning when posting data
 - Readthedocs examples page was too big, and it wasn't loading properly on readthedocs site
