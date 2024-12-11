@@ -31,6 +31,7 @@ class TestJenkins(unittest.TestCase):
                 try:
                     # test Jenkins.py
                     self._test_connection(self.host, port)
+                    self._test_proxy_mount(self.host, port)
                     self._test_connection_two(self.host, port)
                     self._test_version(self.host, port)
                     self._test_get_max_executors(self.host, port)
@@ -222,6 +223,22 @@ class TestJenkins(unittest.TestCase):
         except JenkinsConnectionException as e:
             self.fail(f"Failed to connect to Jenkins to {host}:{port}: {e}")
 
+    def _test_proxy_mount(self, host, port):
+        try:
+            Jenkins(host=host,
+                    port=port,
+                    username=self.username,
+                    passw=self.password,
+                    verify=False,
+                    proxies={"all://": "http://localhost:8080"})
+            print(f"Connected to port {port}: SUCCESS")
+        except ConnectionRefusedError:
+            print("Failed to connect to proxy.")
+        except AssertionError as e:
+            raise e
+        except JenkinsConnectionException as e:
+            self.fail(f"Failed to connect to Jenkins to {host}:{port}: {e}")
+
     def _test_connection_two(self, host, port):
         host = host.lstrip("http://")
         try:
@@ -286,7 +303,7 @@ class TestJenkins(unittest.TestCase):
 
     def _test_quiet_mode_duration(self, host, port):
         try:
-            j = Jenkins(host=host, port=port, username=self.username, passw=self.password, verify=False)
+            j = Jenkins(host=host, port=port, username=self.username, token="7ca0b88453d76d47e41490efb42679f8", verify=False)
             print(j.quiet_mode(duration=10))
             print(f"Successfully enabled quiet mode for 10s on port {port}: SUCCESS")
         except AssertionError as e:
