@@ -5,7 +5,7 @@ with open("README.md", "r") as readme:
 
 setup(
     name='jenkins_pysdk',
-    version='1.4.3',  # Don't forget to update version.py & conf.py :)
+    version='1.4.4',  # Don't forget to update version.py & conf.py :)
     packages=find_packages(),
     install_requires=[
         "httpx",

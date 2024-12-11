@@ -8,7 +8,8 @@ from httpx import (
     Request,
     Response,
     HTTPError,
-    TimeoutException
+    TimeoutException,
+    HTTPTransport
 )
 
 from jenkins_pysdk.consts import Endpoints
@@ -142,12 +143,21 @@ class Core:  # TODO: Revise these messy methods
 
         headers.update({"User-Agent": f"{python_name}/{version}"})
 
+        proxies = dict()
+        if self.proxies:
+            try:
+                for k, v in self.proxies.items():
+                    transport = HTTPTransport(proxy=v)  # transport doesn't work with dictionary comprehension???
+                    proxies[k] = transport
+            except:
+                raise JenkinsConnectionException("Proxy configuration is invalid.")
+
         with Client(verify=self.verify,
-                    proxies=self.proxies,
+                    mounts=proxies,
                     timeout=timeout if timeout else self.timeout,
                     follow_redirects=True,
-                    auth=(username if username else self.username,
-                          passw_or_token if passw_or_token else self.token if self.token else self.passw),
+                    auth=(username or self.username,
+                          passw_or_token or self.token or self.passw),
                     ) as session:
 
             if not self.token:
@@ -161,9 +171,12 @@ class Core:  # TODO: Revise these messy methods
                 except (EnvironmentError, HTTPError, TimeoutException) as e:
                     raise JenkinsConnectionException(e)
 
-                crumbed_data = json.loads(crumbed_session.content)
-                headers.update({crumbed_data['crumbRequestField']: crumbed_data['crumb']})
-                headers.update({"x-jenkins-session": crumbed_session.headers['x-jenkins-session']})
+                try:
+                    crumbed_data = json.loads(crumbed_session.content)
+                    headers.update({crumbed_data['crumbRequestField']: crumbed_data['crumb']})
+                    headers.update({"x-jenkins-session": crumbed_session.headers['x-jenkins-session']})
+                except (json.JSONDecodeError, KeyError):
+                    raise JenkinsConnectionException("Issue retrieving crumb details.")
 
             try:
                 with warnings.catch_warnings():
@@ -174,7 +187,7 @@ class Core:  # TODO: Revise these messy methods
                                           params=params,
                                           data=data,
                                           files=files,
-                                          cookies=crumbed_session.cookies)
+                                          cookies=crumbed_session.cookies if not self.token else None)
                     resp = session.send(request_obj)
             except (EnvironmentError, HTTPError, TimeoutException) as e:
                 raise JenkinsConnectionException(e)

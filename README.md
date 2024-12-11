@@ -32,13 +32,20 @@ jenkins = Jenkins(
     username="<username>",
     token="<token>",
     proxies={
-        "http": "http://",
-        "https": "https://"
+        "http://": "http://localhost:8080",
+        "https://": "http://<username>:<password>@localhost:8080"
     },
     timeout=60,
     verify=False
 )
 ```
+
+#### Proxies
+```
+For more advanced proxy usage, see HTTPX docs:
+https://www.python-httpx.org/advanced/transports/#routing
+```
+
 #### Why use token= parameter?
 ```
 Using an API token removes the need for csrf crumbs in your requests. 

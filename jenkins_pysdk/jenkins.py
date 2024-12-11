@@ -74,7 +74,7 @@ class Jenkins(Core):
         self.port = port
         self.timeout = timeout
 
-        self.host = re.sub(":\d+", f":{port}", host)
+        self.host = re.sub(r":\d+", f":{port}", host)
         if not self.host.endswith(f":{port}"):
             self.host += f":{port}"
 
