@@ -6,6 +6,7 @@
 
 ### New:
 - Small cleanup of HTTPX core code
+- No py3.8 support
 
 ###
 
