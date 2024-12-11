@@ -1,6 +1,6 @@
 # Release log
 
-## Release (Minor/Fixes) 1.4.3 - 12/08/2024
+## Release (Minor/Fixes) 1.4.4 - 11/12/2024
 ### Fixes:
 - Fix HTTPX deprecated proxies parameter
 
